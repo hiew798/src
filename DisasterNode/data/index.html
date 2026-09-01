@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EMERGENCY DISASTER RESCUE PORTAL</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Top Emergency Header -->
+        <header class="header">
+            <div class="pulse-icon"></div>
+            <div>
+                <h1>EMERGENCY RESCUE NETWORK</h1>
+                <p class="subtitle" id="nodeStatusText">Connected to Node: Loading...</p>
+            </div>
+        </header>
+
+        <!-- Main SOS Form -->
+        <main class="content">
+            <div class="card emergency-banner">
+                <span class="warning-tag">OFFLINE LORA NETWORK</span>
+                <p>No cellular / internet needed. Your message will be broadcast via radio mesh to search & rescue teams.</p>
+            </div>
+
+            <form id="sosForm" class="sos-form">
+                <!-- Status Checkbox Grid -->
+                <div class="form-group">
+                    <label class="section-title">CURRENT VICTIM STATUS</label>
+                    <div class="checkbox-grid">
+                        <label class="checkbox-btn danger">
+                            <input type="checkbox" id="chkTrapped" name="trapped">
+                            <span class="btn-box">🛟 Trapped Under Rubble</span>
+                        </label>
+                        <label class="checkbox-btn danger">
+                            <input type="checkbox" id="chkInjured" name="injured">
+                            <span class="btn-box">🩸 Injured / Bleeding</span>
+                        </label>
+                        <label class="checkbox-btn warning">
+                            <input type="checkbox" id="chkNeedWater" name="needWater">
+                            <span class="btn-box">💧 Need Water / Food</span>
+                        </label>
+                        <label class="checkbox-btn warning">
+                            <input type="checkbox" id="chkNeedMeds" name="needMeds">
+                            <span class="btn-box">💊 Need Urgent Medication</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Victim Count Slider -->
+                <div class="form-group">
+                    <label for="victimCount" class="section-title">NUMBER OF PEOPLE AT LOCATION</label>
+                    <div class="victim-counter">
+                        <button type="button" id="btnMinusCount" class="count-btn">-</button>
+                        <span id="victimCountValue" class="count-display">1</span>
+                        <button type="button" id="btnPlusCount" class="count-btn">+</button>
+                    </div>
+                </div>
+
+                <!-- Location / Room input -->
+                <div class="form-group">
+                    <label for="txtLocation" class="section-title">EXACT LOCATION / ROOM / FLOOR *</label>
+                    <input type="text" id="txtLocation" class="text-input" placeholder="e.g. Bldg B, 3rd Floor, Room 304" required maxlength="15">
+                </div>
+
+                <!-- Contact Name input -->
+                <div class="form-group">
+                    <label for="txtName" class="section-title">YOUR NAME / CONTACT INFO</label>
+                    <input type="text" id="txtName" class="text-input" placeholder="e.g. Alex Tan" maxlength="15">
+                </div>
+
+                <!-- Message input -->
+                <div class="form-group">
+                    <label for="txtMessage" class="section-title">DISTRESS MESSAGE / DETAILS</label>
+                    <textarea id="txtMessage" class="text-input textarea" rows="3" placeholder="Describe hazards, structural damage, or emergency details..." maxlength="60"></textarea>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" id="btnSubmitSos" class="btn-sos-submit">
+                    <span class="sos-icon">📡</span> SEND DISTRESS ALERT VIA LORA
+                </button>
+            </form>
+
+            <!-- Status Alert Container -->
+            <div id="statusAlert" class="status-alert hidden"></div>
+
+            <!-- View Reported Emergencies -->
+            <section class="distress-list-section">
+                <div class="section-header">
+                    <h2>RECIEVED DISTRESS REPORTS (<span id="distressCount">0</span>)</h2>
+                    <button type="button" id="btnRefreshList" class="btn-refresh">↻ Refresh</button>
+                </div>
+                <div id="distressCards" class="distress-cards-container">
+                    <p class="empty-msg">No active distress reports found on this node.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
