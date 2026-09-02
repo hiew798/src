@@ -2,7 +2,7 @@
  * =====================================================================================
  * File: DisasterNode.ino
  * Project: Heltec Wireless Stick Lite V3 - Disaster Recovery Multi-Node LoRa Network
- * Author: Antigravity AI / FYP Disaster Recovery Team
+ * Author: FYP loRA Team (Hiew Jing Hong / Teh Ming Dong)
  * 
  * Description:
  *   Main firmware sketch for Heltec Wireless Stick Lite V3 (ESP32-S3 + SX1262).
@@ -22,6 +22,9 @@
  *   - Select Board: "Heltec Wireless Stick Lite (V3)" or "ESP32S3 Dev Module".
  * =====================================================================================
  */
+
+//to get the MAC
+#include "esp_mac.h"
 
 #include <Arduino.h>
 #include "Config.h"
@@ -53,8 +56,13 @@ void setup() {
     Serial.println("======================================================================");
 
     // 2. Generate Unique Node ID from ESP32 WiFi MAC Address
+    // FIX: Initialize WiFi mode before reading MAC so it doesn't return 00:00:00:00:00:00
+    WiFi.mode(WIFI_AP);
     uint8_t mac[6];
-    WiFi.macAddress(mac);
+
+    // WiFi.macAddress(mac);
+    esp_read_mac(mac, ESP_MAC_WIFI_SOFTAP);
+
     g_nodeId = ((uint16_t)mac[4] << 8) | mac[5];
     Serial.printf("[SYSTEM] Assigned Node ID: 0x%04X (MAC: %02X:%02X:%02X:%02X:%02X:%02X)\n",
                   g_nodeId, mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);

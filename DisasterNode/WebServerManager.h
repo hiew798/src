@@ -19,6 +19,9 @@
 #ifndef WEB_SERVER_MANAGER_H
 #define WEB_SERVER_MANAGER_H
 
+//to get the MAC
+#include "esp_mac.h"
+
 #include <Arduino.h>
 #include <WiFi.h>
 #include <DNSServer.h>
@@ -46,17 +49,22 @@ public:
      * Initializes WiFi SoftAP, Captive Portal DNS redirection, and HTTP routes.
      */
     bool begin() {
+        // Configure WiFi Access Point mode first so MAC address is correctly loaded
+        WiFi.mode(WIFI_AP);
+
         // Build unique SSID using lower 2 bytes of ESP32 WiFi MAC address
         uint8_t mac[6];
-        WiFi.macAddress(mac);
+
+        // WiFi.macAddress(mac);
+        esp_read_mac(mac, ESP_MAC_WIFI_SOFTAP);
+
         char ssidBuf[32];
         snprintf(ssidBuf, sizeof(ssidBuf), "%s%02X%02X", WIFI_AP_SSID_PREFIX, mac[4], mac[5]);
         apSSID = String(ssidBuf);
 
         Serial.printf("[WIFI AP] Starting Access Point: %s ...\n", apSSID.c_str());
 
-        // Configure WiFi Access Point
-        WiFi.mode(WIFI_AP);
+        // Start WiFi Access Point
         bool apSuccess = WiFi.softAP(apSSID.c_str(), WIFI_AP_PASSWORD, WIFI_AP_CHANNEL, 0, WIFI_MAX_CONNECTIONS);
         if (!apSuccess) {
             Serial.println("[WIFI ERROR] Failed to start SoftAP!");
