@@ -49,5 +49,8 @@ Before compiling, open **Tools > Manage Libraries** in Arduino IDE and install:
 2. **Upload Sketch**: Compile and upload `DisasterNode.ino` via USB-C.
 3. **Upload Web Data to LittleFS**:
    - Install the **Arduino ESP32 LittleFS Filesystem Upload** plugin for Arduino IDE (or use PlatformIO `Upload Filesystem Image`).
+   
+      - Instructions here (https://randomnerdtutorials.com/arduino-ide-2-install-esp32-littlefs/)
+      
    - Run **Tools > ESP32 Sketch Data Upload** to flash the contents of the `data/` folder to ESP32 Flash memory.
 4. **Open Serial Monitor**: Set baud rate to `115200` to view node initialization logs, assigned Node ID, and LoRa transmission diagnostics.
