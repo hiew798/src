@@ -55,8 +55,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (data.success) {
-                showAlert(`✅ SOS Alert Sent! Broadcast ID: ${data.msgId}`, 'success');
-                fetchDistressList(); // Refresh list
+                showAlert(`✅ SOS Alert Broadcast! Message ID: ${data.msgId}`, 'success');
+                fetchDistressList();
             } else {
                 showAlert('❌ Failed to send SOS alert. Please try again.', 'error');
             }
@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Fetch Distress List
+    // Fetch Distress List & Status Badges
     async function fetchDistressList() {
         try {
             const res = await fetch('/api/distress-list');
@@ -95,22 +95,28 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
 
-                distressCards.innerHTML = list.map(item => `
-                    <div class="distress-card">
-                        <div class="card-header">
-                            <span>📍 ${escapeHtml(item.location)}</span>
-                            <span>👥 ${item.victimCount} People</span>
+                distressCards.innerHTML = list.map(item => {
+                    const isResolved = item.status === 2;
+                    return `
+                        <div class="distress-card ${isResolved ? 'status-resolved' : ''}">
+                            <div class="card-header">
+                                <span>📍 ${escapeHtml(item.location)}</span>
+                                <span>👥 ${item.victimCount} People</span>
+                            </div>
+                            <div class="tag-list">
+                                ${isResolved 
+                                    ? '<span class="badge green">✓ RESCUED / RESOLVED</span>' 
+                                    : '<span class="badge orange">AWAITING RESCUE</span>'}
+                                ${item.trapped ? '<span class="badge red">TRAPPED</span>' : ''}
+                                ${item.injured ? '<span class="badge red">INJURED</span>' : ''}
+                                ${item.needWater ? '<span class="badge orange">NEED WATER</span>' : ''}
+                                ${item.needMeds ? '<span class="badge orange">NEED MEDS</span>' : ''}
+                            </div>
+                            <p style="font-size: 0.8rem; color: #cbd5e1;">${escapeHtml(item.text || 'No additional message.')}</p>
+                            <p style="font-size: 0.7rem; color: #64748b; margin-top: 4px;">By: ${escapeHtml(item.name)} | ID: ${item.msgId}</p>
                         </div>
-                        <div class="tag-list">
-                            ${item.trapped ? '<span class="badge red">TRAPPED</span>' : ''}
-                            ${item.injured ? '<span class="badge red">INJURED</span>' : ''}
-                            ${item.needWater ? '<span class="badge orange">NEED WATER</span>' : ''}
-                            ${item.needMeds ? '<span class="badge orange">NEED MEDS</span>' : ''}
-                        </div>
-                        <p style="font-size: 0.8rem; color: #cbd5e1;">${escapeHtml(item.text || 'No additional message.')}</p>
-                        <p style="font-size: 0.7rem; color: #64748b; margin-top: 4px;">By: ${escapeHtml(item.name)} | ID: ${item.msgId}</p>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
             }
         } catch (e) {
             console.error('Failed to load distress list:', e);
@@ -133,8 +139,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Initial load and periodic polling
     fetchNodeStatus();
     fetchDistressList();
     setInterval(fetchNodeStatus, 5000);
+    setInterval(fetchDistressList, 8000);
 });

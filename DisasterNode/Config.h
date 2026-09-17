@@ -7,7 +7,7 @@
  * Description:
  *   Centralized configuration header file. Contains all easily adjustable variables,
  *   hardware pin assignments for the Heltec V3 board (ESP32-S3 + SX1262), WiFi AP
- *   credentials, timer thresholds, and LoRa radio frequency parameters.
+ *   credentials, timer thresholds, network roles, and LoRa radio parameters.
  * =====================================================================================
  */
 
@@ -15,6 +15,18 @@
 #define CONFIG_H
 
 #include <Arduino.h>
+
+// =====================================================================================
+// SECTION 0: NODE ROLE CONFIGURATION (COMPILE-TIME SECURITY)
+// Choose whether this firmware build is for a civilian building node or a rescuer gateway.
+// =====================================================================================
+enum NodeRole : uint8_t {
+    ROLE_CIVILIAN = 0, // Building node: Hosts victim captive portal (No admin/clear access)
+    ROLE_RESCUER  = 1  // Mobile rescuer gateway: Hosts tactical command dashboard
+};
+
+// >>> CHOOSE THE ROLE BEFORE COMPILING AND FLASHING <<<
+#define CURRENT_NODE_ROLE       ROLE_CIVILIAN
 
 // =====================================================================================
 // SECTION 1: HARDWARE PIN MAPPING (Heltec Wireless Stick Lite V3 - ESP32-S3)
@@ -73,21 +85,25 @@ const uint16_t MAX_STORED_OFFLINE_MESSAGES = 50;
 // Rescuer Beacon broadcast interval (in milliseconds) when operating in Rescuer Node mode
 const uint32_t RESCUER_BEACON_INTERVAL_MS = 15000; // 15 seconds
 
+// Maximum number of incident IDs that can be cleared in a single batch Anti-Packet frame
+#define MAX_CLEAR_BATCH_SIZE    8
+
 // =====================================================================================
 // SECTION 4: WIFI ACCESS POINT & CAPTIVE PORTAL SETTINGS
 // =====================================================================================
 
-#define WIFI_AP_SSID_PREFIX     "EMERGENCY_NODE_" // SSID will be "EMERGENCY_NODE_XXXX" (XXXX = last 4 hex of MAC)
-#define WIFI_AP_PASSWORD        ""                // Open WiFi network (no password) so victims can connect instantly
+#define CIVILIAN_AP_SSID_PREFIX "EMERGENCY_NODE_" // SSID for civilian building nodes
+#define RESCUER_AP_SSID_PREFIX  "RESCUER_CMD_"    // SSID for mobile rescuer gateway nodes
+#define WIFI_AP_PASSWORD        ""                // Open WiFi network (no password)
 #define WIFI_AP_CHANNEL         6                 // WiFi channel (1 to 13)
-#define WIFI_MAX_CONNECTIONS    10                // Maximum concurrent WiFi client devices connected to this node
+#define WIFI_MAX_CONNECTIONS    10                // Maximum concurrent WiFi client devices
 
 #define DNS_PORT                53                // Standard DNS port for Captive Portal redirection
 #define HTTP_PORT               80                // Standard Web Server HTTP port
 
 // =====================================================================================
 // SECTION 5: UNIQUE NODE IDENTITY
-// Default node ID generated from ESP32 MAC address at runtime, but can be overridden here.
+// Default node ID generated from ESP32 MAC address at runtime.
 // =====================================================================================
 extern uint16_t g_nodeId;
 

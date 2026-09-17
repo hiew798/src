@@ -287,6 +287,12 @@ body {
     border-radius: 10px;
     padding: 12px;
     margin-bottom: 10px;
+    transition: all 0.3s ease;
+}
+
+.distress-card.status-resolved {
+    border-left: 4px solid var(--success-green);
+    opacity: 0.75;
 }
 
 .card-header {
@@ -314,6 +320,7 @@ body {
 
 .badge.red { background-color: rgba(239, 68, 68, 0.3); color: #fca5a5; }
 .badge.orange { background-color: rgba(249, 115, 22, 0.3); color: #fdba74; }
+.badge.green { background-color: rgba(16, 185, 129, 0.3); color: #6ee7b7; border: 1px solid #10b981; }
 
 .empty-msg {
     font-size: 0.8rem;
