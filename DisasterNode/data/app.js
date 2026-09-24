@@ -1,17 +1,39 @@
+/**
+ * =====================================================================================
+ * File: app.js
+ * Project: Heltec Wireless Stick Lite V3 - Disaster Recovery Multi-Node LoRa Network
+ * Author: Antigravity AI / FYP Disaster Recovery Team
+ * 
+ * Description:
+ *   Frontend client JavaScript for the Emergency Captive Portal web application.
+ *   Runs in the mobile browser of civilians connected to the node's WiFi Access Point.
+ *   
+ *   Key Responsibilities:
+ *   - Form submission via asynchronous AJAX fetch to /api/sos.
+ *   - Local validation and interactive victim counter (+/- buttons).
+ *   - Periodic background polling of node status (/api/status) and incident list (/api/distress-list).
+ *   - Dynamic rendering of emergency status badges (PENDING RESCUE vs RESCUED / RESOLVED).
+ * =====================================================================================
+ */
+
 document.addEventListener('DOMContentLoaded', () => {
+    // Current victim counter state
     let victimCount = 1;
 
-    const countDisplay = document.getElementById('victimCountValue');
-    const btnMinus = document.getElementById('btnMinusCount');
-    const btnPlus = document.getElementById('btnPlusCount');
-    const sosForm = document.getElementById('sosForm');
-    const statusAlert = document.getElementById('statusAlert');
+    // DOM Element References
+    const countDisplay   = document.getElementById('victimCountValue');
+    const btnMinus       = document.getElementById('btnMinusCount');
+    const btnPlus        = document.getElementById('btnPlusCount');
+    const sosForm        = document.getElementById('sosForm');
+    const statusAlert    = document.getElementById('statusAlert');
     const nodeStatusText = document.getElementById('nodeStatusText');
-    const distressCards = document.getElementById('distressCards');
-    const distressCount = document.getElementById('distressCount');
-    const btnRefresh = document.getElementById('btnRefreshList');
+    const distressCards  = document.getElementById('distressCards');
+    const distressCount  = document.getElementById('distressCount');
+    const btnRefresh     = document.getElementById('btnRefreshList');
 
-    // Victim Counter Button Handlers
+    // =================================================================================
+    // 1. VICTIM COUNTER CONTROLS
+    // =================================================================================
     btnMinus.addEventListener('click', () => {
         if (victimCount > 1) {
             victimCount--;
@@ -26,10 +48,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Form Submit Handler
+    // =================================================================================
+    // 2. SOS FORM SUBMISSION HANDLER
+    // Sends distress data as JSON to the ESP32 Async Web Server at /api/sos.
+    // The ESP32 converts this JSON into a compact binary LoRa packet and broadcasts it.
+    // =================================================================================
     sosForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
+        e.preventDefault(); // Prevent full page reload
 
+        // Collect form data into JSON payload
         const payload = {
             trapped: document.getElementById('chkTrapped').checked,
             injured: document.getElementById('chkInjured').checked,
@@ -56,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (data.success) {
                 showAlert(`✅ SOS Alert Broadcast! Message ID: ${data.msgId}`, 'success');
-                fetchDistressList();
+                fetchDistressList(); // Immediately refresh the visible reports list
             } else {
                 showAlert('❌ Failed to send SOS alert. Please try again.', 'error');
             }
@@ -69,7 +96,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Fetch Node Diagnostics
+    // =================================================================================
+    // 3. NODE DIAGNOSTICS POLLING
+    // Periodically checks if the phone is still connected to the ESP32 node and displays
+    // the Node ID and count of offline pending alerts stored in LittleFS.
+    // =================================================================================
     async function fetchNodeStatus() {
         try {
             const res = await fetch('/api/status');
@@ -78,11 +109,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 nodeStatusText.textContent = `Connected to Node: 0x${data.nodeId} | Stored Offline: ${data.offlineSosCount}`;
             }
         } catch (e) {
-            nodeStatusText.textContent = 'Node Status: Connecting...';
+            nodeStatusText.textContent = 'Node Status: Reconnecting...';
         }
     }
 
-    // Fetch Distress List & Status Badges
+    // =================================================================================
+    // 4. INCIDENT LIST RENDERING & STATUS SYNCHRONIZATION
+    // Fetches all distress alerts known to this node and renders them with color-coded
+    // emergency tags and lifecycle status badges (Awaiting Rescue vs Rescued).
+    // =================================================================================
     async function fetchDistressList() {
         try {
             const res = await fetch('/api/distress-list');
@@ -96,6 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 distressCards.innerHTML = list.map(item => {
+                    // status: 0 = PENDING, 1 = ACKNOWLEDGED, 2 = RESOLVED
                     const isResolved = item.status === 2;
                     return `
                         <div class="distress-card ${isResolved ? 'status-resolved' : ''}">
@@ -125,6 +161,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     btnRefresh.addEventListener('click', fetchDistressList);
 
+    /**
+     * Displays a temporary banner alert at the top of the UI.
+     */
     function showAlert(msg, type) {
         statusAlert.textContent = msg;
         statusAlert.className = `status-alert ${type}`;
@@ -133,14 +172,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 8000);
     }
 
+    /**
+     * Sanitizes user input strings to prevent Cross-Site Scripting (XSS).
+     */
     function escapeHtml(str) {
         return str.replace(/[&<>"']/g, function(m) {
             return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
         });
     }
 
+    // Initial load on page startup
     fetchNodeStatus();
     fetchDistressList();
-    setInterval(fetchNodeStatus, 5000);
-    setInterval(fetchDistressList, 8000);
+
+    // Periodic polling timers
+    setInterval(fetchNodeStatus, 5000);   // Check node connectivity every 5 seconds
+    setInterval(fetchDistressList, 8000); // Check for new/resolved incident updates every 8 seconds
 });

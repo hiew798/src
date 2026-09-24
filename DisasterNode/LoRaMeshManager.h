@@ -7,13 +7,32 @@
  * Description:
  *   LoRa Radio & Hybrid Mesh Network Manager using RadioLib for Semtech SX1262.
  *   
- *   Features:
- *   - Automatic Heltec V3 Vext power rail control (GPIO 36).
- *   - SX1262 LoRa radio initialization and CAD channel activity detection.
- *   - Message Deduplication Ring Buffer.
- *   - Controlled Flooding Relay (Decrements TTL and re-transmits if TTL > 1).
- *   - Anti-Packet / Rescuer Invalidation Broadcast & Mesh Relay (PKT_CLEAR_MESSAGES).
- *   - Rescuer Beacon Polling.
+ *   Key Capabilities & Mesh Networking Concepts:
+ *   -----------------------------------------------------------------------------------
+ *   1. Hardware Power Rail Control (Vext):
+ *      Heltec boards power the SX1262 and external sensors via a P-channel MOSFET on
+ *      GPIO 36. Driving GPIO 36 LOW supplies 3.3V to the radio.
+ *      
+ *   2. CAD (Channel Activity Detection / CSMA):
+ *      Before transmitting a packet, the SX1262 performs CAD to check if another node
+ *      in the mesh is currently transmitting preamble symbols. If the channel is busy,
+ *      the node applies a random backoff delay (200-800ms) to avoid packet collisions.
+ *      
+ *   3. Controlled Flooding Relay (TTL-based Multi-hop):
+ *      Packets originate with TTL = LORA_MAX_HOP_COUNT (3). Every intermediate node
+ *      that receives the packet decrements TTL by 1 and re-transmits it after a short
+ *      random jitter delay (100-450ms) to prevent simultaneous collision storms.
+ *      When TTL reaches 1, relaying stops.
+ *      
+ *   4. Deduplication Ring Buffer Cache:
+ *      To prevent endless circular loops (Node A -> Node B -> Node A -> Node B...),
+ *      every node remembers the last 32 message IDs it has processed or relayed.
+ *      If an incoming packet's msgId matches an entry in the cache, it is immediately dropped.
+ *      
+ *   5. Anti-Packet Mesh Invalidation (PKT_CLEAR_MESSAGES):
+ *      When a rescuer marks an incident resolved, an Anti-Packet is broadcast through
+ *      the mesh. Intermediate building nodes clear the incident from their offline
+ *      LittleFS retransmission queue and relay the Anti-Packet to deeper nodes.
  * =====================================================================================
  */
 
@@ -27,24 +46,23 @@
 #include "PacketDefs.h"
 #include "StorageManager.h"
 
-
-// Forward declaration of interrupt service routine
+// Forward declaration of hardware interrupt service routine in DisasterNode.ino
 void IRAM_ATTR setLoRaRxFlag();
 
 class LoRaMeshManager {
 private:
-    SX1262* radio;
-    StorageManager* storage;
+    SX1262* radio;              // RadioLib SX1262 module pointer
+    StorageManager* storage;    // Pointer to persistent LittleFS/NVS storage manager
     
-    // Deduplication cache ring buffer to store recent message IDs
+    // Deduplication ring buffer: Stores the last DEDUPLICATION_CACHE_SIZE (32) seen message IDs
     uint32_t seenMsgCache[DEDUPLICATION_CACHE_SIZE];
-    uint8_t  cacheIndex;
+    uint8_t  cacheIndex;        // Circular pointer to the next insertion slot
 
-    // Last received packet RSSI & SNR metrics for link quality monitoring
-    float lastRssi;
-    float lastSnr;
+    // Radio link diagnostics
+    float lastRssi;             // Received Signal Strength Indicator in dBm (e.g. -65 dBm)
+    float lastSnr;              // Signal-to-Noise Ratio in dB (e.g. +8.5 dB)
 
-    // Flag set by hardware DIO1 interrupt when a radio packet arrives
+    // Hardware interrupt flag set by DIO1 rising edge
     volatile bool packetReceivedFlag;
 
 public:
@@ -59,12 +77,15 @@ public:
     bool begin() {
         Serial.println("[LORA] Powering up Heltec V3 Vext power rail (GPIO 36)...");
         
+        // Heltec V3 Vext Control: GPIO 36 MUST be driven LOW to supply 3.3V to the SX1262!
         pinMode(VEXT_CTRL_PIN, OUTPUT);
         digitalWrite(VEXT_CTRL_PIN, LOW); 
-        delay(100);
+        delay(100); // Allow power rail voltage to stabilize
 
+        // Initialize dedicated hardware SPI bus for ESP32-S3 pins
         SPI.begin(LORA_SCK_PIN, LORA_MISO_PIN, LORA_MOSI_PIN, LORA_NSS_PIN);
 
+        // Instantiate RadioLib SX1262 Module: Module(cs, irq, rst, busy)
         radio = new SX1262(new Module(LORA_NSS_PIN, LORA_DIO1_PIN, LORA_RESET_PIN, LORA_BUSY_PIN));
 
         Serial.println("[LORA] Initializing Semtech SX1262 module with RadioLib...");
@@ -86,12 +107,18 @@ public:
         Serial.printf("[LORA SUCCESS] Radio ready! Freq: %.1f MHz, SF: %d, BW: %.1f kHz, Power: %d dBm\n",
                       LORA_FREQUENCY, LORA_SPREADING_FACTOR, LORA_BANDWIDTH, LORA_OUTPUT_POWER);
 
+        // Attach hardware interrupt on DIO1 rising edge (packet received or TX complete)
         radio->setDio1Action(setLoRaRxFlag);
+
+        // Put radio into continuous background receive mode
         startListening();
 
         return true;
     }
 
+    /**
+     * Places the SX1262 into non-blocking background receive mode.
+     */
     void startListening() {
         if (!radio) return;
         int state = radio->startReceive();
@@ -100,17 +127,24 @@ public:
         }
     }
 
+    /**
+     * Called by the hardware DIO1 interrupt service routine (ISR).
+     */
     void handleInterruptFlag() {
         packetReceivedFlag = true;
     }
 
+    /**
+     * Main background loop processing task for LoRa events. Call this in main loop().
+     */
     void update() {
         if (!packetReceivedFlag) return;
-        packetReceivedFlag = false;
+        packetReceivedFlag = false; // Reset interrupt flag
 
+        // Check length of received radio packet
         size_t len = radio->getPacketLength();
         if (len < sizeof(PacketHeader)) {
-            startListening();
+            startListening(); // Re-arm radio for next frame
             return;
         }
 
@@ -124,11 +158,13 @@ public:
             Serial.printf("[LORA RX] Received frame (%d bytes) | RSSI: %.1f dBm | SNR: %.1f dB\n",
                           len, lastRssi, lastSnr);
 
+            // Pass packet to protocol state machine
             processIncomingFrame(buffer, len);
         } else {
             Serial.printf("[LORA ERROR] Packet read failed with code: %d\n", state);
         }
 
+        // Always re-arm the radio in continuous receive mode after handling an event
         startListening();
     }
 
@@ -138,20 +174,22 @@ public:
     bool sendRawPacket(const uint8_t* data, size_t len) {
         if (!radio) return false;
 
+        // Perform CAD (CSMA collision avoidance check)
         Serial.println("[LORA TX] Checking channel activity (CAD)...");
         int cadState = radio->scanChannel();
         if (cadState == RADIOLIB_PREAMBLE_DETECTED) {
-            Serial.println("[LORA TX] Channel busy! Backing off...");
-            delay(random(200, 800));
+            Serial.println("[LORA TX] Channel busy! Backing off with random delay...");
+            delay(random(200, 800)); // Random backoff to avoid synchronized collisions
         }
 
+        // Visual indicator: Flash user LED during transmission
         digitalWrite(BOARD_LED_PIN, HIGH);
         int txState = radio->transmit((uint8_t*)data, len);
         digitalWrite(BOARD_LED_PIN, LOW);
 
         if (txState == RADIOLIB_ERR_NONE) {
             Serial.printf("[LORA TX SUCCESS] Sent %u bytes successfully.\n", len);
-            startListening();
+            startListening(); // Re-enable receive mode
             return true;
         } else {
             Serial.printf("[LORA TX ERROR] Transmission failed! Error code: %d\n", txState);
@@ -167,6 +205,7 @@ public:
         uint8_t buffer[sizeof(PacketHeader) + sizeof(DistressPayload)];
         size_t pktSize = buildDistressPacket(buffer, msgId, g_nodeId, &payload);
 
+        // Record message ID in deduplication cache so this node drops its own reflected echo
         markMsgAsSeen(msgId);
 
         Serial.printf("[LORA MESH] Broadcasting Distress SOS [MsgID: 0x%08X] over LoRa (TTL: %d)...\n",
@@ -181,6 +220,7 @@ public:
     bool broadcastClearAlert(const uint32_t* msgIds, uint8_t count, uint16_t rescuerId) {
         if (!msgIds || count == 0) return false;
 
+        // Generate a unique packet ID for this Anti-Packet to prevent relay loops
         uint32_t uniquePktId = storage ? storage->getNextUniqueMsgId(g_nodeId) : micros();
         uint8_t buffer[sizeof(PacketHeader) + sizeof(ClearMessagePayload)];
         size_t pktSize = buildClearPacket(buffer, uniquePktId, rescuerId, msgIds, count);
@@ -194,7 +234,8 @@ public:
     }
 
     /**
-     * Sends a Rescuer Beacon to poll nearby civilian nodes for their offline SOS queues.
+     * Sends a single-hop Rescuer Proximity Beacon to command nearby building nodes
+     * to dump their stored offline SOS queues.
      */
     bool sendRescuerBeacon() {
         PacketHeader header;
@@ -204,7 +245,7 @@ public:
         header.msgId        = storage ? storage->getNextUniqueMsgId(g_nodeId) : micros();
         header.senderNodeId = g_nodeId;
         header.targetNodeId = LORA_BROADCAST_ADDR;
-        header.ttl          = 1; // Single-hop local proximity poll
+        header.ttl          = 1; // Proximity beacon: 1 hop only
         header.payloadLen   = 0;
 
         markMsgAsSeen(header.msgId);
@@ -213,6 +254,9 @@ public:
         return sendRawPacket((const uint8_t*)&header, sizeof(PacketHeader));
     }
 
+    /**
+     * Checks if a message ID has been seen recently in the circular ring buffer.
+     */
     bool isDuplicateMsg(uint32_t msgId) {
         for (uint8_t i = 0; i < DEDUPLICATION_CACHE_SIZE; i++) {
             if (seenMsgCache[i] == msgId) return true;
@@ -220,6 +264,9 @@ public:
         return false;
     }
 
+    /**
+     * Records a message ID into the circular ring buffer cache.
+     */
     void markMsgAsSeen(uint32_t msgId) {
         seenMsgCache[cacheIndex] = msgId;
         cacheIndex = (cacheIndex + 1) % DEDUPLICATION_CACHE_SIZE;
@@ -229,6 +276,9 @@ public:
     float getLastSnr()  const { return lastSnr; }
 
 private:
+    /**
+     * Protocol state machine for parsing and handling received LoRa frames.
+     */
     void processIncomingFrame(const uint8_t* buffer, size_t len) {
         PacketHeader header;
         if (!parsePacketHeader(buffer, len, &header)) {
@@ -236,12 +286,14 @@ private:
             return;
         }
 
+        // Deduplication Check: Drop packet if we have already received or relayed it
         if (isDuplicateMsg(header.msgId)) {
             Serial.printf("[LORA MESH] Dropped duplicate packet [MsgID: 0x%08X]\n", header.msgId);
             return;
         }
         markMsgAsSeen(header.msgId);
 
+        // Protocol Dispatcher by Packet Type
         switch (header.pktType) {
             case PKT_DISTRESS_ALERT: {
                 if (len < sizeof(PacketHeader) + sizeof(DistressPayload)) break;
@@ -250,10 +302,12 @@ private:
                 Serial.printf("[LORA SOS RX] Node: 0x%04X | Loc: %s | Victims: %d | Msg: %s\n",
                               header.senderNodeId, payload->floorRoom, payload->victimCount, payload->textMsg);
 
+                // Save to local flash memory so rescuers connecting to this node can view it
                 if (storage) {
                     storage->saveUnackedMessage(header.msgId, *payload);
                 }
 
+                // Controlled Flooding Relay: Re-transmit across mesh if hops remain
                 if (header.ttl > 1) {
                     relayMeshPacket(buffer, len);
                 }
@@ -267,12 +321,13 @@ private:
                 Serial.printf("[LORA CLEAR RX] Anti-Packet received! Rescuer 0x%04X cleared %u incidents.\n",
                               clearPkt->rescuerNodeId, clearPkt->count);
 
+                // Invalidate matching alerts from pending queue and update history log
                 if (storage) {
                     storage->batchMarkMessagesResolved(clearPkt->clearedMsgIds, clearPkt->count,
                                                        clearPkt->rescuerNodeId, clearPkt->clearTimestamp);
                 }
 
-                // Relay Anti-Packet across mesh so all building nodes clear their backlogs
+                // Relay Anti-Packet across mesh so deeper nodes also clear their backlogs
                 if (header.ttl > 1) {
                     relayMeshPacket(buffer, len);
                 }
@@ -286,10 +341,12 @@ private:
                 Serial.printf("[LORA ACK RX] MsgID 0x%08X acknowledged by Rescuer 0x%04X!\n",
                               ack->ackedMsgId, ack->rescuerNodeId);
 
+                // Remove from local offline pending queue
                 if (storage) {
                     storage->markMessageAcknowledged(ack->ackedMsgId);
                 }
 
+                // If ACK target is another node deeper in the building, relay it forward
                 if (header.targetNodeId != g_nodeId && header.targetNodeId != LORA_BROADCAST_ADDR && header.ttl > 1) {
                     relayMeshPacket(buffer, len);
                 }
@@ -299,6 +356,7 @@ private:
             case PKT_RESCUER_BEACON: {
                 Serial.printf("[LORA BEACON RX] Rescuer 0x%04X in range! Flushing unACKed SOS backlog...\n",
                               header.senderNodeId);
+                // Dump all stored offline alerts over radio to the rescuer
                 flushOfflineStorageToRescuer();
                 break;
             }
@@ -309,20 +367,27 @@ private:
         }
     }
 
+    /**
+     * Decrements packet TTL and relays the frame across the mesh network with random jitter.
+     */
     void relayMeshPacket(const uint8_t* originalBuffer, size_t len) {
         uint8_t relayBuf[256];
         memcpy(relayBuf, originalBuffer, len);
 
         PacketHeader* hdr = (PacketHeader*)relayBuf;
-        hdr->ttl--;
+        hdr->ttl--; // Decrement hop counter
 
         Serial.printf("[LORA MESH RELAY] Relaying PktID 0x%08X (Type: 0x%02X, New TTL: %d)...\n",
                       hdr->msgId, hdr->pktType, hdr->ttl);
 
+        // Random jitter delay (100-450ms) prevents all neighbor nodes from broadcasting at the exact same millisecond
         delay(random(100, 450));
         sendRawPacket(relayBuf, len);
     }
 
+    /**
+     * Iterates through all stored offline messages in LittleFS and transmits them over LoRa.
+     */
     void flushOfflineStorageToRescuer() {
         if (!storage) return;
 
@@ -333,7 +398,7 @@ private:
             StoredMessage rec;
             if (storage->getStoredMessageByIndex(i, rec)) {
                 broadcastDistressAlert(rec.msgId, rec.payload);
-                delay(1200);
+                delay(1200); // 1.2-second pause between frames to prevent channel congestion
             }
         }
     }

@@ -7,13 +7,28 @@
  * Description:
  *   Manages ESP32 WiFi SoftAP, Captive Portal DNS Redirection, and Async HTTP Web Server.
  *   
- *   STRICT ROLE SEGREGATION:
- *   - When CURRENT_NODE_ROLE == ROLE_CIVILIAN:
- *       Only victim routes are exposed (Captive portal, SOS submission, report viewing).
- *       Rescuer admin endpoints are completely omitted from the routing table.
- *   - When CURRENT_NODE_ROLE == ROLE_RESCUER:
- *       Hosts Tactical Command Dashboard. Exposes triage feeds, beacon poll triggers,
- *       and Anti-Packet clearance endpoints. SOS submission is disabled.
+ *   Key Capabilities & Networking Concepts:
+ *   -----------------------------------------------------------------------------------
+ *   1. Non-Blocking Async Architecture (ESPAsyncWebServer):
+ *      Unlike standard synchronous Arduino WiFiServer (which blocks loop() while reading/writing
+ *      bytes to a client), ESPAsyncWebServer operates asynchronously on background tasks.
+ *      Multiple victim phones can connect and load webpages simultaneously without stalling
+ *      or delaying time-critical LoRa radio interrupts.
+ *      
+ *   2. Captive Portal DNS Redirection (Port 53):
+ *      When an Android phone connects to an open WiFi network, it immediately tries to resolve
+ *      domains like "connectivitycheck.gstatic.com" or "clients3.google.com". The on-board
+ *      DNSServer intercepts all UDP port 53 queries and answers with the ESP32 IP (192.168.4.1).
+ *      Android detects this redirect and automatically pops up the "Sign in to network" browser!
+ *      
+ *   3. Strict Compile-Time Role Segregation:
+ *      - CURRENT_NODE_ROLE == ROLE_CIVILIAN:
+ *        Registers only civilian routes (SOS form, LittleFS static files, read-only incident list).
+ *        Rescuer admin and clearance endpoints are NOT registered at all, guaranteeing victims
+ *        cannot accidentally or maliciously clear distress reports.
+ *      - CURRENT_NODE_ROLE == ROLE_RESCUER:
+ *        Serves the Tactical Command Console at root (/), exposing incident triage lists,
+ *        proximity beacon triggers, and Anti-Packet clearance actions.
  * =====================================================================================
  */
 
@@ -31,7 +46,14 @@
 #include "StorageManager.h"
 #include "LoRaMeshManager.h"
 
-// Embedded self-contained Rescuer Tactical Dashboard HTML
+//to get the MAC
+#include "esp_mac.h"
+
+// =====================================================================================
+// EMBEDDED RESCUER TACTICAL DASHBOARD (HTML / CSS / JS in PROGMEM Flash)
+// Kept in flash memory so Rescuer Nodes function immediately out-of-the-box
+// without requiring a separate LittleFS filesystem flash tool.
+// =====================================================================================
 const char RESCUER_HTML[] PROGMEM = R"rawliteral(
 <!DOCTYPE html>
 <html lang="en">
@@ -127,27 +149,30 @@ load();
 
 class WebServerManager {
 private:
-    AsyncWebServer server;
-    DNSServer dnsServer;
-    StorageManager* storage;
-    LoRaMeshManager* meshManager;
-    String apSSID;
+    AsyncWebServer server;       // Asynchronous HTTP Web Server on port 80
+    DNSServer      dnsServer;    // DNS Server on UDP port 53 for Captive Portal redirection
+    StorageManager* storage;     // Pointer to persistent LittleFS/NVS storage
+    LoRaMeshManager* meshManager;// Pointer to LoRa Mesh Manager
+    String apSSID;               // Configured Access Point SSID
 
 public:
     WebServerManager(StorageManager* storageMgr, LoRaMeshManager* meshMgr) 
         : server(HTTP_PORT), storage(storageMgr), meshManager(meshMgr) {}
 
     /**
-     * Initializes WiFi SoftAP, Captive Portal DNS, and role-segregated HTTP routes.
+     * Initializes WiFi SoftAP, Captive Portal DNS redirection, and role-segregated HTTP routes.
      */
     bool begin() {
+        // Explicitly set AP mode so hardware MAC address loads cleanly from eFuse
         WiFi.mode(WIFI_AP);
 
         uint8_t mac[6];
-        WiFi.macAddress(mac);
+        // WiFi.macAddress(mac); // Does't work, use the built-in ESP API instead
+        esp_read_mac(mac, ESP_MAC_WIFI_SOFTAP);
+        
         char ssidBuf[32];
 
-        // Strict role-segregated SSID naming
+        // Format SSID with role-specific prefix and lower 2 bytes of hardware MAC
         if (CURRENT_NODE_ROLE == ROLE_RESCUER) {
             snprintf(ssidBuf, sizeof(ssidBuf), "%s%02X%02X", RESCUER_AP_SSID_PREFIX, mac[4], mac[5]);
         } else {
@@ -159,15 +184,17 @@ public:
                       apSSID.c_str(),
                       CURRENT_NODE_ROLE == ROLE_RESCUER ? "RESCUER GATEWAY" : "CIVILIAN NODE");
 
+        // Start open SoftAP without password
         bool apSuccess = WiFi.softAP(apSSID.c_str(), WIFI_AP_PASSWORD, WIFI_AP_CHANNEL, 0, WIFI_MAX_CONNECTIONS);
         if (!apSuccess) {
             Serial.println("[WIFI ERROR] Failed to start SoftAP!");
             return false;
         }
 
-        IPAddress apIP = WiFi.softAPIP();
+        IPAddress apIP = WiFi.softAPIP(); // Default: 192.168.4.1
         Serial.printf("[WIFI SUCCESS] AP Started. IP: %s\n", apIP.toString().c_str());
 
+        // Start Captive Portal DNS Server (Maps all incoming domain queries "*" to 192.168.4.1)
         dnsServer.start(DNS_PORT, "*", apIP);
         Serial.println("[DNS] Captive Portal DNS running on port 53.");
 
@@ -183,6 +210,9 @@ public:
         return true;
     }
 
+    /**
+     * Call this in the main loop to process incoming DNS queries.
+     */
     void update() {
         dnsServer.processNextRequest();
     }
@@ -195,14 +225,18 @@ private:
      * Administrative and clearance endpoints are NOT registered.
      */
     void setupCivilianRoutes() {
-        // Captive Portal Redirects
+        // -----------------------------------------------------------------------------
+        // CAPTIVE PORTAL REDIRECTION ROUTES (Android / iOS / Windows detection URLs)
+        // -----------------------------------------------------------------------------
         server.on("/generate_204", HTTP_GET, [](AsyncWebServerRequest *request) { request->redirect("http://192.168.4.1/"); });
         server.on("/gen_204",      HTTP_GET, [](AsyncWebServerRequest *request) { request->redirect("http://192.168.4.1/"); });
         server.on("/redirect",     HTTP_GET, [](AsyncWebServerRequest *request) { request->redirect("http://192.168.4.1/"); });
         server.on("/hotspot-detect.html", HTTP_GET, [](AsyncWebServerRequest *request) { request->redirect("http://192.168.4.1/"); });
         server.on("/canonical.html",      HTTP_GET, [](AsyncWebServerRequest *request) { request->redirect("http://192.168.4.1/"); });
 
-        // Static files from LittleFS
+        // -----------------------------------------------------------------------------
+        // STATIC FILES (Served from LittleFS Flash)
+        // -----------------------------------------------------------------------------
         server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
             if (LittleFS.exists("/index.html")) {
                 request->send(LittleFS, "/index.html", "text/html");
@@ -219,7 +253,9 @@ private:
             request->send(LittleFS, "/app.js", "application/javascript");
         });
 
-        // Diagnostic status endpoint
+        // -----------------------------------------------------------------------------
+        // REST API: GET /api/status - Civilian Node Diagnostics
+        // -----------------------------------------------------------------------------
         server.on("/api/status", HTTP_GET, [this](AsyncWebServerRequest *request) {
             AsyncJsonResponse *response = new AsyncJsonResponse();
             JsonObject root = response->getRoot().to<JsonObject>();
@@ -238,7 +274,9 @@ private:
             request->send(response);
         });
 
-        // Victim SOS Submission
+        // -----------------------------------------------------------------------------
+        // REST API: POST /api/sos - Submit Victim Distress Alert
+        // -----------------------------------------------------------------------------
         AsyncCallbackJsonWebHandler *sosHandler = new AsyncCallbackJsonWebHandler("/api/sos", 
             [this](AsyncWebServerRequest *request, JsonVariant &json) {
                 JsonObject jsonObj = json.as<JsonObject>();
@@ -263,20 +301,23 @@ private:
                 strncpy(payload.textMsg,     jsonObj["text"]     | "",        sizeof(payload.textMsg) - 1);
                 payload.timestamp = millis() / 1000;
 
-                // Collision-proof NVS persistent Message ID
+                // Generate collision-proof persistent Message ID using ESP32 NVS
                 uint32_t msgId = storage ? storage->getNextUniqueMsgId(g_nodeId) : micros();
 
                 Serial.printf("[WEB SOS SUBMIT] New SOS submitted! MsgID: 0x%08X\n", msgId);
 
+                // 1. Broadcast immediately over LoRa mesh
                 bool sentOk = false;
                 if (meshManager) {
                     sentOk = meshManager->broadcastDistressAlert(msgId, payload);
                 }
 
+                // 2. Save in LittleFS flash memory (Store-and-Forward queue)
                 if (storage) {
                     storage->saveUnackedMessage(msgId, payload);
                 }
 
+                // Return JSON response to victim browser
                 AsyncJsonResponse *response = new AsyncJsonResponse();
                 JsonObject root = response->getRoot().to<JsonObject>();
                 root["success"] = true;
@@ -290,7 +331,9 @@ private:
         );
         server.addHandler(sosHandler);
 
-        // Civilian Distress Reports List (read-only)
+        // -----------------------------------------------------------------------------
+        // REST API: GET /api/distress-list - Read-only incident list for victims
+        // -----------------------------------------------------------------------------
         server.on("/api/distress-list", HTTP_GET, [this](AsyncWebServerRequest *request) {
             AsyncJsonResponse *response = new AsyncJsonResponse(false, 8192);
             JsonArray arr = response->getRoot().to<JsonArray>();
@@ -320,6 +363,7 @@ private:
             request->send(response);
         });
 
+        // Non-existing URLs fallback to captive portal root
         server.onNotFound([](AsyncWebServerRequest *request) {
             request->redirect("http://192.168.4.1/");
         });
@@ -330,12 +374,12 @@ private:
      * and Rescuer Beacon polling. Civilian SOS submission is disabled.
      */
     void setupRescuerRoutes() {
-        // Tactical Dashboard Root Page
+        // Tactical Dashboard Root Page (Served directly from embedded PROGMEM HTML)
         server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
             request->send_P(200, "text/html", RESCUER_HTML);
         });
 
-        // All reports for Triage Dashboard (Sorted priority: Trapped & Injured first)
+        // Triage Report Feed: Returns all recorded distress incidents
         server.on("/api/rescuer/all-reports", HTTP_GET, [this](AsyncWebServerRequest *request) {
             AsyncJsonResponse *response = new AsyncJsonResponse(false, 8192);
             JsonArray arr = response->getRoot().to<JsonArray>();
@@ -365,7 +409,7 @@ private:
             request->send(response);
         });
 
-        // Rescuer Clearance / Anti-Packet Trigger
+        // Rescuer Clearance / Anti-Packet Trigger: Marks incident resolved and broadcasts Anti-Packet
         AsyncCallbackJsonWebHandler *clearHandler = new AsyncCallbackJsonWebHandler("/api/rescuer/clear-alert", 
             [this](AsyncWebServerRequest *request, JsonVariant &json) {
                 JsonObject jsonObj = json.as<JsonObject>();
@@ -379,12 +423,12 @@ private:
 
                 Serial.printf("[RESCUER ACTION] Marking MsgID 0x%08X resolved and broadcasting Anti-Packet...\n", targetId);
 
-                // 1. Mark resolved locally
+                // 1. Mark incident resolved in local storage and purge from pending queue
                 if (storage) {
                     storage->markMessageResolved(targetId, g_nodeId, millis() / 1000);
                 }
 
-                // 2. Broadcast Anti-Packet over LoRa mesh
+                // 2. Broadcast Anti-Packet frame over LoRa mesh
                 bool loraOk = false;
                 if (meshManager) {
                     loraOk = meshManager->broadcastClearAlert(&targetId, 1, g_nodeId);
@@ -401,7 +445,7 @@ private:
         );
         server.addHandler(clearHandler);
 
-        // Rescuer Beacon Poll Trigger
+        // Rescuer Beacon Poll Trigger: Broadcasts PKT_RESCUER_BEACON to poll nearby building nodes
         server.on("/api/rescuer/poll-beacon", HTTP_POST, [this](AsyncWebServerRequest *request) {
             bool ok = false;
             if (meshManager) {
