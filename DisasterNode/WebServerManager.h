@@ -124,7 +124,7 @@ async function load(){
           ${i.needMeds?'<span class="b b-org">MEDS</span>':''}
         </div>
         <p style="font-size:0.85rem;color:#cbd5e1;">${i.text||'No details.'}</p>
-        <img src="/api/rescuer/image?msgId=${i.msgId}" style="max-width:100%; border-radius:8px; margin-top:8px;" onerror="this.style.display='none'">
+        <img src="/api/rescuer/image?msgId=${i.msgId}&t=${Date.now()}" style="max-width:100%; border-radius:8px; margin-top:8px;" onerror="this.style.display='none'">
         <p style="font-size:0.7rem;color:#64748b;margin-top:4px;">ID: ${i.msgId} | Contact: ${i.name}</p>
         ${!isRes?`<button class="btn-clear" onclick="resolve('${i.msgId}')">✓ MARK RESCUED & CLEAR MESH BACKLOG</button>`:''}
       </div>`;
@@ -372,8 +372,15 @@ private:
                 request->send(200, "application/json", "{\"success\":true}");
             },
             [this](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final) {
-                if (!request->hasParam("msgId", true)) return;
-                String msgIdStr = request->getParam("msgId", true)->value();
+                String msgIdStr;
+                if (request->hasParam("msgId")) {
+                    msgIdStr = request->getParam("msgId")->value();
+                } else if (request->hasParam("msgId", true)) {
+                    msgIdStr = request->getParam("msgId", true)->value();
+                } else {
+                    return;
+                }
+
                 uint32_t msgId = strtoul(msgIdStr.c_str(), NULL, 16);
                 
                 if (storage) {
@@ -389,6 +396,7 @@ private:
                     }
                     if (file) {
                         file.write(data, len);
+                        file.flush();
                         file.close();
                     }
                 }
@@ -456,7 +464,32 @@ private:
                 if (storage && storage->hasImage(msgId)) {
                     char filepath[32];
                     snprintf(filepath, sizeof(filepath), "/img_%08X.bin", msgId);
-                    request->send(LittleFS, filepath, "image/jpeg");
+                    
+                    File imgFile = storage->getFullImageFile(msgId);
+                    size_t imgSize = imgFile ? imgFile.size() : 0;
+                    
+                    // --- DEBUG START ---
+                    if (imgFile && imgSize >= 4) {
+                        uint8_t firstBytes[4] = {0};
+                        uint8_t lastBytes[4] = {0};
+                        imgFile.seek(0, SeekSet);
+                        imgFile.read(firstBytes, 4);
+                        imgFile.seek(imgSize - 4, SeekSet);
+                        imgFile.read(lastBytes, 4);
+                        Serial.printf("[WEB SERVE IMAGE DEBUG] First 4 bytes: %02X %02X %02X %02X\n", firstBytes[0], firstBytes[1], firstBytes[2], firstBytes[3]);
+                        Serial.printf("[WEB SERVE IMAGE DEBUG] Last 4 bytes: %02X %02X %02X %02X\n", lastBytes[0], lastBytes[1], lastBytes[2], lastBytes[3]);
+                    } else {
+                        Serial.println("[WEB SERVE IMAGE DEBUG] Could not read bytes, file too small or unable to open.");
+                    }
+                    // --- DEBUG END ---
+                    
+                    if (imgFile) imgFile.close();
+
+                    Serial.printf("[WEB SERVE IMAGE] Serving %s (%u bytes) for MsgID 0x%08X\n", filepath, imgSize, msgId);
+
+                    AsyncWebServerResponse *response = request->beginResponse(LittleFS, filepath, "image/jpeg");
+                    response->addHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+                    request->send(response);
                     return;
                 }
             }

@@ -375,21 +375,29 @@ public:
         char filename[32];
         snprintf(filename, sizeof(filename), "/img_%08X.bin", msgId);
 
-        File file = LittleFS.open(filename, "r+"); // Open for read/write without truncating
-        if (!file) {
-            file = LittleFS.open(filename, "w"); // Create if doesn't exist
-            if (!file) {
-                Serial.println("[STORAGE ERROR] Failed to create image file!");
-                return;
+        File file;
+        if (chunkIndex == 0) {
+            file = LittleFS.open(filename, "w"); // Chunk 0: initialize/overwrite file
+        } else {
+            if (LittleFS.exists(filename)) {
+                file = LittleFS.open(filename, "r+"); // Existing file: open read/write
+            } else {
+                file = LittleFS.open(filename, "w"); // First chunk seen was >0: create file
             }
+        }
+
+        if (!file) {
+            Serial.println("[STORAGE ERROR] Failed to open image file for writing!");
+            return;
         }
 
         // Seek to the exact byte offset for this chunk
         file.seek(chunkIndex * MAX_IMAGE_CHUNK_DATA_LEN);
         file.write(data, dataLen);
+        file.flush(); // Flush buffer to ensure LittleFS updates directory metadata st_size
         file.close();
         
-        Serial.printf("[STORAGE] Saved Image Chunk %u (Len: %u) for MsgID 0x%08X\n", chunkIndex, dataLen, msgId);
+        Serial.printf("[STORAGE] Saved Image Chunk %u (Len: %u) for MsgID 0x%08X\n", chunkIndex+1, dataLen, msgId);
     }
 
     /**

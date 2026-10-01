@@ -366,6 +366,8 @@ private:
         }
         markMsgAsSeen(header.msgId);
 
+        bool knownPacket = true;
+
         // Protocol Dispatcher by Packet Type
         switch (header.pktType) {
             case PKT_DISTRESS_ALERT: {
@@ -381,9 +383,9 @@ private:
                 }
 
                 // Controlled Flooding Relay: Re-transmit across mesh if hops remain
-                if (header.ttl > 1) {
-                    relayMeshPacket(buffer, len);
-                }
+                // if (header.ttl > 1) {
+                //     relayMeshPacket(buffer, len);
+                // }
                 break;
             }
 
@@ -401,9 +403,9 @@ private:
                 }
 
                 // Relay Anti-Packet across mesh so deeper nodes also clear their backlogs
-                if (header.ttl > 1) {
-                    relayMeshPacket(buffer, len);
-                }
+                // if (header.ttl > 1) {
+                //     relayMeshPacket(buffer, len);
+                // }
                 break;
             }
 
@@ -441,6 +443,25 @@ private:
                 Serial.printf("[LORA IMAGE RX] Rcvd Chunk %u/%u for MsgID 0x%08X (Len: %u)\n",
                               chunk->chunkIndex + 1, chunk->totalChunks, chunk->imageMsgId, chunk->chunkDataLen);
 
+                
+                // --- DEBUG START ---
+                if (chunk->chunkData && chunk->chunkDataLen >= 4) {
+                    Serial.printf(
+                        "[LORA IMAGE RX DEBUG] Chunk %u First 4 bytes: %02X %02X %02X %02X\n",
+                        chunk->chunkIndex + 1,
+                        chunk->chunkData[0],
+                        chunk->chunkData[1],
+                        chunk->chunkData[2],
+                        chunk->chunkData[3]
+                    );
+                } else {
+                    Serial.printf(
+                        "[LORA IMAGE RX DEBUG] Chunk %u has less than 4 bytes\n",
+                        chunk->chunkIndex + 1
+                    );
+                }
+                // --- DEBUG END ---
+
                 if (storage) {
                     storage->saveImageChunk(chunk->imageMsgId, chunk->chunkIndex, chunk->chunkData, chunk->chunkDataLen);
                 }
@@ -452,11 +473,11 @@ private:
                 // next chunk to arrive while the radio is still transmitting, dropping it
                 // silently at the hardware layer — resulting in only even-indexed chunks
                 // being received on the rescuer.
-if (CURRENT_NODE_ROLE == ROLE_CIVILIAN) {
-                if (header.ttl > 1) {
-                    relayMeshPacket(buffer, len);
-                }
-            }
+                // if (CURRENT_NODE_ROLE == ROLE_CIVILIAN) {
+                //     if (header.ttl > 1) {
+                //         relayMeshPacket(buffer, len);
+                //     }
+                // }
 
                 break;
             }
@@ -464,6 +485,14 @@ if (CURRENT_NODE_ROLE == ROLE_CIVILIAN) {
             default:
                 Serial.printf("[LORA PROTOCOL] Unknown packet type: 0x%02X\n", header.pktType);
                 break;
+        }
+
+        // Runs for every recognized packet type,
+        // but NOT for unknown packet types
+        if (knownPacket && CURRENT_NODE_ROLE == ROLE_CIVILIAN) {
+            if (header.ttl > 1) {
+                relayMeshPacket(buffer, len);
+            }
         }
     }
 

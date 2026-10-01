@@ -151,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const formData = new FormData();
                     formData.append('msgId', data.msgId);
                     formData.append('image', imageBlob, 'photo.jpg');
-                    fetch('/api/upload-image', { method: 'POST', body: formData }).catch(console.error);
+                    fetch(`/api/upload-image?msgId=${data.msgId}`, { method: 'POST', body: formData }).catch(console.error);
                 }
 
                 clearImageSelection();
