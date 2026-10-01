@@ -76,6 +76,26 @@
                     <textarea id="txtMessage" class="text-input textarea" rows="3" placeholder="Describe hazards, structural damage, or emergency details..." maxlength="60"></textarea>
                 </div>
 
+                <!-- Image upload -->
+                <div class="form-group">
+                    <label class="section-title">ATTACH PHOTO (OPTIONAL)</label>
+                    <div class="file-upload-wrapper">
+                        <label for="fileImage" class="btn-file-custom">
+                            📷 <span id="fileBtnLabel">Take Photo or Choose Image</span>
+                        </label>
+                        <input type="file" id="fileImage" accept="image/*" class="file-input-hidden">
+                    </div>
+                    <div id="imgPreviewContainer" class="img-preview-box" style="display:none;">
+                        <img id="imgPreview" alt="Compressed Preview" class="img-preview-thumb">
+                        <div class="img-preview-meta">
+                            <span id="imgSizeText" class="badge green">Compressed</span>
+                            <button type="button" id="btnRemoveImage" class="btn-remove-img">✕ Remove</button>
+                        </div>
+                    </div>
+                    <p class="captive-hint">💡 <em>If camera/picker doesn't open in this popup, open <strong>Chrome</strong> and go to <strong>192.168.4.1</strong></em></p>
+                    <canvas id="imgCanvas" style="display:none;"></canvas>
+                </div>
+
                 <!-- Submit Button -->
                 <button type="submit" id="btnSubmitSos" class="btn-sos-submit">
                     <span class="sos-icon">📡</span> SEND DISTRESS ALERT VIA LORA

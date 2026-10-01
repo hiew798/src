@@ -49,6 +49,67 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // =================================================================================
+    // 1.5 IMAGE PROCESSING (OPTION A: 160x120 GRAYSCALE)
+    // =================================================================================
+    const fileImage           = document.getElementById('fileImage');
+    const imgCanvas           = document.getElementById('imgCanvas');
+    const fileBtnLabel        = document.getElementById('fileBtnLabel');
+    const imgPreviewContainer = document.getElementById('imgPreviewContainer');
+    const imgPreview          = document.getElementById('imgPreview');
+    const imgSizeText         = document.getElementById('imgSizeText');
+    const btnRemoveImage      = document.getElementById('btnRemoveImage');
+    let imageBlob = null;
+
+    function clearImageSelection() {
+        imageBlob = null;
+        if (fileImage) fileImage.value = '';
+        if (imgPreviewContainer) imgPreviewContainer.style.display = 'none';
+        if (fileBtnLabel) fileBtnLabel.textContent = 'Take Photo or Choose Image';
+    }
+
+    if (btnRemoveImage) {
+        btnRemoveImage.addEventListener('click', clearImageSelection);
+    }
+
+    if (fileImage) {
+        fileImage.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) { clearImageSelection(); return; }
+            const img = new Image();
+            img.onload = () => {
+                const ctx = imgCanvas.getContext('2d');
+                imgCanvas.width = 160;
+                imgCanvas.height = 120;
+                ctx.drawImage(img, 0, 0, 160, 120);
+                
+                // Convert to grayscale for smaller size over LoRa
+                const imgData = ctx.getImageData(0, 0, 160, 120);
+                const data = imgData.data;
+                for(let i=0; i<data.length; i+=4) {
+                    const avg = 0.3 * data[i] + 0.59 * data[i+1] + 0.11 * data[i+2];
+                    data[i] = data[i+1] = data[i+2] = avg;
+                }
+                ctx.putImageData(imgData, 0, 0);
+                
+                // Compress to low-quality JPEG
+                imgCanvas.toBlob((blob) => {
+                    imageBlob = blob;
+                    const kb = (blob.size / 1024).toFixed(1);
+                    const chunks = Math.ceil(blob.size / 180);
+                    console.log(`Image compressed: ${blob.size} bytes (${kb} KB, ${chunks} LoRa chunks)`);
+
+                    // Update UI preview
+                    if (imgPreview) imgPreview.src = URL.createObjectURL(blob);
+                    if (imgSizeText) imgSizeText.textContent = `${kb} KB (${chunks} chunks)`;
+                    if (imgPreviewContainer) imgPreviewContainer.style.display = 'flex';
+                    if (fileBtnLabel) fileBtnLabel.textContent = 'Change Photo';
+                }, 'image/jpeg', 0.5);
+            };
+            img.src = URL.createObjectURL(file);
+        });
+    }
+
+    // =================================================================================
     // 2. SOS FORM SUBMISSION HANDLER
     // Sends distress data as JSON to the ESP32 Async Web Server at /api/sos.
     // The ESP32 converts this JSON into a compact binary LoRa packet and broadcasts it.
@@ -83,6 +144,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (data.success) {
                 showAlert(`✅ SOS Alert Broadcast! Message ID: ${data.msgId}`, 'success');
+                
+                // Upload image if present
+                if (imageBlob) {
+                    showAlert('📡 Uploading image to Node...', 'success');
+                    const formData = new FormData();
+                    formData.append('msgId', data.msgId);
+                    formData.append('image', imageBlob, 'photo.jpg');
+                    fetch('/api/upload-image', { method: 'POST', body: formData }).catch(console.error);
+                }
+
+                clearImageSelection();
                 fetchDistressList(); // Immediately refresh the visible reports list
             } else {
                 showAlert('❌ Failed to send SOS alert. Please try again.', 'error');

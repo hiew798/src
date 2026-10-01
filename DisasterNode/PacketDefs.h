@@ -138,6 +138,20 @@ struct ClearMessagePayload {
 #pragma pack(pop)
 
 // =====================================================================================
+// SECTION 5.1: IMAGE CHUNK PAYLOAD
+// =====================================================================================
+#pragma pack(push, 1)
+// Payload for a single chunk of an image
+struct ImageChunkPayload {
+    uint32_t imageMsgId;      // Unique ID matching the original distress msgId
+    uint16_t chunkIndex;      // Index of this specific chunk (0 to totalChunks - 1)
+    uint16_t totalChunks;     // Total number of chunks that make up the complete image
+    uint8_t  chunkDataLen;    // Number of valid bytes in this chunk's data array
+    uint8_t  chunkData[MAX_IMAGE_CHUNK_DATA_LEN]; // Raw image chunk bytes
+};
+#pragma pack(pop)
+
+// =====================================================================================
 // SECTION 6: SERIALIZATION HELPER FUNCTIONS
 // Converts high-level structs to raw byte buffers for LoRa radio transmission.
 // =====================================================================================
@@ -228,6 +242,31 @@ inline size_t buildAckPacket(uint8_t* buffer, uint32_t targetMsgId, uint16_t sen
     memcpy(buffer + sizeof(PacketHeader), &ack, sizeof(AckPayload));
 
     return sizeof(PacketHeader) + sizeof(AckPayload);
+}
+
+/**
+ * Builds an image chunk packet.
+ * @param buffer Output byte array
+ * @param chunkPktId Unique message ID for this specific chunk packet
+ * @param senderId Node ID of originating device
+ * @param payload Pointer to populated ImageChunkPayload struct
+ * @return Total bytes written to buffer
+ */
+inline size_t buildImageChunkPacket(uint8_t* buffer, uint32_t chunkPktId, uint16_t senderId, const ImageChunkPayload* payload) {
+    PacketHeader header;
+    header.magic        = PROTOCOL_MAGIC_BYTE;
+    header.version      = PAYLOAD_SCHEMA_VERSION;
+    header.pktType      = PKT_IMAGE_CHUNK;
+    header.msgId        = chunkPktId;
+    header.senderNodeId = senderId;
+    header.targetNodeId = LORA_BROADCAST_ADDR;
+    header.ttl          = LORA_MAX_HOP_COUNT;
+    header.payloadLen   = sizeof(ImageChunkPayload);
+
+    memcpy(buffer, &header, sizeof(PacketHeader));
+    memcpy(buffer + sizeof(PacketHeader), payload, sizeof(ImageChunkPayload));
+
+    return sizeof(PacketHeader) + sizeof(ImageChunkPayload);
 }
 
 /**

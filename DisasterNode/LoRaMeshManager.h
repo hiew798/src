@@ -65,9 +65,17 @@ private:
     // Hardware interrupt flag set by DIO1 rising edge
     volatile bool packetReceivedFlag;
 
+    // Image Transmission Queue State
+    uint32_t currentImageMsgId;
+    uint16_t currentImageTotalChunks;
+    uint16_t currentImageNextChunk;
+    uint32_t lastImageChunkTxTime;
+    bool     isTransmittingImage;
+
 public:
     LoRaMeshManager(StorageManager* storageMgr) 
-        : radio(nullptr), storage(storageMgr), cacheIndex(0), lastRssi(0), lastSnr(0), packetReceivedFlag(false) {
+        : radio(nullptr), storage(storageMgr), cacheIndex(0), lastRssi(0), lastSnr(0), packetReceivedFlag(false),
+          currentImageMsgId(0), currentImageTotalChunks(0), currentImageNextChunk(0), lastImageChunkTxTime(0), isTransmittingImage(false) {
         memset(seenMsgCache, 0, sizeof(seenMsgCache));
     }
 
@@ -138,6 +146,11 @@ public:
      * Main background loop processing task for LoRa events. Call this in main loop().
      */
     void update() {
+        // 1. Process Image Transmission Queue (only if radio is idle from RX)
+        if (!packetReceivedFlag && isTransmittingImage && (millis() - lastImageChunkTxTime >= IMAGE_CHUNK_TX_INTERVAL_MS)) {
+            processImageTxQueue();
+        }
+
         if (!packetReceivedFlag) return;
         packetReceivedFlag = false; // Reset interrupt flag
 
@@ -272,10 +285,70 @@ public:
         cacheIndex = (cacheIndex + 1) % DEDUPLICATION_CACHE_SIZE;
     }
 
+    /**
+     * Queues an image in LittleFS to be chunked and transmitted sequentially over LoRa.
+     */
+    void queueImageTransmission(uint32_t msgId) {
+        if (!storage || !storage->hasImage(msgId)) return;
+        File f = storage->getFullImageFile(msgId);
+        if (!f) return;
+        size_t size = f.size();
+        f.close();
+        
+        currentImageMsgId = msgId;
+        currentImageTotalChunks = (size + MAX_IMAGE_CHUNK_DATA_LEN - 1) / MAX_IMAGE_CHUNK_DATA_LEN;
+        currentImageNextChunk = 0;
+        lastImageChunkTxTime = 0;
+        isTransmittingImage = true;
+        
+        Serial.printf("[LORA TX QUEUE] Queued image 0x%08X (%u bytes, %u chunks)\n", msgId, size, currentImageTotalChunks);
+    }
+
     float getLastRssi() const { return lastRssi; }
     float getLastSnr()  const { return lastSnr; }
 
 private:
+    /**
+     * Reads the next image chunk from storage and transmits it.
+     */
+    void processImageTxQueue() {
+        File f = storage->getFullImageFile(currentImageMsgId);
+        if (!f) {
+            Serial.println("[LORA TX IMAGE ERROR] Could not open image file. Aborting.");
+            isTransmittingImage = false;
+            return;
+        }
+
+        f.seek(currentImageNextChunk * MAX_IMAGE_CHUNK_DATA_LEN);
+        ImageChunkPayload chunkPayload;
+        chunkPayload.imageMsgId = currentImageMsgId;
+        chunkPayload.chunkIndex = currentImageNextChunk;
+        chunkPayload.totalChunks = currentImageTotalChunks;
+        
+        size_t bytesRead = f.read(chunkPayload.chunkData, MAX_IMAGE_CHUNK_DATA_LEN);
+        chunkPayload.chunkDataLen = bytesRead;
+        f.close();
+        
+        uint8_t txBuf[256];
+        uint32_t chunkPktId = storage ? storage->getNextUniqueMsgId(g_nodeId) : micros();
+        size_t pktSize = buildImageChunkPacket(txBuf, chunkPktId, g_nodeId, &chunkPayload);
+        
+        markMsgAsSeen(chunkPktId);
+        
+        Serial.printf("[LORA TX IMAGE] Sending chunk %u/%u for MsgID 0x%08X...\n", 
+                        currentImageNextChunk+1, currentImageTotalChunks, currentImageMsgId);
+                        
+        sendRawPacket(txBuf, pktSize);
+        
+        lastImageChunkTxTime = millis();
+        currentImageNextChunk++;
+        
+        if (currentImageNextChunk >= currentImageTotalChunks) {
+            Serial.println("[LORA TX IMAGE] Finished transmitting all chunks.");
+            isTransmittingImage = false;
+        }
+    }
+
     /**
      * Protocol state machine for parsing and handling received LoRa frames.
      */
@@ -358,6 +431,33 @@ private:
                               header.senderNodeId);
                 // Dump all stored offline alerts over radio to the rescuer
                 flushOfflineStorageToRescuer();
+                break;
+            }
+
+            case PKT_IMAGE_CHUNK: {
+                if (len < sizeof(PacketHeader) + sizeof(ImageChunkPayload)) break;
+                
+                const ImageChunkPayload* chunk = (const ImageChunkPayload*)(buffer + sizeof(PacketHeader));
+                Serial.printf("[LORA IMAGE RX] Rcvd Chunk %u/%u for MsgID 0x%08X (Len: %u)\n",
+                              chunk->chunkIndex + 1, chunk->totalChunks, chunk->imageMsgId, chunk->chunkDataLen);
+
+                if (storage) {
+                    storage->saveImageChunk(chunk->imageMsgId, chunk->chunkIndex, chunk->chunkData, chunk->chunkDataLen);
+                }
+
+                // Relay chunk across mesh ONLY from intermediate (civilian) nodes.
+                // The rescuer node MUST NOT relay image chunks: the blocking relay TX
+                // (random jitter delay + CAD + transmit) takes 300–800ms, which is longer
+                // than the civilian's IMAGE_CHUNK_TX_INTERVAL_MS (250ms). This causes the
+                // next chunk to arrive while the radio is still transmitting, dropping it
+                // silently at the hardware layer — resulting in only even-indexed chunks
+                // being received on the rescuer.
+if (CURRENT_NODE_ROLE == ROLE_CIVILIAN) {
+                if (header.ttl > 1) {
+                    relayMeshPacket(buffer, len);
+                }
+            }
+
                 break;
             }
 

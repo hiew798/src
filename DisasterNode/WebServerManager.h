@@ -124,6 +124,7 @@ async function load(){
           ${i.needMeds?'<span class="b b-org">MEDS</span>':''}
         </div>
         <p style="font-size:0.85rem;color:#cbd5e1;">${i.text||'No details.'}</p>
+        <img src="/api/rescuer/image?msgId=${i.msgId}" style="max-width:100%; border-radius:8px; margin-top:8px;" onerror="this.style.display='none'">
         <p style="font-size:0.7rem;color:#64748b;margin-top:4px;">ID: ${i.msgId} | Contact: ${i.name}</p>
         ${!isRes?`<button class="btn-clear" onclick="resolve('${i.msgId}')">✓ MARK RESCUED & CLEAR MESH BACKLOG</button>`:''}
       </div>`;
@@ -363,6 +364,44 @@ private:
             request->send(response);
         });
 
+        // -----------------------------------------------------------------------------
+        // REST API: POST /api/upload-image - Upload an image for a specific msgId
+        // -----------------------------------------------------------------------------
+        server.on("/api/upload-image", HTTP_POST, 
+            [](AsyncWebServerRequest *request) {
+                request->send(200, "application/json", "{\"success\":true}");
+            },
+            [this](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final) {
+                if (!request->hasParam("msgId", true)) return;
+                String msgIdStr = request->getParam("msgId", true)->value();
+                uint32_t msgId = strtoul(msgIdStr.c_str(), NULL, 16);
+                
+                if (storage) {
+                    char filepath[32];
+                    snprintf(filepath, sizeof(filepath), "/img_%08X.bin", msgId);
+                    
+                    File file;
+                    if (index == 0) {
+                        file = LittleFS.open(filepath, "w");
+                        Serial.printf("[WEB UPLOAD] Started receiving image for MsgID 0x%08X\n", msgId);
+                    } else {
+                        file = LittleFS.open(filepath, "a");
+                    }
+                    if (file) {
+                        file.write(data, len);
+                        file.close();
+                    }
+                }
+                
+                if (final) {
+                    Serial.printf("[WEB UPLOAD] Finished receiving image for MsgID 0x%08X\n", msgId);
+                    if (meshManager) {
+                        meshManager->queueImageTransmission(msgId);
+                    }
+                }
+            }
+        );
+
         // Non-existing URLs fallback to captive portal root
         server.onNotFound([](AsyncWebServerRequest *request) {
             request->redirect("http://192.168.4.1/");
@@ -407,6 +446,21 @@ private:
 
             response->setLength();
             request->send(response);
+        });
+
+        // Fetch image for a distress incident
+        server.on("/api/rescuer/image", HTTP_GET, [this](AsyncWebServerRequest *request) {
+            if (request->hasParam("msgId")) {
+                String msgIdStr = request->getParam("msgId")->value();
+                uint32_t msgId = strtoul(msgIdStr.c_str(), NULL, 16);
+                if (storage && storage->hasImage(msgId)) {
+                    char filepath[32];
+                    snprintf(filepath, sizeof(filepath), "/img_%08X.bin", msgId);
+                    request->send(LittleFS, filepath, "image/jpeg");
+                    return;
+                }
+            }
+            request->send(404, "text/plain", "Image not found");
         });
 
         // Rescuer Clearance / Anti-Packet Trigger: Marks incident resolved and broadcasts Anti-Packet

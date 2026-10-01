@@ -33,8 +33,8 @@ enum NodeRole : uint8_t {
 // >>> CHOOSE THE ROLE BEFORE COMPILING AND FLASHING TO EACH BOARD <<<
 // Set to ROLE_CIVILIAN for building nodes deployed for trapped victims.
 // Set to ROLE_RESCUER for mobile rescuer gateway nodes.
-#define CURRENT_NODE_ROLE      ROLE_CIVILIAN 
-// #define CURRENT_NODE_ROLE      ROLE_RESCUER
+// #define CURRENT_NODE_ROLE      ROLE_CIVILIAN 
+#define CURRENT_NODE_ROLE      ROLE_RESCUER
 
 // =====================================================================================
 // SECTION 1: HARDWARE PIN MAPPING (Heltec Wireless Stick Lite V3 - ESP32-S3)
@@ -121,6 +121,19 @@ const uint32_t RESCUER_BEACON_INTERVAL_MS = 15000; // 15 seconds
 // Maximum number of incident IDs that can be cleared in a single batch Anti-Packet frame.
 // Keeping this at 8 ensures the total packet size stays well under 100 bytes.
 #define MAX_CLEAR_BATCH_SIZE    8
+
+// =====================================================================================
+// SECTION 3.1: IMAGE TRANSMISSION VARIABLES
+// =====================================================================================
+
+// Max bytes of image payload per chunk to keep packet size under LoRa's 255 byte limit
+#define MAX_IMAGE_CHUNK_DATA_LEN 180
+
+// Delay between transmitting sequential chunks of an image (in milliseconds).
+// Prevents flooding the radio spectrum and allows high-priority SOS packets to interleave.
+// NOTE: Must be > (relay jitter max 450ms + CAD ~50ms + TX ~200ms) = ~700ms for multi-hop
+// relay to complete before the next chunk arrives. Set to 800ms for safe margin.
+const uint32_t IMAGE_CHUNK_TX_INTERVAL_MS = 800;
 
 // =====================================================================================
 // SECTION 4: WIFI ACCESS POINT & CAPTIVE PORTAL SETTINGS

@@ -361,6 +361,54 @@ private:
             file.close();
         }
     }
+
+public:
+    // =====================================================================================
+    // IMAGE STORAGE FUNCTIONS (OPTION A: SEQUENTIAL REASSEMBLY)
+    // =====================================================================================
+
+    /**
+     * Saves an incoming image chunk directly to a combined binary file.
+     * Used by Rescuer Node receiving chunks over LoRa.
+     */
+    void saveImageChunk(uint32_t msgId, uint16_t chunkIndex, const uint8_t* data, uint8_t dataLen) {
+        char filename[32];
+        snprintf(filename, sizeof(filename), "/img_%08X.bin", msgId);
+
+        File file = LittleFS.open(filename, "r+"); // Open for read/write without truncating
+        if (!file) {
+            file = LittleFS.open(filename, "w"); // Create if doesn't exist
+            if (!file) {
+                Serial.println("[STORAGE ERROR] Failed to create image file!");
+                return;
+            }
+        }
+
+        // Seek to the exact byte offset for this chunk
+        file.seek(chunkIndex * MAX_IMAGE_CHUNK_DATA_LEN);
+        file.write(data, dataLen);
+        file.close();
+        
+        Serial.printf("[STORAGE] Saved Image Chunk %u (Len: %u) for MsgID 0x%08X\n", chunkIndex, dataLen, msgId);
+    }
+
+    /**
+     * Reads a full reassembled image from storage to stream to HTTP clients.
+     */
+    File getFullImageFile(uint32_t msgId) {
+        char filename[32];
+        snprintf(filename, sizeof(filename), "/img_%08X.bin", msgId);
+        return LittleFS.open(filename, "r");
+    }
+
+    /**
+     * Checks if an image exists for a given message ID.
+     */
+    bool hasImage(uint32_t msgId) {
+        char filename[32];
+        snprintf(filename, sizeof(filename), "/img_%08X.bin", msgId);
+        return LittleFS.exists(filename);
+    }
 };
 
 #endif // STORAGE_MANAGER_H
