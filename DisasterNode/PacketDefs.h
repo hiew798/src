@@ -47,7 +47,10 @@ enum PacketType : uint8_t {
     PKT_DISTRESS_ACK   = 0x02,  // Point-to-point Acknowledgment from Rescuer to Victim Node
     PKT_RESCUER_BEACON = 0x03,  // Beacon sent by Rescuer Node asking nearby nodes to dump stored SOS logs
     PKT_IMAGE_CHUNK    = 0x04,  // Optional chunked image payload (for low-res photos)
-    PKT_CLEAR_MESSAGES = 0x05   // Anti-Packet / Rescuer Invalidation (Purges cleared alerts from mesh)
+    PKT_CLEAR_MESSAGES = 0x05,  // Anti-Packet / Rescuer Invalidation (Purges cleared alerts from mesh)
+    PKT_IMAGE_POLL     = 0x06,  // Sender poll to Rescuer: "Finished chunk burst, please ACK or NACK"
+    PKT_IMAGE_ACK      = 0x07,  // Rescuer ACK to Sender: "Full image received successfully"
+    PKT_IMAGE_NACK     = 0x08   // Rescuer NACK to Sender: "Missing specific chunk indices"
 };
 
 // =====================================================================================
@@ -148,6 +151,27 @@ struct ImageChunkPayload {
     uint16_t totalChunks;     // Total number of chunks that make up the complete image
     uint8_t  chunkDataLen;    // Number of valid bytes in this chunk's data array
     uint8_t  chunkData[MAX_IMAGE_CHUNK_DATA_LEN]; // Raw image chunk bytes
+};
+
+// Payload for sender polling receiver for image completeness
+struct ImagePollPayload {
+    uint32_t imageMsgId;      // Unique ID matching original distress msgId
+    uint16_t totalChunks;     // Expected total chunks
+    uint16_t senderNodeId;    // Originating node
+};
+
+// Payload for rescuer ACK confirming full image reception
+struct ImageAckPayload {
+    uint32_t imageMsgId;      // Message ID of completed image
+    uint16_t rescuerNodeId;   // Rescuer node ID
+};
+
+// Payload for rescuer NACK requesting retransmission of missing chunks
+struct ImageNackPayload {
+    uint32_t imageMsgId;      // Message ID of image
+    uint16_t rescuerNodeId;   // Rescuer node ID
+    uint8_t  missingCount;    // Number of missing chunk indices listed (1..MAX_NACK_CHUNKS_PER_PKT)
+    uint16_t missingChunks[MAX_NACK_CHUNKS_PER_PKT]; // Array of 0-based chunk indices
 };
 #pragma pack(pop)
 
@@ -267,6 +291,86 @@ inline size_t buildImageChunkPacket(uint8_t* buffer, uint32_t chunkPktId, uint16
     memcpy(buffer + sizeof(PacketHeader), payload, sizeof(ImageChunkPayload));
 
     return sizeof(PacketHeader) + sizeof(ImageChunkPayload);
+}
+
+/**
+ * Builds an image poll packet (sent after all chunks to prompt ACK or NACK).
+ */
+inline size_t buildImagePollPacket(uint8_t* buffer, uint32_t pollPktId, uint16_t senderId, uint32_t imageMsgId, uint16_t totalChunks) {
+    PacketHeader header;
+    header.magic        = PROTOCOL_MAGIC_BYTE;
+    header.version      = PAYLOAD_SCHEMA_VERSION;
+    header.pktType      = PKT_IMAGE_POLL;
+    header.msgId        = pollPktId;
+    header.senderNodeId = senderId;
+    header.targetNodeId = LORA_BROADCAST_ADDR;
+    header.ttl          = LORA_MAX_HOP_COUNT;
+    header.payloadLen   = sizeof(ImagePollPayload);
+
+    ImagePollPayload poll;
+    poll.imageMsgId   = imageMsgId;
+    poll.totalChunks  = totalChunks;
+    poll.senderNodeId = senderId;
+
+    memcpy(buffer, &header, sizeof(PacketHeader));
+    memcpy(buffer + sizeof(PacketHeader), &poll, sizeof(ImagePollPayload));
+
+    return sizeof(PacketHeader) + sizeof(ImagePollPayload);
+}
+
+/**
+ * Builds an image ACK packet confirming full reception.
+ */
+inline size_t buildImageAckPacket(uint8_t* buffer, uint32_t ackPktId, uint16_t rescuerId, uint32_t imageMsgId, uint16_t targetNodeId) {
+    PacketHeader header;
+    header.magic        = PROTOCOL_MAGIC_BYTE;
+    header.version      = PAYLOAD_SCHEMA_VERSION;
+    header.pktType      = PKT_IMAGE_ACK;
+    header.msgId        = ackPktId;
+    header.senderNodeId = rescuerId;
+    header.targetNodeId = targetNodeId;
+    header.ttl          = LORA_MAX_HOP_COUNT;
+    header.payloadLen   = sizeof(ImageAckPayload);
+
+    ImageAckPayload ack;
+    ack.imageMsgId    = imageMsgId;
+    ack.rescuerNodeId = rescuerId;
+
+    memcpy(buffer, &header, sizeof(PacketHeader));
+    memcpy(buffer + sizeof(PacketHeader), &ack, sizeof(ImageAckPayload));
+
+    return sizeof(PacketHeader) + sizeof(ImageAckPayload);
+}
+
+/**
+ * Builds an image NACK packet requesting missing chunks.
+ */
+inline size_t buildImageNackPacket(uint8_t* buffer, uint32_t nackPktId, uint16_t rescuerId, uint32_t imageMsgId, uint16_t targetNodeId, const uint16_t* missingChunks, uint8_t count) {
+    if (count > MAX_NACK_CHUNKS_PER_PKT) count = MAX_NACK_CHUNKS_PER_PKT;
+
+    PacketHeader header;
+    header.magic        = PROTOCOL_MAGIC_BYTE;
+    header.version      = PAYLOAD_SCHEMA_VERSION;
+    header.pktType      = PKT_IMAGE_NACK;
+    header.msgId        = nackPktId;
+    header.senderNodeId = rescuerId;
+    header.targetNodeId = targetNodeId;
+    header.ttl          = LORA_MAX_HOP_COUNT;
+    header.payloadLen   = sizeof(ImageNackPayload);
+
+    ImageNackPayload nack;
+    nack.imageMsgId    = imageMsgId;
+    nack.rescuerNodeId = rescuerId;
+    nack.missingCount  = count;
+    memset(nack.missingChunks, 0, sizeof(nack.missingChunks));
+    for (uint8_t i = 0; i < count; i++) {
+        nack.missingChunks[i] = missingChunks[i];
+    }
+
+    memcpy(buffer, &header, sizeof(PacketHeader));
+    memcpy(buffer + sizeof(PacketHeader), &nack, sizeof(ImageNackPayload));
+
+    return sizeof(PacketHeader) + sizeof(ImageNackPayload);
 }
 
 /**

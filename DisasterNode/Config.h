@@ -104,8 +104,14 @@ const uint32_t LORA_ACK_WAIT_TIMEOUT_MS = 10000; // 10 seconds
 // Maximum retransmission attempts for an SOS alert before falling back to local storage.
 const uint8_t LORA_MAX_RETRIES = 3;
 
-// Delay between retransmission retries (in milliseconds).
-const uint32_t LORA_RETRY_DELAY_MS = 2000; // 2 seconds
+// Max number of chunks missing that can be requested in a single NACK packet
+#define MAX_NACK_CHUNKS_PER_PKT 24
+
+// Delay between retransmission retries for SOS (in milliseconds).
+const uint32_t LORA_RETRY_DELAY_MS = 3000; // 3 seconds
+
+// Time window to consider another node "in range" (120 seconds)
+const uint32_t NODE_IN_RANGE_TIMEOUT_MS = 120000;
 
 // Size of the ring buffer used to remember recently received message IDs.
 // If a node receives a packet ID already in this cache, it drops the packet, preventing infinite echo loops.
@@ -130,10 +136,15 @@ const uint32_t RESCUER_BEACON_INTERVAL_MS = 15000; // 15 seconds
 #define MAX_IMAGE_CHUNK_DATA_LEN 180
 
 // Delay between transmitting sequential chunks of an image (in milliseconds).
-// Prevents flooding the radio spectrum and allows high-priority SOS packets to interleave.
-// NOTE: Must be > (relay jitter max 450ms + CAD ~50ms + TX ~200ms) = ~700ms for multi-hop
-// relay to complete before the next chunk arrives. Set to 800ms for safe margin.
-const uint32_t IMAGE_CHUNK_TX_INTERVAL_MS = 800;
+// Paced to allow intermediate civilian relay nodes sufficient time to rebroadcast
+// each chunk without collisions (Sender TX ~400ms + Relay Jitter/CAD ~400ms + Relay TX ~400ms + buffer).
+const uint32_t IMAGE_CHUNK_TX_INTERVAL_MS = 1800; // 1.8 seconds
+
+// Timeout waiting for Image ACK or NACK after transmitting chunks or sending poll
+const uint32_t IMAGE_ACK_WAIT_TIMEOUT_MS = 4000; // 4 seconds
+
+// Maximum rounds of retrying missing image chunks via NACK
+const uint8_t IMAGE_MAX_RETRY_ROUNDS = 3;
 
 // =====================================================================================
 // SECTION 4: WIFI ACCESS POINT & CAPTIVE PORTAL SETTINGS

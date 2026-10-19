@@ -266,6 +266,7 @@ private:
             root["apSsid"]          = apSSID;
             root["connectedClients"]= WiFi.softAPgetStationNum();
             root["offlineSosCount"] = storage ? storage->getStoredMessageCount() : 0;
+            root["neighborInRange"] = meshManager ? meshManager->isNeighborInRange() : false;
             root["lastRssi"]        = meshManager ? meshManager->getLastRssi() : 0;
             root["lastSnr"]         = meshManager ? meshManager->getLastSnr() : 0;
             root["maxHops"]         = LORA_MAX_HOP_COUNT;

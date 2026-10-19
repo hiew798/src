@@ -65,18 +65,62 @@ private:
     // Hardware interrupt flag set by DIO1 rising edge
     volatile bool packetReceivedFlag;
 
-    // Image Transmission Queue State
-    uint32_t currentImageMsgId;
-    uint16_t currentImageTotalChunks;
-    uint16_t currentImageNextChunk;
-    uint32_t lastImageChunkTxTime;
-    bool     isTransmittingImage;
+    // Passive Link Monitoring
+    uint32_t lastNeighborSeenTime;
+
+    // Asynchronous Relay Queue State
+    struct RelayQueueItem {
+        uint8_t  buffer[256];
+        size_t   len;
+        uint32_t scheduledTxTime;
+    };
+    static const uint8_t RELAY_QUEUE_CAPACITY = 4;
+    RelayQueueItem relayQueue[RELAY_QUEUE_CAPACITY];
+    uint8_t relayQueueHead;
+    uint8_t relayQueueTail;
+    uint8_t relayQueueCount;
+
+    // SOS Retransmission (ARQ) State for Civilian Nodes
+    uint32_t        pendingSosMsgId;
+    DistressPayload pendingSosPayload;
+    uint8_t         pendingSosRetries;
+    uint32_t        lastSosTxTime;
+    bool            hasPendingSos;
+
+    // Image Transmission & Selective NACK State
+    enum ImageTxState {
+        IMG_STATE_IDLE = 0,
+        IMG_STATE_SENDING_CHUNKS,
+        IMG_STATE_WAIT_ACK_NACK,
+        IMG_STATE_RETRYING_MISSING
+    };
+    ImageTxState imageTxState;
+    uint32_t     currentImageMsgId;
+    uint16_t     currentImageTotalChunks;
+    uint16_t     currentImageNextChunk;
+    uint32_t     lastImageChunkTxTime;
+    uint8_t      imageRetryRound;
+    uint16_t     missingChunksToRetransmit[MAX_NACK_CHUNKS_PER_PKT];
+    uint8_t      missingChunksCount;
+    uint8_t      missingChunksIndex;
+
+    // Rescuer Incoming Image Tracking
+    uint32_t     rxImageMsgId;
+    uint16_t     rxImageTotalChunks;
+    bool         rxChunkMap[64];
 
 public:
     LoRaMeshManager(StorageManager* storageMgr) 
         : radio(nullptr), storage(storageMgr), cacheIndex(0), lastRssi(0), lastSnr(0), packetReceivedFlag(false),
-          currentImageMsgId(0), currentImageTotalChunks(0), currentImageNextChunk(0), lastImageChunkTxTime(0), isTransmittingImage(false) {
+          lastNeighborSeenTime(0), relayQueueHead(0), relayQueueTail(0), relayQueueCount(0),
+          pendingSosMsgId(0), pendingSosRetries(0), lastSosTxTime(0), hasPendingSos(false),
+          imageTxState(IMG_STATE_IDLE), currentImageMsgId(0), currentImageTotalChunks(0), currentImageNextChunk(0),
+          lastImageChunkTxTime(0), imageRetryRound(0), missingChunksCount(0), missingChunksIndex(0),
+          rxImageMsgId(0), rxImageTotalChunks(0) {
         memset(seenMsgCache, 0, sizeof(seenMsgCache));
+        memset(&pendingSosPayload, 0, sizeof(pendingSosPayload));
+        memset(missingChunksToRetransmit, 0, sizeof(missingChunksToRetransmit));
+        memset(rxChunkMap, 0, sizeof(rxChunkMap));
     }
 
     /**
@@ -146,9 +190,19 @@ public:
      * Main background loop processing task for LoRa events. Call this in main loop().
      */
     void update() {
-        // 1. Process Image Transmission Queue (only if radio is idle from RX)
-        if (!packetReceivedFlag && isTransmittingImage && (millis() - lastImageChunkTxTime >= IMAGE_CHUNK_TX_INTERVAL_MS)) {
+        // 1. Process Image Transmission State Machine (only if radio is idle from RX)
+        if (!packetReceivedFlag && imageTxState != IMG_STATE_IDLE) {
             processImageTxQueue();
+        }
+
+        // 2. Process Asynchronous Relay Queue (only if radio is idle and not transmitting images)
+        if (!packetReceivedFlag && imageTxState == IMG_STATE_IDLE && relayQueueCount > 0) {
+            processRelayQueue();
+        }
+
+        // 3. Process SOS Retries (ARQ) for civilian nodes
+        if (!packetReceivedFlag && CURRENT_NODE_ROLE == ROLE_CIVILIAN && hasPendingSos && imageTxState == IMG_STATE_IDLE && relayQueueCount == 0) {
+            processSosRetries();
         }
 
         if (!packetReceivedFlag) return;
@@ -212,13 +266,26 @@ public:
     }
 
     /**
-     * Broadcasts a victim DistressPayload across the mesh network.
+     * Broadcasts a victim DistressPayload across the mesh network and registers it for ARQ.
      */
     bool broadcastDistressAlert(uint32_t msgId, const DistressPayload& payload) {
+        if (CURRENT_NODE_ROLE == ROLE_CIVILIAN) {
+            pendingSosMsgId = msgId;
+            pendingSosPayload = payload;
+            pendingSosRetries = 0;
+            lastSosTxTime = millis();
+            hasPendingSos = true;
+        }
+        return sendDistressAlertRaw(msgId, payload);
+    }
+
+    /**
+     * Sends raw Distress SOS frame over LoRa without modifying ARQ tracking.
+     */
+    bool sendDistressAlertRaw(uint32_t msgId, const DistressPayload& payload) {
         uint8_t buffer[sizeof(PacketHeader) + sizeof(DistressPayload)];
         size_t pktSize = buildDistressPacket(buffer, msgId, g_nodeId, &payload);
 
-        // Record message ID in deduplication cache so this node drops its own reflected echo
         markMsgAsSeen(msgId);
 
         Serial.printf("[LORA MESH] Broadcasting Distress SOS [MsgID: 0x%08X] over LoRa (TTL: %d)...\n",
@@ -286,7 +353,7 @@ public:
     }
 
     /**
-     * Queues an image in LittleFS to be chunked and transmitted sequentially over LoRa.
+     * Queues an image in LittleFS to be chunked and transmitted sequentially over LoRa with NACK support.
      */
     void queueImageTransmission(uint32_t msgId) {
         if (!storage || !storage->hasImage(msgId)) return;
@@ -299,9 +366,21 @@ public:
         currentImageTotalChunks = (size + MAX_IMAGE_CHUNK_DATA_LEN - 1) / MAX_IMAGE_CHUNK_DATA_LEN;
         currentImageNextChunk = 0;
         lastImageChunkTxTime = 0;
-        isTransmittingImage = true;
+        imageRetryRound = 0;
+        missingChunksCount = 0;
+        missingChunksIndex = 0;
+        imageTxState = IMG_STATE_SENDING_CHUNKS;
         
-        Serial.printf("[LORA TX QUEUE] Queued image 0x%08X (%u bytes, %u chunks)\n", msgId, size, currentImageTotalChunks);
+        Serial.printf("[LORA TX QUEUE] Queued image 0x%08X (%u bytes, %u chunks, paced interval: %ums)\n",
+                      msgId, size, currentImageTotalChunks, IMAGE_CHUNK_TX_INTERVAL_MS);
+    }
+
+    bool isNeighborInRange() const {
+        return (lastNeighborSeenTime > 0) && (millis() - lastNeighborSeenTime <= NODE_IN_RANGE_TIMEOUT_MS);
+    }
+
+    bool isTransmittingImage() const {
+        return imageTxState != IMG_STATE_IDLE;
     }
 
     float getLastRssi() const { return lastRssi; }
@@ -309,21 +388,91 @@ public:
 
 private:
     /**
-     * Reads the next image chunk from storage and transmits it.
+     * Checks if pending SOS alert should be retransmitted (up to 3 retries if neighbor in range).
      */
-    void processImageTxQueue() {
-        File f = storage->getFullImageFile(currentImageMsgId);
+    void processSosRetries() {
+        if (!hasPendingSos) return;
+
+        if (millis() - lastSosTxTime >= LORA_RETRY_DELAY_MS) {
+            if (isNeighborInRange() && pendingSosRetries < LORA_MAX_RETRIES) {
+                pendingSosRetries++;
+                lastSosTxTime = millis();
+                Serial.printf("[SOS ARQ] Retrying SOS 0x%08X (Attempt %u/%u, neighbor in range)...\n",
+                              pendingSosMsgId, pendingSosRetries, LORA_MAX_RETRIES);
+                sendDistressAlertRaw(pendingSosMsgId, pendingSosPayload);
+            } else {
+                if (!isNeighborInRange()) {
+                    Serial.printf("[SOS ARQ] No neighbor in range for SOS 0x%08X. Halting active retries (kept in flash).\n",
+                                  pendingSosMsgId);
+                } else {
+                    Serial.printf("[SOS ARQ] Exhausted %u retries for SOS 0x%08X. Halting active retries (kept in flash).\n",
+                                  LORA_MAX_RETRIES, pendingSosMsgId);
+                }
+                hasPendingSos = false;
+            }
+        }
+    }
+
+    /**
+     * Relays queued packets non-blockingly once their random jitter delay expires.
+     */
+    void processRelayQueue() {
+        if (relayQueueCount == 0) return;
+        RelayQueueItem& item = relayQueue[relayQueueHead];
+        if (millis() >= item.scheduledTxTime) {
+            PacketHeader* hdr = (PacketHeader*)item.buffer;
+            Serial.printf("[LORA MESH RELAY] Relaying queued PktID 0x%08X (Type: 0x%02X, TTL: %d)...\n",
+                          hdr->msgId, hdr->pktType, hdr->ttl);
+            sendRawPacket(item.buffer, item.len);
+            relayQueueHead = (relayQueueHead + 1) % RELAY_QUEUE_CAPACITY;
+            relayQueueCount--;
+        }
+    }
+
+    /**
+     * Enqueues a packet for asynchronous relay with random jitter (100-350ms).
+     */
+    void queueMeshRelay(const uint8_t* originalBuffer, size_t len) {
+        if (CURRENT_NODE_ROLE != ROLE_CIVILIAN) return;
+
+        if (relayQueueCount >= RELAY_QUEUE_CAPACITY) {
+            Serial.println("[LORA MESH RELAY] Queue full, dropping oldest relay frame.");
+            relayQueueHead = (relayQueueHead + 1) % RELAY_QUEUE_CAPACITY;
+            relayQueueCount--;
+        }
+
+        RelayQueueItem& item = relayQueue[relayQueueTail];
+        memcpy(item.buffer, originalBuffer, len);
+        item.len = len;
+
+        PacketHeader* hdr = (PacketHeader*)item.buffer;
+        hdr->ttl--; // Decrement hop counter
+
+        item.scheduledTxTime = millis() + random(100, 350);
+
+        relayQueueTail = (relayQueueTail + 1) % RELAY_QUEUE_CAPACITY;
+        relayQueueCount++;
+
+        Serial.printf("[LORA MESH RELAY] Enqueued PktID 0x%08X (Type: 0x%02X, New TTL: %d, Delay: %lums)\n",
+                      hdr->msgId, hdr->pktType, hdr->ttl, (unsigned long)(item.scheduledTxTime - millis()));
+    }
+
+    /**
+     * Reads a single chunk from flash and broadcasts it.
+     */
+    void sendSingleImageChunk(uint32_t msgId, uint16_t chunkIndex, uint16_t totalChunks) {
+        File f = storage->getFullImageFile(msgId);
         if (!f) {
-            Serial.println("[LORA TX IMAGE ERROR] Could not open image file. Aborting.");
-            isTransmittingImage = false;
+            Serial.println("[LORA TX IMAGE ERROR] Could not open image file.");
+            imageTxState = IMG_STATE_IDLE;
             return;
         }
 
-        f.seek(currentImageNextChunk * MAX_IMAGE_CHUNK_DATA_LEN);
+        f.seek(chunkIndex * MAX_IMAGE_CHUNK_DATA_LEN);
         ImageChunkPayload chunkPayload;
-        chunkPayload.imageMsgId = currentImageMsgId;
-        chunkPayload.chunkIndex = currentImageNextChunk;
-        chunkPayload.totalChunks = currentImageTotalChunks;
+        chunkPayload.imageMsgId = msgId;
+        chunkPayload.chunkIndex = chunkIndex;
+        chunkPayload.totalChunks = totalChunks;
         
         size_t bytesRead = f.read(chunkPayload.chunkData, MAX_IMAGE_CHUNK_DATA_LEN);
         chunkPayload.chunkDataLen = bytesRead;
@@ -335,17 +484,129 @@ private:
         
         markMsgAsSeen(chunkPktId);
         
-        Serial.printf("[LORA TX IMAGE] Sending chunk %u/%u for MsgID 0x%08X...\n", 
-                        currentImageNextChunk+1, currentImageTotalChunks, currentImageMsgId);
+        Serial.printf("[LORA TX IMAGE] Sending chunk %u/%u for MsgID 0x%08X (Len: %u)...\n", 
+                      chunkIndex + 1, totalChunks, msgId, (unsigned int)bytesRead);
                         
         sendRawPacket(txBuf, pktSize);
-        
-        lastImageChunkTxTime = millis();
-        currentImageNextChunk++;
-        
-        if (currentImageNextChunk >= currentImageTotalChunks) {
-            Serial.println("[LORA TX IMAGE] Finished transmitting all chunks.");
-            isTransmittingImage = false;
+    }
+
+    /**
+     * Broadcasts an image poll packet asking the receiver to ACK or NACK.
+     */
+    void sendImagePoll(uint32_t imageMsgId, uint16_t totalChunks) {
+        uint8_t txBuf[sizeof(PacketHeader) + sizeof(ImagePollPayload)];
+        uint32_t pollPktId = storage ? storage->getNextUniqueMsgId(g_nodeId) : micros();
+        size_t pktSize = buildImagePollPacket(txBuf, pollPktId, g_nodeId, imageMsgId, totalChunks);
+        markMsgAsSeen(pollPktId);
+
+        Serial.printf("[LORA TX IMAGE] Sending Image Poll for MsgID 0x%08X (Round %u/%u)...\n",
+                      imageMsgId, imageRetryRound + 1, IMAGE_MAX_RETRY_ROUNDS);
+        sendRawPacket(txBuf, pktSize);
+    }
+
+    /**
+     * State machine for chunk transmission, burst polling, and selective NACK retransmission.
+     */
+    void processImageTxQueue() {
+        if (imageTxState == IMG_STATE_SENDING_CHUNKS) {
+            if (millis() - lastImageChunkTxTime < IMAGE_CHUNK_TX_INTERVAL_MS) return;
+
+            if (currentImageNextChunk < currentImageTotalChunks) {
+                sendSingleImageChunk(currentImageMsgId, currentImageNextChunk, currentImageTotalChunks);
+                lastImageChunkTxTime = millis();
+                currentImageNextChunk++;
+            } else {
+                // Sent all chunks! Poll rescuer for ACK or NACK
+                sendImagePoll(currentImageMsgId, currentImageTotalChunks);
+                imageTxState = IMG_STATE_WAIT_ACK_NACK;
+                lastImageChunkTxTime = millis();
+            }
+        } else if (imageTxState == IMG_STATE_RETRYING_MISSING) {
+            if (millis() - lastImageChunkTxTime < IMAGE_CHUNK_TX_INTERVAL_MS) return;
+
+            if (missingChunksIndex < missingChunksCount) {
+                uint16_t chunkIdx = missingChunksToRetransmit[missingChunksIndex];
+                Serial.printf("[LORA TX IMAGE RETRY] Retransmitting missing chunk %u (%u/%u)...\n",
+                              chunkIdx + 1, missingChunksIndex + 1, missingChunksCount);
+                sendSingleImageChunk(currentImageMsgId, chunkIdx, currentImageTotalChunks);
+                lastImageChunkTxTime = millis();
+                missingChunksIndex++;
+            } else {
+                // Sent all missing chunks! Re-poll
+                sendImagePoll(currentImageMsgId, currentImageTotalChunks);
+                imageTxState = IMG_STATE_WAIT_ACK_NACK;
+                lastImageChunkTxTime = millis();
+            }
+        } else if (imageTxState == IMG_STATE_WAIT_ACK_NACK) {
+            if (millis() - lastImageChunkTxTime >= IMAGE_ACK_WAIT_TIMEOUT_MS) {
+                if (isNeighborInRange() && imageRetryRound < IMAGE_MAX_RETRY_ROUNDS) {
+                    imageRetryRound++;
+                    lastImageChunkTxTime = millis();
+                    Serial.printf("[LORA TX IMAGE] Timeout waiting for ACK/NACK. Re-polling (Attempt %u/%u)...\n",
+                                  imageRetryRound + 1, IMAGE_MAX_RETRY_ROUNDS);
+                    sendImagePoll(currentImageMsgId, currentImageTotalChunks);
+                } else {
+                    if (!isNeighborInRange()) {
+                        Serial.println("[LORA TX IMAGE] No neighbor in range. Aborting image transfer.");
+                    } else {
+                        Serial.println("[LORA TX IMAGE] Max retry rounds reached without ACK. Aborting.");
+                    }
+                    imageTxState = IMG_STATE_IDLE;
+                }
+            }
+        }
+    }
+
+    /**
+     * Rescuer sends point-to-point ACK for SOS alert.
+     */
+    void sendDistressAck(uint32_t targetMsgId, uint16_t targetNodeId) {
+        uint8_t ackBuf[sizeof(PacketHeader) + sizeof(AckPayload)];
+        size_t ackSize = buildAckPacket(ackBuf, targetMsgId, g_nodeId, targetNodeId);
+        markMsgAsSeen(micros());
+        Serial.printf("[LORA RESCUER] Sending ACK for MsgID 0x%08X to Node 0x%04X\n", targetMsgId, targetNodeId);
+        sendRawPacket(ackBuf, ackSize);
+    }
+
+    /**
+     * Rescuer handles incoming Image Poll by returning either IMAGE_ACK or IMAGE_NACK.
+     */
+    void handleImagePoll(uint32_t imageMsgId, uint16_t totalChunks, uint16_t senderNodeId) {
+        uint16_t missing[MAX_NACK_CHUNKS_PER_PKT];
+        uint8_t missingCount = 0;
+
+        if (rxImageMsgId == imageMsgId) {
+            uint16_t checkLimit = totalChunks < 64 ? totalChunks : 64;
+            for (uint16_t i = 0; i < checkLimit; i++) {
+                if (!rxChunkMap[i]) {
+                    if (missingCount < MAX_NACK_CHUNKS_PER_PKT) {
+                        missing[missingCount++] = i;
+                    }
+                }
+            }
+        } else {
+            uint16_t checkLimit = totalChunks < MAX_NACK_CHUNKS_PER_PKT ? totalChunks : MAX_NACK_CHUNKS_PER_PKT;
+            for (uint16_t i = 0; i < checkLimit; i++) {
+                missing[missingCount++] = i;
+            }
+        }
+
+        if (missingCount == 0 && rxImageMsgId == imageMsgId) {
+            Serial.printf("[LORA RESCUER] Full image 0x%08X verified! Sending IMAGE_ACK to Node 0x%04X\n",
+                          imageMsgId, senderNodeId);
+            uint8_t txBuf[sizeof(PacketHeader) + sizeof(ImageAckPayload)];
+            uint32_t ackPktId = storage ? storage->getNextUniqueMsgId(g_nodeId) : micros();
+            size_t pktSize = buildImageAckPacket(txBuf, ackPktId, g_nodeId, imageMsgId, senderNodeId);
+            markMsgAsSeen(ackPktId);
+            sendRawPacket(txBuf, pktSize);
+        } else {
+            Serial.printf("[LORA RESCUER] Image 0x%08X missing %u chunks. Sending IMAGE_NACK to Node 0x%04X\n",
+                          imageMsgId, missingCount, senderNodeId);
+            uint8_t txBuf[sizeof(PacketHeader) + sizeof(ImageNackPayload)];
+            uint32_t nackPktId = storage ? storage->getNextUniqueMsgId(g_nodeId) : micros();
+            size_t pktSize = buildImageNackPacket(txBuf, nackPktId, g_nodeId, imageMsgId, senderNodeId, missing, missingCount);
+            markMsgAsSeen(nackPktId);
+            sendRawPacket(txBuf, pktSize);
         }
     }
 
@@ -382,10 +643,10 @@ private:
                     storage->saveUnackedMessage(header.msgId, *payload);
                 }
 
-                // Controlled Flooding Relay: Re-transmit across mesh if hops remain
-                // if (header.ttl > 1) {
-                //     relayMeshPacket(buffer, len);
-                // }
+                // If Rescuer: send point-to-point ACK back to the reporting victim node
+                if (CURRENT_NODE_ROLE == ROLE_RESCUER) {
+                    sendDistressAck(header.msgId, header.senderNodeId);
+                }
                 break;
             }
 
@@ -401,11 +662,6 @@ private:
                     storage->batchMarkMessagesResolved(clearPkt->clearedMsgIds, clearPkt->count,
                                                        clearPkt->rescuerNodeId, clearPkt->clearTimestamp);
                 }
-
-                // Relay Anti-Packet across mesh so deeper nodes also clear their backlogs
-                // if (header.ttl > 1) {
-                //     relayMeshPacket(buffer, len);
-                // }
                 break;
             }
 
@@ -416,14 +672,15 @@ private:
                 Serial.printf("[LORA ACK RX] MsgID 0x%08X acknowledged by Rescuer 0x%04X!\n",
                               ack->ackedMsgId, ack->rescuerNodeId);
 
+                // Check if this matches our active pending SOS
+                if (hasPendingSos && ack->ackedMsgId == pendingSosMsgId) {
+                    Serial.printf("[SOS ARQ] Confirmed receipt of SOS 0x%08X! Stopping retries.\n", pendingSosMsgId);
+                    hasPendingSos = false;
+                }
+
                 // Remove from local offline pending queue
                 if (storage) {
                     storage->markMessageAcknowledged(ack->ackedMsgId);
-                }
-
-                // If ACK target is another node deeper in the building, relay it forward
-                if (header.targetNodeId != g_nodeId && header.targetNodeId != LORA_BROADCAST_ADDR && header.ttl > 1) {
-                    relayMeshPacket(buffer, len);
                 }
                 break;
             }
@@ -443,75 +700,92 @@ private:
                 Serial.printf("[LORA IMAGE RX] Rcvd Chunk %u/%u for MsgID 0x%08X (Len: %u)\n",
                               chunk->chunkIndex + 1, chunk->totalChunks, chunk->imageMsgId, chunk->chunkDataLen);
 
-                
-                // --- DEBUG START ---
-                if (chunk->chunkData && chunk->chunkDataLen >= 4) {
-                    Serial.printf(
-                        "[LORA IMAGE RX DEBUG] Chunk %u First 4 bytes: %02X %02X %02X %02X\n",
-                        chunk->chunkIndex + 1,
-                        chunk->chunkData[0],
-                        chunk->chunkData[1],
-                        chunk->chunkData[2],
-                        chunk->chunkData[3]
-                    );
-                } else {
-                    Serial.printf(
-                        "[LORA IMAGE RX DEBUG] Chunk %u has less than 4 bytes\n",
-                        chunk->chunkIndex + 1
-                    );
+                // If Rescuer: track received chunk in bitmask
+                if (CURRENT_NODE_ROLE == ROLE_RESCUER) {
+                    if (rxImageMsgId != chunk->imageMsgId) {
+                        rxImageMsgId = chunk->imageMsgId;
+                        rxImageTotalChunks = chunk->totalChunks;
+                        memset(rxChunkMap, 0, sizeof(rxChunkMap));
+                    }
+                    if (chunk->chunkIndex < 64) {
+                        rxChunkMap[chunk->chunkIndex] = true;
+                    }
                 }
-                // --- DEBUG END ---
 
                 if (storage) {
                     storage->saveImageChunk(chunk->imageMsgId, chunk->chunkIndex, chunk->chunkData, chunk->chunkDataLen);
                 }
+                break;
+            }
 
-                // Relay chunk across mesh ONLY from intermediate (civilian) nodes.
-                // The rescuer node MUST NOT relay image chunks: the blocking relay TX
-                // (random jitter delay + CAD + transmit) takes 300–800ms, which is longer
-                // than the civilian's IMAGE_CHUNK_TX_INTERVAL_MS (250ms). This causes the
-                // next chunk to arrive while the radio is still transmitting, dropping it
-                // silently at the hardware layer — resulting in only even-indexed chunks
-                // being received on the rescuer.
-                // if (CURRENT_NODE_ROLE == ROLE_CIVILIAN) {
-                //     if (header.ttl > 1) {
-                //         relayMeshPacket(buffer, len);
-                //     }
-                // }
+            case PKT_IMAGE_POLL: {
+                if (len < sizeof(PacketHeader) + sizeof(ImagePollPayload)) break;
+                const ImagePollPayload* poll = (const ImagePollPayload*)(buffer + sizeof(PacketHeader));
+                Serial.printf("[LORA IMAGE POLL RX] Poll for MsgID 0x%08X from Node 0x%04X (Total: %u chunks)\n",
+                              poll->imageMsgId, poll->senderNodeId, poll->totalChunks);
 
+                if (CURRENT_NODE_ROLE == ROLE_RESCUER) {
+                    handleImagePoll(poll->imageMsgId, poll->totalChunks, poll->senderNodeId);
+                }
+                break;
+            }
+
+            case PKT_IMAGE_ACK: {
+                if (len < sizeof(PacketHeader) + sizeof(ImageAckPayload)) break;
+                const ImageAckPayload* ack = (const ImageAckPayload*)(buffer + sizeof(PacketHeader));
+                Serial.printf("[LORA IMAGE ACK RX] Received Image ACK for MsgID 0x%08X from Rescuer 0x%04X!\n",
+                              ack->imageMsgId, ack->rescuerNodeId);
+
+                if (imageTxState == IMG_STATE_WAIT_ACK_NACK && ack->imageMsgId == currentImageMsgId) {
+                    Serial.println("[LORA TX IMAGE SUCCESS] Image transfer fully confirmed by Rescuer!");
+                    imageTxState = IMG_STATE_IDLE;
+                }
+                break;
+            }
+
+            case PKT_IMAGE_NACK: {
+                if (len < sizeof(PacketHeader) + sizeof(ImageNackPayload)) break;
+                const ImageNackPayload* nack = (const ImageNackPayload*)(buffer + sizeof(PacketHeader));
+                Serial.printf("[LORA IMAGE NACK RX] Received Image NACK for MsgID 0x%08X (%u chunks missing)\n",
+                              nack->imageMsgId, nack->missingCount);
+
+                if (imageTxState == IMG_STATE_WAIT_ACK_NACK && nack->imageMsgId == currentImageMsgId) {
+                    if (imageRetryRound < IMAGE_MAX_RETRY_ROUNDS && nack->missingCount > 0) {
+                        imageRetryRound++;
+                        missingChunksCount = nack->missingCount;
+                        missingChunksIndex = 0;
+                        for (uint8_t i = 0; i < missingChunksCount; i++) {
+                            missingChunksToRetransmit[i] = nack->missingChunks[i];
+                        }
+                        imageTxState = IMG_STATE_RETRYING_MISSING;
+                        lastImageChunkTxTime = millis();
+                        Serial.printf("[LORA TX IMAGE] Entering retry round %u/%u to retransmit %u missing chunks.\n",
+                                      imageRetryRound, IMAGE_MAX_RETRY_ROUNDS, missingChunksCount);
+                    } else {
+                        Serial.println("[LORA TX IMAGE] Exhausted max retry rounds or invalid NACK. Aborting image transfer.");
+                        imageTxState = IMG_STATE_IDLE;
+                    }
+                }
                 break;
             }
 
             default:
                 Serial.printf("[LORA PROTOCOL] Unknown packet type: 0x%02X\n", header.pktType);
+                knownPacket = false;
                 break;
         }
 
-        // Runs for every recognized packet type,
-        // but NOT for unknown packet types
+        // Passive Link Monitoring: Any valid frame marks a neighbor in range
+        lastNeighborSeenTime = millis();
+
+        // Mesh Relaying for civilian nodes:
+        // Relays recognized packets across the mesh if hops remain, unless addressed specifically to this node
         if (knownPacket && CURRENT_NODE_ROLE == ROLE_CIVILIAN) {
-            if (header.ttl > 1) {
-                relayMeshPacket(buffer, len);
+            bool addressedToSelf = (header.targetNodeId != LORA_BROADCAST_ADDR && header.targetNodeId == g_nodeId);
+            if (!addressedToSelf && header.ttl > 1) {
+                queueMeshRelay(buffer, len);
             }
         }
-    }
-
-    /**
-     * Decrements packet TTL and relays the frame across the mesh network with random jitter.
-     */
-    void relayMeshPacket(const uint8_t* originalBuffer, size_t len) {
-        uint8_t relayBuf[256];
-        memcpy(relayBuf, originalBuffer, len);
-
-        PacketHeader* hdr = (PacketHeader*)relayBuf;
-        hdr->ttl--; // Decrement hop counter
-
-        Serial.printf("[LORA MESH RELAY] Relaying PktID 0x%08X (Type: 0x%02X, New TTL: %d)...\n",
-                      hdr->msgId, hdr->pktType, hdr->ttl);
-
-        // Random jitter delay (100-450ms) prevents all neighbor nodes from broadcasting at the exact same millisecond
-        delay(random(100, 450));
-        sendRawPacket(relayBuf, len);
     }
 
     /**
@@ -526,7 +800,7 @@ private:
         for (size_t i = 0; i < count; i++) {
             StoredMessage rec;
             if (storage->getStoredMessageByIndex(i, rec)) {
-                broadcastDistressAlert(rec.msgId, rec.payload);
+                sendDistressAlertRaw(rec.msgId, rec.payload);
                 delay(1200); // 1.2-second pause between frames to prevent channel congestion
             }
         }
