@@ -1,0 +1,746 @@
+                                                                                    
+                                                                                    
+      2026S1-3636                                                                   
+                                                                                    
+         Asynchronous        Data   Gateway      for  LoRa-to-Mobile                
+                                                                                    
+            Integration    in Disaster    Mesh    Networks      (2026)              
+                                                                                    
+                                                                                    
+                                                                                    
+                           Supervisors: Dr. Lillian Wang and Dr. Wai Peng, Wong     
+                                Ming Dong, Teh and Jing Hong, Hiew                  
+                                                                                    
+        Abstract: Communication disruption during disasters motivates distinguish a report saved locally from one stored by the
+      systems that exchange essential information without cellular destination.     
+      service or Internet backhaul. This paper presents a browser- Our implementation uses an HTTPS page served by each
+      accessible gateway that integrates smartphone location, SOS                   
+                                           LoRa node. The phone performs image preparation and
+      reports, photographs and two-way text messaging with persistent               
+                                           requests a location estimate through the browser. The
+      LoRa delivery. Two Heltec WiFi LoRa 32 V3 nodes provide local                 
+      HTTPS interfaces and exchange data through their SX1262 radios. embedded node stores reports and schedules subsequent
+      The phone browser converts photographs into bounded grayscale transmissions. This allocation allows accepted transfers to
+      JPEGs, while the nodes retain transfer state and acknowledge continue while the interface awaits progress, although the
+      stored data. We compare baseline stop-and-wait, tuned stop-and- firmware still uses cooperative servicing and can experience
+      wait, fixed groups with bitmap acknowledgements, and adaptive                 
+                                           blocking web operations. The term asynchronous describes
+      grouping with acknowledgement recovery. Using the same 2284-                  
+                                           this separation of submission, transmission and
+      byte image, five close-placement trials per mode produced mean                
+      receiver-observed completion times of 98.0, 85.8, 77.4 and 65.6 s, acknowledgement; it does not imply that every operation is
+      respectively. Across one brick wall at approximately 1–2 m, four nonblocking. 
+      trials each produced means of 105.25 s for fixed grouping and                 
+                                           B. Existing Architectures and Positioning Approaches
+      88.00 s for adaptive grouping; all eight transfers completed.                 
+      Adaptive grouping reduced mean time by 15.2% and 16.4% relative The IEEE Wireless Resilience study integrates a LoRa
+      to fixed grouping in the two placements, although its timing sensor network, GPS-capable emergency hardware and a
+      variability was greater. These descriptive results support further            
+                                           mobile rescue application [3]. LoRaAid instead investigates
+      investigation of the integrated policy, while limited sample sizes,           
+                                           joint communication and localisation using LoRa
+      manual timing and the absence of packet traces constrain causal               
+      and reliability claims. Browser compatibility and certificate measurements [4]. These architectures address different
+      handling remain deployment considerations. positioning requirements. A receiver attached to a node can
+        Index Terms: Adaptive transmission, disaster communication, locate that node independently of a phone, whereas a browser
+      image compression, LoRa, mobile gateway, selective can request the position of the person using the phone. Neither
+      retransmission.                                                               
+                                           approach establishes the accuracy or availability of the other.
+                                             Chan Xin Yen et al. proposed phone-derived location and a
+            I. INTRODUCTION AND LITERATURE REVIEW                                   
+                                           LoRa-connected web form, but documented difficulties
+      A. Background and Problem Definition obtaining browser location because of HTTPS and certificate
+        Emergency communication must accommodate users who restrictions [5]. This directly related non-IEEE study is
+      cannot depend on cellular coverage, Internet backhaul or a retained because it identifies a deployment issue encountered
+      previously installed specialist application. Smartphone by the present design. Our successful local HTTPS interaction
+      networking for disaster recovery has been investigated in addresses that implementation question in the tested
+      TeamPhone [1], while LOCATE combines mobile interaction environment; it does not establish that phone location over
+      with LoRa communication for emergency management [2]. LoRa is a new concept.  
+      These studies establish the relevance of mobile access and Existing platforms also constrain claims about access and
+      infrastructure-independent communication. They also show forwarding. Meshtastic is an open-source system with browser
+      that disaster messaging and multihop forwarding are access through HTTP, Bluetooth or serial connections [6]. Its
+      established research topics rather than sufficient novelty ordinary CLIENT role can rebroadcast packets, enabling
+      claims for a new prototype.          forwarding through participating users' nodes [7]. LoRaWAN
+        The engineering problem addressed here is the integration uses gateways and network-server functions, and supports
+      of accessible phone interaction with reliable transfer of small, private deployment models [8]. Consequently, neither civilian
+      useful records over a constrained radio link. A short SOS can relaying nor browser access alone differentiates our work. The
+      describe an emergency and its location, while a photograph present study examines a particular SOS workflow and a
+      may provide additional context. Image delivery, however, reproducible comparison of transfer configurations on the
+      requires fragmentation and repeated feedback exchanges. same hardware.        
+      Reducing the transmitted image size and reducing                              
+      acknowledgement overhead are distinct interventions; their                    
+      effects must be evaluated separately. The system must also                    
+
+                                                                                    
+                                                                                    
+      2026S1-3636                                                                   
+                                                                                    
+      C. Image Transmission and the Research Gap interface. Each radio used one antenna for alternating
+        Chen et al. investigated batching, bit-vector transmission and reception. Phones joined an open local Wi-Fi
+      acknowledgements and selective retransmission for LoRa access point, and the node supplied the web interface and
+      image transfer [9]. Torres et al. also examined a multi-packet application endpoints over HTTPS. Figure 1 identifies the two
+      LoRa image protocol [10]. These studies motivate fixed communication links and the persistent source and destination
+      grouping as the principal transport baseline: comparing an copies.            
+      adaptive method only against stop-and-wait would conflate the                 
+      benefit of grouping with the benefit of adaptation. Dede et al.               
+      studied JPEG-based image transmission and reconstruction                      
+      over LoRa [11], reinforcing the need to keep compressed                       
+      payloads constant during a protocol comparison.                               
+        More recent IEEE work explores different interventions.                     
+      Onykiienko et al. combine Haar-wavelet preprocessing with                     
+      JPEG on ESP32-CAM hardware [12], while De et al.                              
+      investigate interleaved reception using two frequencies and                   
+      receivers [13]. These approaches motivate alternative ways to                 
+      reduce delay, but their hardware and preprocessing differ from                
+      our single-transceiver, phone-assisted architecture. Their                    
+      published performance is therefore not a matched benchmark                    
+      for our measurements. Table I summarises the relevant                         
+      distinctions.                                                                 
+                      TABLE I                                                       
+               RELATED WORK AND ITS RELEVANCE                                       
+                 Established                                                        
+       Approach            Implication for this study                               
+                 capability                                                         
+       LOCATE and                                                                   
+                 Mobile disaster Mobile access and relaying                         
+       TeamPhone [1],                                                               
+                 communication have precedent.                                      
+       [2]                                                                          
+                                           Fig. 1. System architecture. Phones access their respective nodes locally; the
+       Chen and Torres Multi-packet image Compare adaptation against nodes exchange reports, image fragments and acknowledgements over LoRa.
+       [9], [10] transfer  fixed grouping.                                          
+                                           The measured path contains two nodes and no intermediate relay.
+                                             The implementation includes forwarding through civilian
+                 Wavelet and JPEG Separate compression gains                        
+       Onykiienko [12] processing from transport gains. nodes, bounded hop counts and duplicate suppression.
+                                           However, the quantitative experiments used a direct two-node
+                 Interleaved Additional receivers change                            
+       De [13]                                                                      
+                 reception the hardware comparison.                                 
+                                           path. Mesh capability in the software is therefore distinguished
+                                           from experimentally demonstrated multihop performance. All
+                 Phone location and Evaluate HTTPS access and                       
+       Chan et al. [5]                     participating nodes require compatible protocol, radio and
+                 web access certificate handling.                                   
+                                           authentication settings. Table II records the inspected source
+        The research question is whether an integrated browser configuration; per-run firmware logs were not retained to
+      gateway with adaptive group selection and acknowledgement independently verify the exact flashed state.
+      recovery reduces receiver-observed image-reception time                       
+                                                          TABLE II                  
+      relative to fixed grouping, while preserving stored and verified              
+                                                   HARDWARE AND SOURCE CONFIGURATION
+      delivery. We hypothesise a lower mean duration under the                      
+                                                                 Reason for documenting
+      evaluated conditions, without assuming that adaptation always Parameter Value 
+                                                                 it                 
+      outperforms a suitable fixed group. The objectives are to                     
+      implement the complete SOS workflow, document its Controller and ESP32-S3; SX1262 Defines memory and radio
+                                            radio                resources.         
+      processing and delivery semantics, compare four                               
+      configurations with identical compressed bytes, and assess the Radio 915 MHz; 125 kHz; Determines nominal frame
+                                            configuration SF9; coding rate 4/7 duration.
+      scope of the resulting evidence. The candidate contribution is                
+      this integration and its measured behaviour, rather than a new Output and Affects link budget and
+                                                     22 dBm; 8 symbols              
+      image codec or the invention of bitmap acknowledgements. preamble airtime.    
+                                                     180 bytes per full Held constant across
+                                            Image payload                           
+                   II. METHODOLOGY                   chunk       modes.             
+      A. Prototype and System Architecture  Accepted JPEG At most 8192 bytes Bounds radio and storage
+                                                                 workload.          
+        We used two Heltec WiFi LoRa 32 V3 boards, each                             
+                                            Adaptive airtime     Limits time before group
+      containing an ESP32-S3 and an SX1262 transceiver. One 8000 ms per data group  
+                                            budget               feedback.          
+      board served the civilian interface and the other the rescuer                 
+
+                                                                                    
+                                                                                    
+      2026S1-3636                                                                   
+                                                                                    
+                            Reason for documenting consistency of the selected JPEG bytes, rather than the
+       Parameter Value                                                              
+                            it             usefulness of the photographed scene.    
+                                             Persistent progress supports retry after interrupted
+       Application-task     Accommodates combined                                   
+       stack    16 KiB      service paths. exchanges. Duplicate logical messages are recognised rather
+                                           than displayed repeatedly. An acknowledgement confirms
+        These are prototype settings, not evidence of regulatory                    
+                                           stored progress or destination completion; it does not confirm
+      certification or region-wide operating permission. We do not                  
+                                           that a rescuer has read the report or performed a rescue. SOS
+      carry forward the earlier proposal's AS923 duty-cycle-                        
+                                           and chat retain scheduling priority over images. This is an
+      compliance claim because the measured study did not validate                  
+                                           implemented scheduling rule, whose latency under concurrent
+      such a scheduler.                                                             
+                                           traffic has not yet been measured.       
+      B. Software Responsibilities and Delivery Semantics                           
+                                           C. Browser Image Compression             
+        Figure 2 shows the implemented software responsibilities.                   
+                                             Image processing runs in the browser using the phone's
+      Browser JavaScript manages form input, image preparation,                     
+                                           processor and memory. Figure 3 separates the application-
+      location requests and interface polling. WebServerManager                     
+                                           controlled search from the JPEG encoder supplied by the
+      validates requests and invokes StorageManager and                             
+                                           browser. The input is selected from a camera or existing file.
+      LoRaMeshManager. StorageManager maintains records,                            
+                                           Encoded files exceeding 15 MiB are rejected before image
+      images and progress in LittleFS. LoRaMeshManager manages                      
+                                           decoding. A decoded photograph can occupy substantially
+      queues and acknowledgements, TransferPolicy selects                           
+                                           more memory than its compressed file, so this input limit does
+      grouped-transfer behaviour, and RadioLib controls the                         
+                                           not establish a peak-memory bound.       
+      transceiver. DNS and HTTP redirection support portal                          
+      discovery; captive-portal behaviour remains dependent on the                  
+      phone.                                                                        
+                                                                                    
+                                                                                    
+      Fig. 2. Software architecture. The browser executes on the phone; web         
+      handling, persistent storage and radio scheduling execute on the node. Radio  
+      events are processed through the shared application loop.                     
+        An SOS is saved before its optional photo is uploaded. This                 
+      ordering prevents image preparation from delaying local Fig. 3. Image-compression architecture. The application tries size and quality
+      acceptance of the shorter emergency report. Photo candidates in order and accepts the first JPEG of at most 8192 bytes. The
+                                           lower path shows the conceptual JPEG stages; codec internals are selected by
+      transmission begins after the associated SOS has an                           
+                                           the browser.                             
+      acknowledged rescuer destination. A receiver writes and reads                 
+                                             For each bounding rectangle, the scale is
+      back each chunk before saving its reception bit. Final                        
+      completion requires the expected byte count, JPEG boundary- s = min( Wb, Hb,1) (1)
+                                                           W H                      
+      marker checks, CRC32 verification and persisted completion                    
+                                             where W and H are the original dimensions and W_b and
+      state. The sender marks destination delivery after the                        
+                                           H_b are the current bounds. The minimum preserves aspect
+      corresponding acknowledgement. These checks establish                         
+                                           ratio and prevents enlargement. The application tries 160 ×
+                                           120, 120 × 90 and 80 × 60 pixel bounds in that order,
+
+                                                                                    
+                                                                                    
+      2026S1-3636                                                                   
+                                                                                    
+      rounding output dimensions and retaining at least one pixel on implementation [18], [19]. High accuracy is a request to the
+      each axis. These choices prioritise a compact preview and provider, not proof of a fresh satellite fix. Allowing a recent
+      bound the candidate search; they are design parameters rather cached estimate reduces repeated acquisition demand, but
+      than experimentally optimised values. limits claims about freshness.          
+        The resized image is drawn onto a white canvas and Latitude and longitude are validated as a pair within
+      converted using                      geographic ranges and included in the SOS. Manual
+                                           coordinates and written location remain available when
+           Y = round(0.299R + 0.587G + 0.114B) (2)                                  
+                                           automatic acquisition fails. We observed automatic coordinate
+        The coefficients follow a conventional brightness-weighted                  
+                                           population with mobile data disabled after continuing past the
+      conversion discussed in recent IEEE/CVF work [14]. The                        
+                                           node's certificate warning; no certificate or dedicated
+      same Y value is written into all three colour channels. This                  
+                                           application was installed. Chrome was used on Xiaomi 12T
+      removes colour variation before encoding, but does not                        
+                                           and Xiaomi 17T phones during the project. Browser and
+      guarantee that the browser produces a single-component                        
+                                           operating-system versions were not recorded, and the offline-
+      JPEG. It also removes potentially useful colour cues, which is                
+                                           location observation was not separately logged for each
+      a substantive application trade-off.                                          
+                                           device.                                  
+        At each size, canvas.toBlob requests JPEG quality settings                  
+                                             HTTPS supplies the local transport and secure-context
+      0.60, 0.45, 0.30 and 0.20, accepting the first output no larger               
+                                           prerequisite; the phone's location provider supplies the
+      than 8192 bytes. If all four fail, the next smaller rectangle is              
+                                           estimate. We did not retain its provider, accuracy radius or
+      tried; failure of all twelve candidates rejects the photo. The                
+                                           acquisition timestamp. Thus, this observation establishes
+      quality argument influences the browser encoder but is neither                
+                                           successful browser interaction under the tested conditions,
+      a compression ratio nor a portable measure of visual quality                  
+                                           without establishing positioning accuracy, GPS-only operation
+      [15]. The search retains the first acceptable candidate rather                
+                                           or universal acceptance of self-signed certificates. It does not
+      than proving a globally optimal image. The 8192-byte bound                    
+                                           imply that HTTPS requires Internet access.
+      limits transmission and storage demand across the four modes.                 
+        The standard baseline JPEG model explains why this E. Four Transfer Configurations
+      process reduces bytes. Samples are organised into 8 × 8 blocks All modes retain the same image bytes, fragmentation,
+      and transformed into spatial-frequency coefficients using the stored-progress requirements and completion verification. A
+      discrete cosine transform [16], [17]. The transform 2284-byte image requires ceiling(2284/180) = 13 data chunks:
+      concentrates common smooth-image structure into relatively twelve full chunks and one carrying 124 bytes. The ceiling is
+      few coefficients. Quantisation then applies necessary because a nonempty remainder requires another
+                         F(u,v)            chunk. This count excludes acknowledgements, manifests and
+                Q(u,v) = round( )      (3)                                          
+                         S(u,v)            retransmissions. Table III and Fig. 4 distinguish the four
+        where F is a transform coefficient and S its quantisation scheduling policies.
+      step. Larger steps discard more coefficient precision and often               
+                                                          TABLE III                 
+      create more zeros; this is a principal source of irreversible TRANSFER CONFIGURATIONS
+      JPEG loss. Zigzag ordering groups low- and high-frequency                     
+                                            Mode Feedback and group rule Principal difference
+      coefficients for subsequent representation, while differential                
+      DC coding, zero-run representation and Huffman coding 1 One chunk, then Baseline scheduling and retry
+                                               acknowledgement timing.              
+      reduce coding redundancy in the baseline model [17]. Entropy                  
+      coding preserves the already quantised values; it does not                    
+                                             2                                      
+                                               One chunk, then Shorter delays and image timer
+                                               acknowledgement after transmission.  
+      restore detail removed by resizing or quantisation.                           
+        Our application delegates those codec stages to the browser Up to four chunks, then Fixed grouping and selective
+                                             3                                      
+      and does not select its exact tables, sampling factors or bitmap retry.       
+      entropy-coding configuration. Consequently, equal source Rate-based selection and
+                                             4 Adaptive group, then bitmap          
+      photographs or quality settings need not produce identical acknowledgement recovery.
+      bytes across browsers. Transport experiments must reuse the                   
+      same prepared JPEG. We did not measure PSNR, structural                       
+      similarity or rescue-task recognition accuracy; image fidelity                
+      remains distinct from CRC-verified transfer integrity.                        
+      D. Phone-Derived Location and HTTPS                                           
+        The page checks whether the browser recognises a secure                     
+      context and exposes navigator.geolocation before requesting                   
+      coordinates. It calls getCurrentPosition with high accuracy                   
+      requested, a 12 s timeout and a maximum cached-position age                   
+      of 30 s. W3C specifies permission and secure-context                          
+      requirements, while leaving the positioning provider to the                   
+
+                                                                                    
+                                                                                    
+      2026S1-3636                                                                   
+                                                                                    
+                                                               8000                 
+                                                  w   = min(8,max(1,⌊ ⌋))   (5)     
+                                                   max          τc                  
+                                             where tau_c is the calculated duration of a full chunk frame
+                                           in milliseconds. The floor selects a whole number of frames
+                                           within the data-airtime budget, and the lower bound permits at
+                                           least one frame. With the inspected configuration, the
+                                           estimated 1574 ms frame duration gives a cap of five chunks.
+                                           Listening intervals and control frames add elapsed time, and a
+                                           frame longer than the budget would itself exceed it. The
+                                           budget is therefore a scheduling bound rather than a regulatory
+                                           duty-cycle guarantee.                    
+                                             Figure 5 summarises recovery and adaptation. One
+                                           unanswered bitmap query is repeated before the preferred
+                                           group is reduced. Two consecutive unanswered queries allow
+                                           a smaller preference for subsequent groups. Further silence
+                                           invokes the existing retry pause and manifest recovery. The
+                                           acknowledgement timer uses smoothed reply delay and
+                                           variation, a path-dependent floor and a 60 s ceiling. Missing
+                                           feedback does not reveal whether data or the reply was lost;
+                                           retrying the query can recover the destination's saved bitmap
+                                           without immediately repeating all data.  
+      Fig. 4. Logical transfer paths for the four modes. All paths share manifest   
+      exchange, persistent reception and final integrity verification. Retry arrows 
+      are abbreviated.                                                              
+        Mode 1 retains a 200 ms planning interval and 300 ms post-                  
+      image-acknowledgement delay. Mode 2 reduces these to 20                       
+      ms and 30 ms and starts its image acknowledgement timer                       
+      after local transmission. This comparison tests scheduling                    
+      overhead without changing the chunk size. Mode 3 sends                        
+      groups of at most four missing chunks and requests a bitmap                   
+      that identifies stored fragments. Missing fragments can then be               
+      selectively retransmitted rather than repeating the complete                  
+      image. A final group may contain fewer than four chunks.                      
+      F. Adaptive Group Selection and Recovery                                      
+        Mode 4 begins each image with a preferred group of two                      
+      chunks. Its measured rate is                                                  
+                  r =                                                               
+                     1000Bnew                                                       
+                                       (4)                                          
+                   g   Δtg                                                          
+        where B_new is newly confirmed image data in bytes and                      
+      delta_t_g is the elapsed group interval in milliseconds,                      
+      including waits and retries. Counting only new bytes prevents                 
+      retransmissions from inflating the useful-delivery estimate;                  
+      multiplying by 1000 gives bytes per second. This internal Fig. 5. Adaptive policy. The sender measures newly confirmed bytes, probes
+                                           bounded group sizes and recovers missing bitmap replies. Short final groups
+      feedback quantity is separate from the manually measured                      
+                                           and groups interrupted by urgent traffic do not train the rate estimate.
+      interface duration.                                                           
+                                             The policy resets per image. Short final groups, manifest
+        After its first eligible observation, the policy probes another             
+                                           responses and groups interrupted by urgent traffic are
+      group size. Later probes normally occur after three measured                  
+                                           excluded from training because their size or duration is
+      groups at the preferred size. Candidate sizes are obtained by                 
+                                           constrained by factors other than the candidate group size. A
+      doubling or halving the preference, within the permitted                      
+                                           path-state change or receiver rollback resets the estimate. The
+      bounds. A candidate is retained only if its measured rate                     
+                                           path estimate uses acknowledgement hop information for
+      improves by more than 5%. Preferred-rate smoothing assigns                    
+                                           timing; it is not an additional route-selection algorithm. On the
+      weights of 0.75 to the previous estimate and 0.25 to the new                  
+                                           direct experimental link, all modes used the same two
+      measurement. The threshold reduces switching on small                         
+                                           endpoints.                               
+      observed differences, while smoothing limits dependence on a                  
+      single group. These are heuristic design choices requiring                    
+      sensitivity analysis, not proven optimal constants.                           
+        The maximum group is bounded by                                             
+
+                                                                                    
+                                                                                    
+      2026S1-3636                                                                   
+                                                                                    
+      G. Experimental Procedure and Analysis             III. RESULTS               
+        We first recorded five trials per mode with the boards side                 
+                                           A. Close-Placement Comparison            
+      by side, giving 20 timings. We then recorded four trials each                 
+                                             Table IV preserves the individual readings and their
+      for modes 3 and 4 in adjacent rooms, approximately 1–2 m                      
+                                           summaries. Adaptive grouping had the lowest mean, followed
+      apart, with one intervening brick wall. Both conditions used                  
+                                           by fixed grouping, tuned stop-and-wait and baseline stop-and-
+      the same 2284-byte JPEG. All eight obstruction attempts                       
+                                           wait. Relative to mode 1, modes 2, 3 and 4 reduced mean
+      completed. Earlier timings obtained with different compressed                 
+                                           duration by 12.4%, 21.0% and 33.1%, respectively. The
+      images were excluded from the comparative dataset because                     
+                                           principal mode-4 versus mode-3 comparison gave an 11.8 s
+      payload differences would confound protocol effects.                          
+                                           reduction, equivalent to 15.2% of the fixed-group mean.
+        The common payload fixes scene content, encoded size and                    
+      nominal chunk count. Repetition avoids dependence on one TABLE IV             
+                                              CLOSE-PLACEMENT TIMINGS FOR THE SAME 2284-BYTE IMAGE
+      observation; Chen et al. likewise used five repeated                          
+      measurements in their testbed study [9]. This precedent does Mod              
+                                                  Individual times (s) Mean ± sample SD (s)
+      not establish adequate statistical power for our experiment. e                
+      Four obstruction runs per mode are the measurements 1 94, 90, 95, 98, 113 98.0 ± 8.86
+      completed so far. We preserve every genuine reading,                          
+                                             2     85, 89, 84, 83, 88 85.8 ± 2.59   
+      including the 113 s baseline result, and make no paired-trial                 
+                                             3     75, 80, 77, 82, 73 77.4 ± 3.65   
+      assumption because acquisition order was not recorded.                        
+        The measured interval is             4     58, 71, 75, 63, 61 65.6 ± 7.13   
+          T = t complete and verified − t reception indication (6) Mode 4 varied more than mode 3, with sample standard
+        Both endpoints were observed on the rescuer interface and deviations of 7.13 and 3.65 s. Mode 2 had the smallest
+      timed manually in seconds. This definition measures the wait standard deviation, 2.59 s. Thus, the lowest average duration
+      for an incoming image to become available with verified and the most consistent timings occurred in different
+      completion and avoids synchronising node clocks. The configurations. The earlier close-placement record does not
+      approximately 3 s initial receiving indication observed during establish a complete failure denominator, so a success
+      the close-placement experiment precedes this timer. The percentage is not inferred for this condition.
+      interval excludes phone image preparation and does not end at B. Brick-Wall Obstruction
+      the civilian's final acknowledgement. Interface polling and                   
+                                             Table V presents the separate obstruction dataset. Mode 4
+      manual reaction time can affect the observations.                             
+                                           averaged 88.00 s compared with 105.25 s for mode 3, a
+        For each mode and condition, we calculated                                  
+                                           reduction of 17.25 s or 16.4%. Both modes completed four of
+                    T = ∑Ti                four attempts, with zero failed completions. Their observed
+                       n                                                            
+                                           completion fractions were therefore both 100% within this
+                  s = √∑(Ti − T)2      (7) session. Successful completion may still include retransmitted
+                  T    n − 1                                                        
+                                           packets and delayed acknowledgements.    
+        The arithmetic mean weights each run equally and retains                    
+                                                          TABLE V                   
+      the contribution of slow completions. Sample standard                         
+                                                 BRICK-WALL TIMINGS AT APPROXIMATELY 1–2 M
+      deviation describes variation around that mean in seconds. The                
+      n−1 denominator accounts for estimating the mean from the Mod Individual times (s) Mean ± sample SD (s)
+                                             e                                      
+      same sample: it equals four for the close-placement condition                 
+      and three for obstruction. Under independent sampling with 3 101, 116, 98, 106 105.25 ± 7.89
+      finite variance, this corrects bias in the sample variance; it 4 76, 101, 85, 90 88.00 ± 10.42
+      does not establish independence or provide a confidence                       
+                                             Mode 4 again showed greater timing variation. Both
+      interval. We use the statistics descriptively.                                
+                                           obstruction means exceeded their close-placement
+        The reduction relative to a reference-mode mean is                          
+                                           counterparts, but separation, room geometry and session also
+              R = 100                                                               
+                   Treference − Tcomparison                                         
+                                       (8) changed. Without an unobstructed control at the same
+                      Treference                                                    
+                                           placement, the difference cannot be attributed solely to the
+        Using the reference mean as denominator makes the                           
+                                           wall. Figure 6 displays all observations to make both the mean
+      direction of comparison explicit. We also report seconds saved                
+                                           ordering and variation visible.          
+      to retain practical scale. Percentages describe elapsed-time                  
+      reduction rather than increased radio bit rate. Completion is                 
+      reported as completed attempts divided by attempted transfers                 
+      when both counts are known. This prevents successful                          
+      durations from concealing failed attempts. Packet-delivery                    
+      ratio, retransmission counts, measured airtime and energy                     
+      were not recorded in these trials.                                            
+
+                                                                                    
+                                                                                    
+      2026S1-3636                                                                   
+                                                                                    
+                                           establish that Wi-Fi is more reliable or more energy-efficient
+                                           than BLE or USB.                         
+                                             A private LoRaWAN installation is appropriate where
+                                           gateway and network-server services can be deployed and
+                                           maintained [8]. The two-node prototype instead aims to carry
+                                           its local access and transfer functions on the participating
+                                           boards. This reduces additional service dependencies for the
+                                           examined topology, but gives up the interoperability and
+                                           operational support of an established network stack.
+                                           Meshtastic already provides open-source messaging,
+                                           forwarding and web access [6], [7]. We implement a separate
+                                           protocol to control the four image-transfer policies and SOS
+                                           completion semantics for this study, not because existing
+                                           systems lack civilian relaying or are inherently unsuitable for
+                                           emergency communication.                 
+                                             Phone-derived location is appropriate when a user's position
+                                           is needed and a capable phone is already present. Node-
+                                           mounted GNSS remains preferable when the node must locate
+      Fig. 6. Individual receiver-observed times, with mean and sample-standard-    
+                                           itself without a phone. Radio-derived localisation addresses
+      deviation markers. The two physical conditions are separate datasets; error   
+      bars describe sample variation rather than confidence intervals. different environments and infrastructure assumptions, as
+                                           illustrated by LoRaAid [4]. Our browser approach avoids
+      C. Distance and Location Observations                                         
+                                           adding a GNSS module to each node, but its availability
+        We checked all four modes over approximately 50–100 m                       
+                                           depends on phone permissions, positioning services and
+      with a clear path and observed broadly similar delivery                       
+                                           browser security decisions. No component-cost or energy
+      behaviour. Per-distance numerical timings and attempt counts                  
+                                           advantage has been quantified.           
+      were not retained, so this remains a qualitative observation. It              
+      establishes neither a maximum range nor a distance- B. Why Adapt Groups Rather Than Only Compress More
+      performance curve. The successful phone-coordinate Further compression reduces bytes at the cost of visual
+      interaction described in Section II-D is likewise a functional information. The present grayscale preview already discards
+      observation, separate from quantitative positioning accuracy colour and spatial detail; reducing it again could obscure
+      and browser-wide compatibility.      features relevant to an SOS. Wavelet preprocessing and
+                                           alternative encoders warrant separate fidelity and processing-
+                   IV. DISCUSSION          cost experiments [12]. Interleaved reception can address
+                                           waiting through additional receiver resources [13]. Our policy
+      A. Why Use a Local Browser Gateway                                            
+                                           instead changes feedback scheduling while keeping
+        The design prioritises access by a person carrying an                       
+                                           compressed bytes, chunk size and transceiver count fixed,
+      ordinary phone without a dedicated application, additional                    
+                                           allowing the observed configurations to be compared on the
+      positioning receiver or USB cable. A local web page                           
+                                           same payload.                            
+      centralises the interface on the node and permits the same                    
+                                             Fixed grouping amortises acknowledgement overhead, as
+      application code to serve different browser platforms. Moving                 
+                                           established in [9], [10], and may be preferable when one group
+      image preparation to the phone avoids decoding a full camera                  
+                                           size performs well consistently. Adaptive grouping seeks to
+      photograph on the ESP32. After upload, the node owns the                      
+                                           respond to observed delivery rate and feedback delay. Its
+      saved record and transfer state. These are architectural                      
+                                           probing, conservative initial group and recovery can
+      benefits; the study did not measure onboarding time, total                    
+                                           themselves add delay, especially for a 13-chunk image with
+      energy or deployment cost.                                                    
+                                           few learning opportunities. The observed lower means
+        A native Android application with USB OTG remains a                         
+                                           therefore support the implemented configuration in these
+      reasonable alternative for managed responder equipment. It                    
+                                           placements, rather than a claim that adaptation must always be
+      can expose hardware access and a controlled application                       
+                                           faster.                                  
+      lifecycle, but requires application distribution, a physical                  
+                                             The current comparison also changes more than one
+      connection, USB-host support and device permission handling                   
+                                           mechanism. Mode 4 combines group selection, reply-delay
+      [20]. Native BLE access avoids the cable but still requires                   
+                                           estimation and recovery, and its effective cap is five chunks
+      application provisioning and device association. Browser                      
+                                           compared with mode 3's four. Some benefit may arise from
+      access over Web Bluetooth or Web Serial has more restricted                   
+                                           the larger allowed group. Fixed groups of two, four and five,
+      platform support than ordinary web interaction [21], [22]. Our                
+                                           an adaptive policy capped at four, and separate recovery-only
+      Wi-Fi/HTTPS choice avoids those two browser APIs, while                       
+                                           and selection-only variants are needed to isolate these effects.
+      introducing access-point power consumption, certificate                       
+                                           The candidate contribution is the combined policy's evaluated
+      handling and web-service load. The experiment does not                        
+
+                                                                                    
+                                                                                    
+      2026S1-3636                                                                   
+                                                                                    
+      behaviour; the present data cannot assign its benefit to one gallery option remains useful when capture is unavailable or
+      component.                           memory pressure prevents a new photo. If location permission
+                                           is denied, manual coordinates or written location preserve the
+      C. Browser Compatibility and Practical Access                                 
+                                           reporting workflow. Persistent browser storage retains the
+        The application cannot presently be described as working                    
+                                           report-access token; clearing site data can remove that access
+      on all browsers. We used Chrome on Xiaomi 12T and Xiaomi                      
+                                           even while the node retains the report.  
+      17T phones, but did not perform a version-controlled                          
+      compatibility campaign. Table VI distinguishes those D. Interpretation, Limitations and Future Evaluation
+      observations from candidate platforms. MDN compatibility The results answer the latency question narrowly: mode 4
+      data document Geolocation, Canvas.toBlob and image.decode produced lower mean receiver-observed times than mode 3 in
+      support in current major browser families [23]. That API both measured placements, with greater variation. Equal
+      evidence does not verify this complete application or its self- successful-completion counts in the obstruction session do not
+      signed-certificate workflow on every platform. distinguish reliability, and neither speed nor timing
+                                           consistency measures packet loss directly. We also cannot
+                     TABLE VI                                                       
+             BROWSER SCOPE AND REMAINING VALIDATION infer energy savings from shorter duration without measuring
+                                           device activity and power.               
+       Browser and                                                                  
+       platform                                                                     
+                  Project evidence Qualification Manual timing, interface polling, unknown trial order,
+                                           missing payload hashes and unrecorded per-run firmware state
+                  Used on Xiaomi Versions unrecorded; no                            
+       Chrome on Android                   limit reproducibility. Antenna orientation, wall thickness,
+                  12T and 17T exhaustive feature matrix.                            
+                                           pending traffic and web-client workload were not fully
+                           Required API support                                     
+                                           documented. Development logs showed web-service intervals
+       Firefox on Android Not tested documented; validate node                      
+                                           of several seconds, so cooperative web servicing is a plausible
+                           access.                                                  
+                                           source of radio-processing delay. Those cumulative
+                           Required API support                                     
+                                           diagnostics are not synchronised with the reported trials and
+       Samsung Internet Not tested documented; validate node                        
+                           access.                                                  
+                                           cannot explain a particular slow completion. Earlier stack
+                                           exhaustion and HTTPS failures motivated a larger application
+                           Validate the installed                                   
+                                           stack and connection-handling repairs; they should not be
+       Edge on Android Not tested mobile build and certificate                      
+                           path.           concealed by reporting only later successful trials.
+                                             The study concerns one small image, two boards and
+                           Required API support                                     
+       Opera on Android Not tested documented; validate node                        
+                                           limited placements. Four or five observations per
+                           access.         configuration provide descriptive evidence, without
+                                           establishing statistical significance, dense-network scalability,
+                           API support exists; validate                             
+       Safari on iPhone/iPad Not tested                                             
+                           HTTPS and offline location.                              
+                                           multihop performance or field-rescue effectiveness. A future
+                                           evaluation should interleave mode order, retain the exact
+       Chrome/Edge/Firefox Validate each app and OS                                 
+                  Not tested               JPEG and firmware identifiers, define a stopping rule, collect
+       on iOS              combination.                                             
+                                           packet and acknowledgement traces, and use matched physical
+       Desktop                                                                      
+                           File upload is a candidate; controls. Multiple image sizes would examine adaptation
+       Chrome/Edge/Firefox Not tested                                               
+       /Safari                                                                      
+                           camera and location differ. overhead as the number of groups increases. A browser
+                                           campaign should record device and software versions,
+       Captive-portal mini- Not a validated Permissions and storage                 
+                                           certificate treatment, permissions, camera and file paths,
+       browser    target   require separate checks.                                 
+                                           offline location, reconnection and memory failures. These
+        Compatibility has several independent requirements. First, measurements would test the conditions under which the
+      the phone must remain connected to the node's local Wi-Fi present benefits persist or disappear.
+      network. Second, the browser must accept the HTTPS origin                     
+      and recognise a secure context; continuing past a warning is V. CONCLUSION    
+      not a portable certificate-provisioning strategy. Third,                      
+                                             We implemented a local HTTPS gateway integrating
+      geolocation requires permission and an available positioning                  
+                                           phone-derived location, browser image compression, SOS
+      provider [18], [19]. Finally, the image must decode within                    
+                                           reporting and two-way messages with persistent LoRa
+      device memory, and the page must support the JavaScript and                   
+                                           delivery. The architecture separates phone preparation from
+      canvas operations used by the application. Supporting                         
+                                           node storage and scheduled transmission, while exposing
+      Geolocation alone is insufficient to establish full                           
+                                           destination-confirmed progress. With the same 2284-byte
+      compatibility.                                                                
+                                           JPEG, the adaptive configuration reduced mean receiver-
+        The camera control uses a file input with                                   
+                                           observed image time by 15.2% relative to fixed grouping in
+      capture="environment", which requests a suitable camera                       
+                                           close placement and by 16.4% across one brick wall. All eight
+      rather than guaranteeing a particular camera interface. MDN                   
+                                           obstruction attempts completed, although adaptive timings
+      documents differing behaviour across devices, with desktop                    
+                                           varied more than fixed-group timings. The evidence supports a
+      browsers commonly presenting a file picker [24]. The separate                 
+                                           preliminary latency benefit for the complete configuration
+
+                                                                                    
+                                                                                    
+      2026S1-3636                                                                   
+                                                                                    
+      rather than universal superiority or improved packet [13] S. De et al., “Interleaved Reception in LoRa Using IFT: A Hardware-
+                                             Efficient Architecture for Fast and Low-Power Image Transmission,”
+      reliability. Browser access was used through Chrome on two                    
+                                             IEEE Internet of Things Journal, vol. 12, no. 19, pp. 39777–39787, Oct.
+      Xiaomi phones; wider compatibility remains to be validated. 2025, doi: 10.1109/JIOT.2025.3588064.
+      The next research priority is to isolate group-size and recovery [14] L. Stracke, L. Nimmermann, S. Agnihotri, M. Keuper, and V. Blanz,
+      effects through matched experiments and to extend evaluation “Vision At Night: Exploring Biologically Inspired Preprocessing For
+                                             Improved Robustness Via Color And Contrast Transformations,” in
+      across payload sizes, browser platforms and multihop paths.                   
+                                             Proceedings of the IEEE/CVF International Conference on Computer
+                                             Vision Workshops, 2025. Author manuscript, version 1.
+                  ACKNOWLEDGMENT           [15] MDN Web Docs, “HTMLCanvasElement: toBlob() method.” [Online].
+                                             Available:         https://developer.mozilla.org/en-
+        We thank Dr. Lillian Wang and Dr. Wai Peng, Wong for                        
+                                             US/docs/Web/API/HTMLCanvasElement/toBlob. Accessed: Oct. 19,
+      their supervision. OpenAI Codex assisted with software 2026.                  
+      development, literature discovery, manuscript drafting, [16] N. Ahmed, T. Natarajan, and K. R. Rao, “Discrete Cosine Transform,”
+      diagrams and statistical summaries. We conducted the IEEE Transactions on Computers, vol. C-23, no. 1, pp. 90–93, Jan. 1974,
+                                             doi: 10.1109/T-C.1974.223784.          
+      hardware experiments and recorded the measurements.                           
+                                           [17] G. K. Wallace, “The JPEG Still Picture Compression Standard,” IEEE
+                                             Transactions on Consumer Electronics, vol. 38, no. 1, pp. xviii–xxxiv,
+                    REFERENCES               Feb. 1992, doi: 10.1109/30.125072.     
+      [1] Z. Lu, G. Cao, and T. La Porta, “TeamPhone: Networking SmartPhones [18] W3C, “Geolocation,” Candidate Recommendation Snapshot, Mar. 26,
+                                             2026. [Online]. Available: dated specification. Accessed: Oct. 19, 2026.
+        for Disaster Recovery,” IEEE Transactions on Mobile Computing, vol.         
+        16, no. 12, pp. 3554–3567, Dec. 2017, doi: 10.1109/TMC.2017.2695452. [19] W3C, “Secure Contexts,” Candidate Recommendation Draft, Nov. 10,
+                                             2023. [Online]. Available: dated specification. Accessed: Oct. 19, 2026.
+      [2] L. Sciullo, F. Fossemò, A. Trotta, and M. Di Felice, “LOCATE: A LoRa-     
+        based mObile emergenCy mAnagement sysTEm,” in 2018 IEEE Global [20] Android Developers, “USB host overview.” [Online]. Available:
+        Communications Conference (GLOBECOM), Abu Dhabi, United Arab https://developer.android.com/develop/connectivity/usb/host. Accessed:
+        Emirates, 2018, pp. 1–7, doi: 10.1109/GLOCOM.2018.8647177. Oct. 19, 2026.   
+      [3] M. S. Imran, M. Daniel, Z. S. Attarbashi, D. O. D. Handayani, S. Iftikhar, [21] MDN Web Docs, “Web Bluetooth API.” [Online]. Available:
+        and D. Al-Madani, “Wireless Resilience: A LoRa-Based Sensor Network https://developer.mozilla.org/en-US/docs/Web/API/Web_Bluetooth_API.
+        and Mobile Application for Flood Victim Rescue System,” in 2023 IEEE Accessed: Oct. 19, 2026.
+        9th International Conference on Computing, Engineering and Design [22] MDN Web Docs, “Web Serial API.” [Online]. Available:
+        (ICCED), Kuala Lumpur, Malaysia, 2023, pp. 1–6, doi: https://developer.mozilla.org/en-US/docs/Web/API/Web_Serial_API.
+        10.1109/ICCED60214.2023.10425043.    Accessed: Oct. 19, 2026.               
+      [4] H. Zhang, G. Liu, Y. Xu, and T. Jiang, “LoRaAid: Underground Joint [23] MDN Web Docs contributors, “Browser compatibility data: Geolocation,
+        Communication and Localization System Based on LoRa Technology,” HTMLCanvasElement and HTMLImageElement.” [Online]. Available:
+        IEEE Transactions on Wireless Communications, vol. 23, no. 5, pp. https://github.com/mdn/browser-compat-data. Accessed: Oct. 19, 2026.
+        5248–5260, May 2024, doi: 10.1109/TWC.2023.3325330.                         
+                                           [24] MDN Web Docs, “capture HTML attribute.” [Online]. Available:
+      [5] Chan Xin Yen, K. Shanmugam, and M. E. Rana, “Short-Term Mobile Ad https://developer.mozilla.org/en-
+        Hoc Network with LoRa Based Infrastructure in Disaster Relief,” Journal US/docs/Web/HTML/Reference/Attributes/capture. Accessed: Oct. 19,
+        of Applied Technology and Innovation, vol. 6, no. 2, pp. 55–59, 2022, 2026. 
+        doi: 10.65136/jati.v6i1.170. Publisher full text.                           
+      [6] Meshtastic Project, “Web Client Overview.” [Online]. Available:           
+        https://meshtastic.org/docs/software/web-client/. Accessed: Oct. 19, 2026.  
+      [7] Meshtastic Project, “Device Configuration.” [Online]. Available:          
+        https://meshtastic.org/docs/configuration/radio/device/. Accessed: Oct.     
+        19, 2026.                                                                   
+      [8] LoRa Alliance, “About the LoRaWAN Standards.” [Online]. Available:        
+        https://lora-alliance.org/lorawan-for-developers/. Accessed: Oct. 19,       
+        2026.                                                                       
+      [9] T. Chen, D. Eager, and D. Makaroff, “Efficient Image Transmission Using   
+        LoRa Technology In Agricultural Monitoring IoT Systems,” in 2019            
+        International Conference on Internet of Things (iThings) and IEEE Green     
+        Computing and Communications (GreenCom) and IEEE Cyber, Physical            
+        and Social Computing (CPSCom) and IEEE Smart Data (SmartData),              
+        Atlanta, GA, USA, 2019, pp. 937–944, doi:                                   
+        10.1109/iThings/GreenCom/CPSCom/SmartData.2019.00166.                       
+      [10] J. Torres, M. Nunez, and J. M. Mauricio Villanueva, “LoRa Multi-Packet   
+        Protocol for Image Transmission,” in 2024 8th International Symposium       
+        on Instrumentation Systems, Circuits and Transducers (INSCIT), Joao         
+        Pessoa, Brazil, 2024, pp. 1–6,  doi:                                        
+        10.1109/INSCIT62583.2024.10693388.                                          
+      [11] O. L. Dede, H. M. Jalajamony, and R. E. Fernandez, “Image                
+        Transmission over LoRa-Based Networks: A Performance Study Using            
+        Image Compression and Reconstruction Methods,” in 2024 IEEE 21st            
+        Consumer Communications & Networking Conference (CCNC), Las                 
+        Vegas, NV, USA, 2024, pp. 642–643, doi:                                     
+        10.1109/CCNC51664.2024.10454687.                                            
+      [12] Y. Onykiienko, S. Naida, M. Mazin, I. Kyrylenko, and P. Popovych, “An    
+        Efficient Image Compression Method for LoRa Networks,” in 2026 IEEE         
+        8th International Conference on Smart Technologies in Power                 
+        Engineering and Electronics (STEE), Kyiv, Ukraine, 2026, pp. TT2.14.1–      
+        TT2.14.5, doi: 10.1109/STEE63704.2026.11663995.                             

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg
+  PUBLIC '-//W3C//DTD SVG 1.0//EN'
+  'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'>
+<svg width="960" height="670" preserveAspectRatio="xMinYMin meet" viewBox="0 0 960 670" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="960" height="670"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-670)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="0" y="0" width="960" height="670" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<rect x="255" y="593" width="450" height="62" rx="9" ry="9" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(91%,96%,97%); fill-rule: evenodd;"/>
+			<text x="348.660888671875" y="630.0" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1260) scale(1,-1)">Receive addressed image chunk</text>
+			<text x="331.578369140625" y="604.24" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1208) scale(1,-1)">Validate frame, source, index and byte count</text>
+			<polyline points="480 593, 480 562" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="480 562, 483.9147 570.104, 476.0853 570.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<rect x="255" y="487" width="450" height="75" rx="9" ry="9" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(90%,95%,93%); fill-rule: evenodd;"/>
+			<text x="379.855224609375" y="537.0" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1074) scale(1,-1)">Write .part at index x 180</text>
+			<text x="334.925537109375" y="511.24" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1022) scale(1,-1)">Flush / close; read back and compare bytes</text>
+			<polyline points="480 487, 480 456" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="480 456, 483.9147 464.104, 476.0853 464.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<rect x="255" y="381" width="450" height="75" rx="9" ry="9" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(90%,95%,93%); fill-rule: evenodd;"/>
+			<text x="322.716796875" y="431.0" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,862) scale(1,-1)">Set chunk bit; commit record metadata</text>
+			<text x="317.442626953125" y="405.24" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,810) scale(1,-1)">Write temporary record; verify; rename into place</text>
+			<polyline points="480 381, 480 352" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="480 352, 483.9147 360.104, 476.0853 360.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<polygon points="480 352, 630 311, 480 270, 330 311" style="stroke: rgb(65%,39%,8%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(100%,95%,87%); fill-rule: evenodd;"/>
+			<text x="432.87109375" y="314.0" style="font-family: Arial-Bold; font-size: 16px;fill: rgb(65%,39%,8%); stroke:none;" transform="translate(0,628) scale(1,-1)">All expected</text>
+			<text x="421.32421875" y="293.52" style="font-family: Arial-Bold; font-size: 16px;fill: rgb(65%,39%,8%); stroke:none;" transform="translate(0,587) scale(1,-1)">chunk bits set?</text>
+			<rect x="20" y="241" width="230" height="102" rx="9" ry="9" style="stroke: rgb(39%,45%,54%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(94%,96%,97%); fill-rule: evenodd;"/>
+			<text x="82.0859375" y="318.0" style="font-family: Arial-Bold; font-size: 16px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,636) scale(1,-1)">Partial receipt</text>
+			<text x="63.4072265625" y="293.52" style="font-family: Arial; font-size: 14px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,587) scale(1,-1)">Modes 1/2: chunk ACK</text>
+			<text x="83.251953125" y="275.59999999999997" style="font-family: Arial; font-size: 14px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,551) scale(1,-1)">Modes 3/4: reply</text>
+			<text x="92.96923828125" y="257.67999999999995" style="font-family: Arial; font-size: 14px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,515) scale(1,-1)">when queried</text>
+			<polyline points="330 311, 250 311" style="stroke: rgb(39%,45%,54%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="250 311, 258.104 307.0853, 258.104 314.9147" style="stroke: rgb(39%,45%,54%); stroke-linecap: butt; stroke-width: 1; fill: rgb(39%,45%,54%); fill-rule: evenodd;"/>
+			<text x="280.41259765625" y="325.0" style="font-family: Arial; font-size: 15px;fill: rgb(39%,45%,54%); stroke:none;" transform="translate(0,650) scale(1,-1)">No</text>
+			<polyline points="480 270, 480 239" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="480 239, 483.9147 247.104, 476.0853 247.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<text x="502.076416015625" y="251.0" style="font-family: Arial; font-size: 15px;fill: rgb(9%,41%,58%); stroke:none;" transform="translate(0,502) scale(1,-1)">Yes</text>
+			<rect x="255" y="164" width="450" height="75" rx="9" ry="9" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(90%,95%,93%); fill-rule: evenodd;"/>
+			<text x="287.741455078125" y="214.0" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,428) scale(1,-1)">Verify image size, CRC32 and JPEG boundaries</text>
+			<text x="341.1767578125" y="188.24" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,376) scale(1,-1)">Rename .part to .jpg; save complete state</text>
+			<rect x="740" y="143" width="205" height="97" rx="9" ry="9" style="stroke: rgb(65%,39%,8%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(100%,95%,87%); fill-rule: evenodd;"/>
+			<text x="772.703125" y="215.0" style="font-family: Arial-Bold; font-size: 16px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,430) scale(1,-1)">Verification failure</text>
+			<text x="799.31396484375" y="190.51999999999998" style="font-family: Arial; font-size: 14px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,381) scale(1,-1)">Reset bitmap;</text>
+			<text x="790.7451171875" y="172.59999999999997" style="font-family: Arial; font-size: 14px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,345) scale(1,-1)">request / expose</text>
+			<text x="796.986328125" y="154.67999999999998" style="font-family: Arial; font-size: 14px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,309) scale(1,-1)">retransmission</text>
+			<polyline points="705 204, 740 204" style="stroke: rgb(65%,39%,8%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="740 204, 731.896 207.9147, 731.896 200.0853" style="stroke: rgb(65%,39%,8%); stroke-linecap: butt; stroke-width: 1; fill: rgb(65%,39%,8%); fill-rule: evenodd;"/>
+			<polyline points="480 164, 480 129" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="480 129, 483.9147 137.104, 476.0853 137.104" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1; fill: rgb(7%,49%,45%); fill-rule: evenodd;"/>
+			<text x="504.6552734375" y="141.0" style="font-family: Arial; font-size: 15px;fill: rgb(7%,49%,45%); stroke:none;" transform="translate(0,282) scale(1,-1)">Success</text>
+			<rect x="255" y="63" width="450" height="66" rx="9" ry="9" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(91%,96%,97%); fill-rule: evenodd;"/>
+			<text x="309.97509765625" y="104.0" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,208) scale(1,-1)">Destination completion acknowledgement</text>
+			<text x="298.65234375" y="78.24000000000001" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,156) scale(1,-1)">Sender saves received status before reporting delivery</text>
+			<rect x="40" y="13" width="880" height="30" rx="9" ry="9" style="stroke: rgb(39%,45%,54%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(94%,96%,97%); fill-rule: evenodd;"/>
+			<text x="177.835693359375" y="23.200000000000045" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,46) scale(1,-1)">Any failed write or metadata commit prevents a successful receipt for that operation.</text>
+		</g>
+	</g>
+</svg>

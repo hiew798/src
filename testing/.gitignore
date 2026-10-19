@@ -1,0 +1,10 @@
+# Generated private key: keep local. Regenerate before sharing a project copy.
+key_der.h
+*.key
+*.pfx
+*.p12
+build/
+
+# Shared mesh key and local rescuer login
+NetworkSecrets.h
+__pycache__/

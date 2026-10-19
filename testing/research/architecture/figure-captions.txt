@@ -1,0 +1,17 @@
+Figure 1. Deployment and data paths of the current two-node system. The radio link carries both application data and destination acknowledgements.
+
+Figure 2. Software responsibilities and cooperative execution. Boxes are logical modules, not separate parallel threads.
+
+Figure 3. Exact search order in compressPhoto(). The outer loop reduces dimensions; the inner loop tries JPEG quality hints. Every dimension candidate is drawn from the decoded original.
+
+Figure 4. The local web response, rescuer SOS acknowledgement and final image acknowledgement are separate milestones. Compression and upload can overlap SOS delivery.
+
+Figure 5. Mode 1 sends one image chunk and waits for its acknowledgement before advancing. Manifest and final-completion exchanges are part of the image transfer.
+
+Figure 6. Mode 2 keeps individual chunk acknowledgements and shortens scheduling delays. The sequence is unchanged; timing and receive handling differ.
+
+Figure 7. Illustrative loss of chunk 1 in a four-chunk group. Bitmap positions shown in brackets follow the labelled chunk order, not a printed integer's bit order.
+
+Figure 8. Mode 4 uses the same grouped receiver as mode 3. Adaptation is a sender-side policy over group size, measured delivery rate and acknowledgement waiting.
+
+Figure 9. Successful reception is tied to saved state. Full image verification and committed completion are required before final acknowledgement.

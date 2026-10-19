@@ -1,0 +1,701 @@
+[
+  {
+    "DOI": "10.1109/ithings/greencom/cpscom/smartdata.2019.00166",
+    "title": [
+      "Efficient Image Transmission Using LoRa Technology In Agricultural Monitoring IoT Systems"
+    ],
+    "author": [
+      {
+        "given": "Tonghao",
+        "family": "Chen",
+        "sequence": "first",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Derek",
+        "family": "Eager",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Dwight",
+        "family": "Makaroff",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "container-title": [
+      "2019 International Conference on Internet of Things (iThings) and IEEE Green Computing and Communications (GreenCom) and IEEE Cyber, Physical and Social Computing (CPSCom) and IEEE Smart Data (SmartData)"
+    ],
+    "publisher": "IEEE",
+    "type": "proceedings-article",
+    "page": "937-944",
+    "published": {
+      "date-parts": [
+        [
+          2019,
+          7
+        ]
+      ]
+    },
+    "published-print": {
+      "date-parts": [
+        [
+          2019,
+          7
+        ]
+      ]
+    },
+    "event": {
+      "name": "2019 International Conference on Internet of Things (iThings) and IEEE Green Computing and Communications (GreenCom) and IEEE Cyber, Physical and Social Computing (CPSCom) and IEEE Smart Data (SmartData)",
+      "location": "Atlanta, GA, USA",
+      "start": {
+        "date-parts": [
+          [
+            2019,
+            7,
+            14
+          ]
+        ]
+      },
+      "end": {
+        "date-parts": [
+          [
+            2019,
+            7,
+            17
+          ]
+        ]
+      }
+    },
+    "URL": "https://doi.org/10.1109/ithings/greencom/cpscom/smartdata.2019.00166"
+  },
+  {
+    "DOI": "10.1109/inscit62583.2024.10693388",
+    "title": [
+      "LoRa Multi-Packet Protocol for Image Transmission"
+    ],
+    "author": [
+      {
+        "given": "Jhordan",
+        "family": "Torres",
+        "sequence": "first",
+        "affiliation": [
+          {
+            "name": "Universidad de Ingenieria y Tecnologia - UTEC,Electrical Engineering Department,Lima,Peru"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Moises",
+        "family": "Nunez",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Universidad de Ingenieria y Tecnologia - UTEC,Electrical Engineering Department,Lima,Peru"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Juan M.",
+        "family": "Mauricio Villanueva",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Universidade Federal da Para&#x00ED;ba - UFPB,Electrical Engineering Department,Jo&#x00E3;o Pessoa,Brasil"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "container-title": [
+      "2024 8th International Symposium on Instrumentation Systems, Circuits and Transducers (INSCIT)"
+    ],
+    "publisher": "IEEE",
+    "type": "proceedings-article",
+    "page": "1-6",
+    "published": {
+      "date-parts": [
+        [
+          2024,
+          9,
+          2
+        ]
+      ]
+    },
+    "published-print": {
+      "date-parts": [
+        [
+          2024,
+          9,
+          2
+        ]
+      ]
+    },
+    "event": {
+      "name": "2024 8th International Symposium on Instrumentation Systems, Circuits and Transducers (INSCIT)",
+      "location": "Joao Pessoa, Brazil",
+      "start": {
+        "date-parts": [
+          [
+            2024,
+            9,
+            2
+          ]
+        ]
+      },
+      "end": {
+        "date-parts": [
+          [
+            2024,
+            9,
+            6
+          ]
+        ]
+      }
+    },
+    "URL": "https://doi.org/10.1109/inscit62583.2024.10693388"
+  },
+  {
+    "DOI": "10.1109/ccnc51664.2024.10454687",
+    "title": [
+      "Image Transmission over LoRa-Based Networks: A Performance Study Using Image Compression and Reconstruction Methods"
+    ],
+    "author": [
+      {
+        "given": "Obeng Lydia",
+        "family": "Dede",
+        "sequence": "first",
+        "affiliation": [
+          {
+            "name": "Norfolk State University,Department of Engineering,Norfolk,USA"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Harikrishnan Muraleedharan",
+        "family": "Jalajamony",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Norfolk State University,Department of Engineering,Norfolk,USA"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Renny Edwin",
+        "family": "Fernandez",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Norfolk State University,Department of Engineering,Norfolk,USA"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "container-title": [
+      "2024 IEEE 21st Consumer Communications &amp; Networking Conference (CCNC)"
+    ],
+    "publisher": "IEEE",
+    "type": "proceedings-article",
+    "page": "642-643",
+    "published": {
+      "date-parts": [
+        [
+          2024,
+          1,
+          6
+        ]
+      ]
+    },
+    "event": {
+      "name": "2024 IEEE 21st Consumer Communications & Networking Conference (CCNC)",
+      "location": "Las Vegas, NV, USA",
+      "start": {
+        "date-parts": [
+          [
+            2024,
+            1,
+            6
+          ]
+        ]
+      },
+      "end": {
+        "date-parts": [
+          [
+            2024,
+            1,
+            9
+          ]
+        ]
+      }
+    },
+    "URL": "https://doi.org/10.1109/ccnc51664.2024.10454687"
+  },
+  {
+    "DOI": "10.1109/icsp58490.2023.10248707",
+    "title": [
+      "Design of LoRa Communication Protocol for Image Transmission"
+    ],
+    "author": [
+      {
+        "given": "Han",
+        "family": "Gao",
+        "sequence": "first",
+        "affiliation": [
+          {
+            "name": "Beijing University of Technology,Beijing Engineering Research Center for IoT Software and System,Beijing,China"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Zhangqin",
+        "family": "Huang",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Beijing University of Technology,Beijing Engineering Research Center for IoT Software and System,Beijing,China"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Xiaobo",
+        "family": "Zhang",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Beijing University of Technology,Beijing Engineering Research Center for IoT Software and System,Beijing,China"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Ling",
+        "family": "Huang",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Beijing University of Technology,Beijing Engineering Research Center for IoT Software and System,Beijing,China"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "container-title": [
+      "2023 8th International Conference on Intelligent Computing and Signal Processing (ICSP)"
+    ],
+    "publisher": "IEEE",
+    "type": "proceedings-article",
+    "page": "2142-2146",
+    "published": {
+      "date-parts": [
+        [
+          2023,
+          4,
+          21
+        ]
+      ]
+    },
+    "published-print": {
+      "date-parts": [
+        [
+          2023,
+          4,
+          21
+        ]
+      ]
+    },
+    "event": {
+      "name": "2023 8th International Conference on Intelligent Computing and Signal Processing (ICSP)",
+      "location": "Xi'an, China",
+      "start": {
+        "date-parts": [
+          [
+            2023,
+            4,
+            21
+          ]
+        ]
+      },
+      "end": {
+        "date-parts": [
+          [
+            2023,
+            4,
+            23
+          ]
+        ]
+      }
+    },
+    "URL": "https://doi.org/10.1109/icsp58490.2023.10248707"
+  },
+  {
+    "DOI": "10.3390/sym12040552",
+    "title": [
+      "Reliability Improvement of LoRa with ARQ and Relay Node"
+    ],
+    "author": [
+      {
+        "given": "Rocksan",
+        "family": "Choi",
+        "sequence": "first",
+        "affiliation": [
+          {
+            "name": "Department of Computer Science and Engineering, Kyung Hee University, Gyeonggi-do 17104, Korea"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "ORCID": "https://orcid.org/0000-0002-5510-390X",
+        "authenticated-orcid": false,
+        "given": "SeungGwan",
+        "family": "Lee",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Humanitas College, Kyung Hee University, Gyeonggi-do 17104, Korea"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Sungwon",
+        "family": "Lee",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Department of Software Convergence, Kyung Hee University, Gyeonggi-do 17104, Korea"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "container-title": [
+      "Symmetry"
+    ],
+    "publisher": "MDPI AG",
+    "type": "journal-article",
+    "page": "552",
+    "volume": "12",
+    "issue": "4",
+    "published": {
+      "date-parts": [
+        [
+          2020,
+          4,
+          4
+        ]
+      ]
+    },
+    "URL": "https://doi.org/10.3390/sym12040552"
+  },
+  {
+    "DOI": "10.5220/0013704800003985",
+    "title": [
+      "Evaluating Use of ARQ Strategies in Communication Protocols for Search and Rescue"
+    ],
+    "author": [
+      {
+        "given": "Antonello",
+        "family": "Calabrò",
+        "sequence": "first",
+        "affiliation": [
+          {
+            "name": "Istituto di Scienza e Tecnologie dell’Informazione “A. Faedo”, CNR, Pisa, Italy"
+          }
+        ],
+        "role": [
+          {
+            "role": "author",
+            "vocabulary": "crossref"
+          }
+        ]
+      },
+      {
+        "given": "Eda",
+        "family": "Marchetti",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Istituto di Scienza e Tecnologie dell’Informazione “A. Faedo”, CNR, Pisa, Italy"
+          }
+        ],
+        "role": [
+          {
+            "role": "author",
+            "vocabulary": "crossref"
+          }
+        ]
+      },
+      {
+        "given": "Maria",
+        "family": "Paratore",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Istituto di Scienza e Tecnologie dell’Informazione “A. Faedo”, CNR, Pisa, Italy"
+          }
+        ],
+        "role": [
+          {
+            "role": "author",
+            "vocabulary": "crossref"
+          }
+        ]
+      }
+    ],
+    "container-title": [
+      "Proceedings of the 21st International Conference on Web Information Systems and Technologies"
+    ],
+    "publisher": "SCITEPRESS - Science and Technology Publications",
+    "type": "proceedings-article",
+    "page": "59-70",
+    "published": {
+      "date-parts": [
+        [
+          2025
+        ]
+      ]
+    },
+    "published-print": {
+      "date-parts": [
+        [
+          2025
+        ]
+      ]
+    },
+    "event": {
+      "name": "21st International Conference on Web Information Systems and Technologies",
+      "start": {
+        "date-parts": [
+          [
+            2025,
+            10,
+            21
+          ]
+        ]
+      },
+      "location": "Marbella, Spain",
+      "end": {
+        "date-parts": [
+          [
+            2025,
+            10,
+            23
+          ]
+        ]
+      }
+    },
+    "URL": "https://doi.org/10.5220/0013704800003985"
+  },
+  {
+    "DOI": "10.1109/blackseacom61746.2024.10646253",
+    "title": [
+      "Cooperative Transmission of Large Files Over LoRa in Multimedia loT Networks"
+    ],
+    "author": [
+      {
+        "given": "Temirlan",
+        "family": "Nurbay",
+        "sequence": "first",
+        "affiliation": [
+          {
+            "name": "Nazarbayev University, School of Engineering &#x0026; Digital Sciences,Astana,Kazakhstan"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Sultan",
+        "family": "Kasenov",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Nazarbayev University, School of Engineering &#x0026; Digital Sciences,Astana,Kazakhstan"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Adi",
+        "family": "Yeltay",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Nazarbayev University, School of Engineering &#x0026; Digital Sciences,Astana,Kazakhstan"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Dimitrios",
+        "family": "Zorbas",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Nazarbayev University, School of Engineering &#x0026; Digital Sciences,Astana,Kazakhstan"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "container-title": [
+      "2024 IEEE International Black Sea Conference on Communications and Networking (BlackSeaCom)"
+    ],
+    "publisher": "IEEE",
+    "type": "proceedings-article",
+    "page": "153-158",
+    "published": {
+      "date-parts": [
+        [
+          2024,
+          6,
+          24
+        ]
+      ]
+    },
+    "published-print": {
+      "date-parts": [
+        [
+          2024,
+          6,
+          24
+        ]
+      ]
+    },
+    "event": {
+      "name": "2024 IEEE International Black Sea Conference on Communications and Networking (BlackSeaCom)",
+      "location": "Tbilisi, Georgia",
+      "start": {
+        "date-parts": [
+          [
+            2024,
+            6,
+            24
+          ]
+        ]
+      },
+      "end": {
+        "date-parts": [
+          [
+            2024,
+            6,
+            27
+          ]
+        ]
+      }
+    },
+    "URL": "https://doi.org/10.1109/blackseacom61746.2024.10646253"
+  }
+]

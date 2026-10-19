@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg
+  PUBLIC '-//W3C//DTD SVG 1.0//EN'
+  'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'>
+<svg width="960" height="805" preserveAspectRatio="xMinYMin meet" viewBox="0 0 960 805" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="960" height="805"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-805)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="0" y="0" width="960" height="805" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="59.951171875" y="777.0" style="font-family: Arial-Bold; font-size: 20px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1554) scale(1,-1)">(a) Implemented browser preprocessing</text>
+			<text x="580.546875" y="777.0" style="font-family: Arial-Bold; font-size: 20px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1554) scale(1,-1)">(b) JPEG encoding model [6], [7]</text>
+			<path d="M 495,757 L 495,57 Z" style="stroke: rgb(39%,45%,54%); stroke-linecap: butt; stroke-width: 1.2; stroke-dasharray: 5, 5;"/>
+			<rect x="45" y="679" width="410" height="62" rx="9" ry="9" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(91%,96%,97%); fill-rule: evenodd;"/>
+			<text x="163.543212890625" y="716.0" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1432) scale(1,-1)">Camera or gallery file</text>
+			<text x="118.057861328125" y="690.24" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1380) scale(1,-1)">Reject absent input or file size &gt; 15 MiB</text>
+			<polyline points="250 679, 250 656" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="250 656, 253.9147 664.104, 246.0853 664.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<rect x="45" y="594" width="410" height="62" rx="9" ry="9" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(91%,96%,97%); fill-rule: evenodd;"/>
+			<text x="159.309814453125" y="631.0" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1262) scale(1,-1)">Decode original image</text>
+			<text x="120.76416015625" y="605.24" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1210) scale(1,-1)">Decoded pixels occupy phone memory</text>
+			<polyline points="250 594, 250 570" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="250 570, 253.9147 578.104, 246.0853 578.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<rect x="45" y="498" width="410" height="72" rx="9" ry="9" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(91%,96%,97%); fill-rule: evenodd;"/>
+			<text x="153.99609375" y="545.0" style="font-family: Arial-Bold; font-size: 16px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1090) scale(1,-1)">Resize within next bound</text>
+			<text x="130.51806640625" y="520.52" style="font-family: Arial; font-size: 14px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1041) scale(1,-1)">160 x 120, then 120 x 90, then 80 x 60</text>
+			<text x="131.32470703125" y="502.59999999999997" style="font-family: Arial; font-size: 14px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1005) scale(1,-1)">Preserve aspect ratio; no enlargement</text>
+			<polyline points="250 498, 250 473" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="250 473, 253.9147 481.104, 246.0853 481.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<rect x="45" y="401" width="410" height="72" rx="9" ry="9" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(91%,96%,97%); fill-rule: evenodd;"/>
+			<text x="132.1640625" y="448.0" style="font-family: Arial-Bold; font-size: 16px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,896) scale(1,-1)">White canvas; grayscale pixels</text>
+			<text x="131.11279296875" y="423.52" style="font-family: Arial; font-size: 14px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,847) scale(1,-1)">Y = round(0.299R + 0.587G + 0.114B)</text>
+			<text x="187.95361328125" y="405.59999999999997" style="font-family: Arial; font-size: 14px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,811) scale(1,-1)">Write R = G = B = Y</text>
+			<polyline points="250 401, 250 377" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="250 377, 253.9147 385.104, 246.0853 385.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<rect x="45" y="305" width="410" height="72" rx="9" ry="9" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(91%,96%,97%); fill-rule: evenodd;"/>
+			<text x="121.9765625" y="352.0" style="font-family: Arial-Bold; font-size: 16px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,704) scale(1,-1)">Request JPEG encoding at next q</text>
+			<text x="171.96435546875" y="327.52" style="font-family: Arial; font-size: 14px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,655) scale(1,-1)">q = 0.60, 0.45, 0.30, 0.20</text>
+			<text x="129.38330078125" y="309.59999999999997" style="font-family: Arial; font-size: 14px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,619) scale(1,-1)">Browser codec: conceptual detail in (b)</text>
+			<polyline points="250 305, 250 278" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="250 278, 253.9147 286.104, 246.0853 286.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<polygon points="250 278, 402.5 236, 250 194, 97.5 236" style="stroke: rgb(65%,39%,8%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(100%,95%,87%); fill-rule: evenodd;"/>
+			<text x="187.33984375" y="239.0" style="font-family: Arial-Bold; font-size: 16px;fill: rgb(65%,39%,8%); stroke:none;" transform="translate(0,478) scale(1,-1)">Valid output and</text>
+			<text x="175.28515625" y="218.52" style="font-family: Arial-Bold; font-size: 16px;fill: rgb(65%,39%,8%); stroke:none;" transform="translate(0,437) scale(1,-1)">size &lt;= 8192 bytes?</text>
+			<polyline points="250 194, 250 158" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="250 158, 253.9147 166.104, 246.0853 166.104" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1; fill: rgb(7%,49%,45%); fill-rule: evenodd;"/>
+			<text x="269.076416015625" y="169.0" style="font-family: Arial; font-size: 15px;fill: rgb(7%,49%,45%); stroke:none;" transform="translate(0,338) scale(1,-1)">Yes</text>
+			<rect x="45" y="98" width="410" height="60" rx="9" ry="9" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(90%,95%,93%); fill-rule: evenodd;"/>
+			<text x="152.237548828125" y="133.0" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,266) scale(1,-1)">Accept first fitting JPEG</text>
+			<text x="119.50439453125" y="107.24000000000001" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,214) scale(1,-1)">Upload binary bytes to the civilian node</text>
+			<polyline points="98 236, 18 236, 18 341, 45 341" style="stroke: rgb(65%,39%,8%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="45 341, 36.89598 344.9147, 36.89598 337.0853" style="stroke: rgb(65%,39%,8%); stroke-linecap: butt; stroke-width: 1; fill: rgb(65%,39%,8%); fill-rule: evenodd;"/>
+			<text x="27.369140625" y="202.0" style="font-family: Arial; font-size: 14px;fill: rgb(65%,39%,8%); stroke:none;" transform="translate(0,404) scale(1,-1)">No: next q*</text>
+			<rect x="45" y="21" width="410" height="60" rx="9" ry="9" style="stroke: rgb(39%,45%,54%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(94%,96%,97%); fill-rule: evenodd;"/>
+			<text x="89.97314453125" y="55.80000000000007" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,111) scale(1,-1)">* After four failures, resize at the next bound.</text>
+			<text x="108.291015625" y="36.600000000000065" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,73) scale(1,-1)">Reject if all 12 candidate encodings fail.</text>
+			<rect x="535" y="679" width="390" height="62" rx="9" ry="9" style="stroke: rgb(39%,45%,54%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(94%,96%,97%); fill-rule: evenodd;"/>
+			<text x="589.231201171875" y="716.0" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1432) scale(1,-1)">Prepare component sample blocks</text>
+			<text x="614.94384765625" y="690.24" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1380) scale(1,-1)">Baseline illustration: 8 x 8 samples</text>
+			<polyline points="730 679, 730 633" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="730 633, 733.9147 641.104, 726.0853 641.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<rect x="535" y="561" width="390" height="72" rx="9" ry="9" style="stroke: rgb(39%,45%,54%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(94%,96%,97%); fill-rule: evenodd;"/>
+			<text x="625.1279296875" y="608.0" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1216) scale(1,-1)">Discrete cosine transform</text>
+			<text x="582.21923828125" y="582.24" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1164) scale(1,-1)">Pixel values -&gt; spatial-frequency coefficients</text>
+			<polyline points="730 561, 730 515" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="730 515, 733.9147 523.104, 726.0853 523.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<rect x="535" y="443" width="390" height="72" rx="9" ry="9" style="stroke: rgb(65%,39%,8%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(100%,95%,87%); fill-rule: evenodd;"/>
+			<text x="644.032958984375" y="490.0" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,980) scale(1,-1)">Quantise coefficients</text>
+			<text x="613.262939453125" y="464.24" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,928) scale(1,-1)">Divide by quantisation steps; round</text>
+			<polyline points="730 443, 730 397" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="730 397, 733.9147 405.104, 726.0853 405.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<rect x="535" y="325" width="390" height="72" rx="9" ry="9" style="stroke: rgb(39%,45%,54%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(94%,96%,97%); fill-rule: evenodd;"/>
+			<text x="598.681640625" y="372.0" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,744) scale(1,-1)">Order and represent coefficients</text>
+			<text x="604.532470703125" y="346.24" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,692) scale(1,-1)">DC differences; zigzag AC / zero runs</text>
+			<polyline points="730 325, 730 279" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="730 279, 733.9147 287.104, 726.0853 287.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<rect x="535" y="207" width="390" height="72" rx="9" ry="9" style="stroke: rgb(39%,45%,54%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(94%,96%,97%); fill-rule: evenodd;"/>
+			<text x="667.66943359375" y="254.0" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,508) scale(1,-1)">Entropy coding</text>
+			<text x="604.5068359375" y="228.24" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,456) scale(1,-1)">Huffman coding in the baseline model</text>
+			<polyline points="730 207, 730 158" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="730 158, 733.9147 166.104, 726.0853 166.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<rect x="535" y="98" width="390" height="60" rx="9" ry="9" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(90%,95%,93%); fill-rule: evenodd;"/>
+			<text x="657.24365234375" y="133.0" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,266) scale(1,-1)">JPEG byte stream</text>
+			<text x="601.588134765625" y="107.24000000000001" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,214) scale(1,-1)">Return encoded Blob to the size check</text>
+			<rect x="535" y="21" width="390" height="60" rx="9" ry="9" style="stroke: rgb(39%,45%,54%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(94%,96%,97%); fill-rule: evenodd;"/>
+			<text x="594.974365234375" y="55.80000000000007" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,111) scale(1,-1)">The application supplies pixels and q.</text>
+			<text x="578.275146484375" y="36.600000000000065" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,73) scale(1,-1)">Codec details are selected by the browser.</text>
+		</g>
+	</g>
+</svg>

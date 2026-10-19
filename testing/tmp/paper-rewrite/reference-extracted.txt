@@ -1,0 +1,327 @@
+
+===== PAGE 1 =====
+                                                                                    
+                                                                                    
+      2026S1-3636                                                                   
+                                                                                    
+         Asynchronous        Data   Gateway      for  LoRa-to-Mobile                
+                                                                                    
+            Integration    in Disaster    Mesh    Networks      (2026)              
+                                                                                    
+                                                                                    
+                          Supervisors: Dr. Lillian Wang and Dr. Wai Peng, Wong      
+                               Ming Dong, Teh and Jing Hong, Hiew                   
+                                                                                    
+                                                                                    
+        Abstract: Natural disasters routinely disable cellular multi-hop latencies of 2.28 s, 4.60 s, and 6.75 s for one-, two-,
+      infrastructure at the precise moment reliable communication is and three-hop paths respectively, without any cellular
+      most critical. In Malaysia and Southeast Asia, the AS923 LoRa                 
+                                           backbone.                                
+      spectrum offers a viable low-power fallback, yet no production-               
+                                             Despite this validated physical-layer capability, a critical
+      ready, open-source Android application exists to act as a true                
+                                           software gap persists at the Android middleware layer. No
+      asynchronous middleware gateway between a commodity LoRa                      
+      transceiver and a mobile device user interface over USB serial. This production-ready, open-source Android application exists that
+      paper presents the DEC-AI LoRa Gateway: a custom Android functions as a fully asynchronous gateway between a
+      middleware application that implements (1) a bespoke binary mesh commodity LoRa transceiver connected via USB serial OTG
+      protocol optimised for sub-50-byte maximum transmission units                 
+                                           and a mobile device user interface, implementing a custom
+      (MTUs); (2) asynchronous, state-machine-driven serial                         
+                                           binary protocol with built-in ARQ and duty-cycle
+      communication over USB OTG targeting the Heltec V3 ESP32                      
+                                           enforcement. This project directly addresses that gap.
+      (SX1262 transceiver) via a Xiaomi 12T running Android 12; and                 
+      (3) selective-repeat automatic repeat request (ARQ) fragmentation             
+                                           B. Literature Review                     
+      for reliable transmission of structured disaster data including GPS           
+      coordinates, status reports, and alert messages under AS923 duty- 1) LoRa Mesh for Disaster Communications
+      cycle constraints. The proposed architecture is benchmarked The suitability of LoRa mesh for post-disaster
+      against Meshtastic [6], MeshCore , LoRaWAN, Reticulum, and the communication has been corroborated across multiple
+      recently published Stratos system [8], demonstrating that building deployment studies and system architectures. Sciullo, Trotta,
+      the disaster-specific protocol layer atop the stable Meshtastic               
+                                           and Di Felice [2] introduced LOCATE, a wearable IoT system
+      Android transport stack offers a superior convergence of reliability,         
+                                           pairing a LoRa transceiver with an Android application via
+      bandwidth efficiency, and research novelty. Empirical evaluation              
+      targets packet delivery ratio, throughput, latency, and power Bluetooth Low Energy (BLE) for opportunistic, multi-hop
+      consumption across indoor and outdoor line-of-sight test scenarios alert dissemination in post-disaster scenarios. While LOCATE
+      at the Monash University campus in Malaysia. confirmed that a mobile-phone-centric LoRa architecture is
+        Index Terms: LoRa, AS923, disaster communication, Android operationally feasible, BLE introduces additional pairing
+      middleware, USB OTG, ARQ, binary protocol, Heltec V3, mesh                    
+                                           complexity and a wireless link that is vulnerable to
+      network, Malaysia.                                                            
+                                           interference in dense urban rubble environments; this project
+                                           targets USB OTG serial as a more deterministic and robust
+            I. INTRODUCTION AND LITERATURE REVIEW                                   
+      T                                    alternative.                             
+            HE failure of telecommunications infrastructure                         
+                                             Trotta et al. [3] conducted a substantive analysis of LoRa-
+           during natural disasters is a well-documented and                        
+                                           based peer-to-peer mesh architecture and identified the single
+           persistent problem. Floods in Malaysia, earthquakes                      
+                                           point-of-failure inherent in LoRaWAN’s star-of-stars
+      across Southeast Asia, and typhoons throughout the Pacific                    
+                                           topology. Their finding that all existing LoRa mesh overlays
+      annually demonstrate that cellular towers and internet                        
+                                           at the time still partially required gateways or internet
+      backhaul are among the first systems to fail, yet they are                    
+                                           backhaul which renders them unsuitable for fully offline
+      precisely the systems upon which modern emergency                             
+                                           disaster scenarios. This remains the primary architectural
+      coordination depends. This creates a communication void                       
+                                           motivation for this project’s gateway-free design goal.
+      between affected civilians, first responders, and coordination                
+                                             Carrillo et al. [4] published what constitutes the most
+      centres at the most critical window of a disaster response.                   
+                                           technically relevant 2025 contribution: a gateway-free LoRa
+      A. Background and Motivation         mesh system on ESP32 implementing neighbour-based
+                                           routing, hop-by-hop acknowledgements, Listen-Before-Talk
+        Long Range (LoRa) radio has emerged as a technically                        
+                                           (LBT), and duplicate suppression via Alternate Link
+      compelling fallback medium for such scenarios. Operating in                   
+                                           Triggering (ALT). This work empirically confirms that
+      the unlicensed AS923 band designated for IoT use in Malaysia                  
+                                           lightweight self-healing mechanisms are achievable on
+      (923.2–924.6 MHz), LoRa provides kilometre-scale range                        
+                                           commodity microcontrollers, directly informing the ARQ and
+      with sub-milliamp receive currents and does not require any                   
+                                           routing design of this project’s protocol specification.
+      licensed spectrum or network infrastructure [1]. Foundational                 
+                                           2) Existing Mesh Protocol Ecosystems     
+      empirical work by Lee and Ke [5] validated LoRa mesh at                       
+                                             Meshtastic (v2.7.8, April 2025) represents the most mature
+      campus scale: a 20-node deployment achieved a packet                          
+                                           open-source LoRa mesh platform, supporting Android, iOS,
+      delivery ratio (PDR) of 99.99% for periodic traffic, with                     
+
+===== PAGE 2 =====
+                                                                                    
+                                                                                    
+      2026S1-3636                                                                   
+                                                                                    
+      macOS, and Linux clients communicating with ESP32/nRF52- this project’s transmission scheduler, has been surveyed by
+      based nodes via Bluetooth, USB serial, or TCP [6]. It encodes Faiza et al. for the Malaysian IEEE MICC 2025 context [10].
+      all on-air packets using Protocol Buffers and implements a 4) Android Asynchronous Serial Communication
+      flooding-based mesh with configurable hop limits. Its Android The usb-serial-for-android library (v3.8.x, 2024 - 2025) is
+      application uses the usb-serial-for-android library with a the most actively maintained Android USB serial solution,
+      ProbeTableProvider for device-specific driver mappings, an supporting FTDI, CDC-ACM, CP210x, PL2303, and
+      architectural pattern this project directly reuses [10]. The CH340/CH341 chipsets; the latter being the chipset used on
+      principal limitation of Meshtastic from the perspective of this the Heltec V3 [13]. The Xiaomi 12T running Android 12
+      research is that it requires proprietary Meshtastic firmware on (MIUI/HyperOS) supports USB OTG via its USB 2.0 Type-C
+      all nodes and provides no mechanism for custom binary port, confirmed by hardware specification [14]. Google’s
+      protocol overlays or application-layer duty-cycle enforcement. official Android documentation designates Kotlin Coroutines
+      These limitations define the research gap this project occupies. as the recommended asynchronous programming model for
+        MeshCore is a lightweight C++ library targeting disaster Android, with Kotlin Flows providing reactive streaming from
+      recovery that emphasises minimal overhead and an open background serial I/O coroutines to the UI layer [7], precisely
+      firmware architecture [6]. It provides a useful comparative the architectural model adopted by this project’s gateway state
+      benchmark for protocol overhead analysis, but its absence of a machine.       
+      mature Android middleware layer and the lack of a 5) Gap Analysis             
+      documented USB OTG integration path means it does not Table I synthesises the comparative analysis of related
+      address the Android-gateway dimension of this research. protocols and systems. The critical gaps are: (1) no existing
+        The recently published Stratos system by Sai and Sujini [8] system combines a native Android application, USB OTG
+      introduces a decentralized LoRa mesh architecture combining serial as the primary transport, a custom binary protocol with
+      a Raspberry Pi gateway, Wi-Fi captive portal, BLE crowd built-in ARQ and fragmentation, and AS923 duty-cycle
+      estimation, and TinyML-based message prioritisation for enforcement in a single open-source middleware architecture;
+      civilian SOS messaging. While Stratos demonstrates (2) Meshtastic is the closest technically, but requires
+      sophisticated edge-intelligence integration, its architectural proprietary firmware on all nodes and lacks duty-cycle
+      dependency on a Raspberry Pi gateway and Python-based enforcement in the Android client are the specific gaps this
+      backend means it is not a native Android solution. Civilians project addresses; (3) Stratos demonstrates the value of edge
+      must interact through a web captive portal rather than a direct intelligence in disaster communication but requires a
+      Android application, and the system cannot function as a Raspberry Pi gateway, precluding use as a hand-carried
+      device-carried, hand-held gateway without the Raspberry Pi smartphone-native solution.
+      hardware. This represents a significant operational constraint TABLE I        
+                                              COMPARATIVE ANALYSIS OF RELATED PROTOCOLS AND SYSTEMS
+      in rapid-onset, highly mobile disaster response scenarios                     
+      where a responder carrying only a smartphone and a USB-                       
+      connected LoRa node needs autonomous communication                            
+      capability.                                                                   
+        LoRaWAN’s star-only topology, mandatory join procedure,                     
+      and 14-byte minimum MAC overhead make it fundamentally                        
+      unsuitable for direct Android-to-gateway peer-to-peer                         
+      messaging [1]. Reticulum (RNS) offers mesh routing with                       
+      end-to-end encryption but imposes cryptographic metadata                      
+      overhead per packet that is incompatible with 50-byte MTUs                    
+      at SF12 (0.3 kbps) under AS923 duty-cycle constraints.                        
+      3) Binary Serialisation for Constrained IoT                                   
+                                           Table I: Comparative analysis of related protocols and systems against the
+        Shvaika et al. [9] conducted a comparative benchmarking proposed DEC-AI LoRa Gateway.
+      study of serialisation formats across IoT ecosystems,                         
+                                           C. Research Question                     
+      confirming that binary formats including Protocol Buffers and                 
+                                             The gap identified by the literature review leads to the
+      Avro outperform JSON by 60–80% in sensor telemetry                            
+                                           following research question:             
+      workloads. For GPS latitude/longitude, timestamp, or status                   
+                                               Can a custom asynchronous Android middleware
+      reports, a JSON encoding yields 78–90 bytes versus 13 bytes                   
+                                              application, communicating with a Heltec V3 ESP32
+      for a compact binary struct. At SF12 (0.3 kbps) under                         
+                                              (SX1262) via USB OTG serial and implementing a
+      AS923’s 1% duty-cycle constraint, this yields approximately                   
+                                              bespoke binary mesh protocol with selective-repeat
+      102 binary messages per hour versus 15 JSON messages, a                       
+                                              ARQ, fragmentation, and AS923 duty-cycle
+      difference that may be operationally decisive in a disaster                   
+                                              enforcement, achieve a packet delivery ratio of ≥95%
+      scenario.                                                                     
+                                              and a throughput of ≥50 binary messages per hour
+        Structured packet scheduling for ground-based LoRa IoT                      
+                                              under realistic disaster channel conditions in
+      networks, including TDMA solutions addressing the                             
+                                              Malaysia?                             
+      contention and duty-cycle challenges that directly constrain                  
+
+===== PAGE 3 =====
+                                                                                    
+                                                                                    
+      2026S1-3636                                                                   
+                                                                                    
+        This question defines the target platform, hardware, region, scenarios.     
+      reliability, and throughput metrics, all of which are                         
+      measurable through the evaluation plan described in Section II. METHODOLOGY   
+      2G. Its significance lies in determining whether the DEC-AI                   
+                                           A. Research and Design                   
+      protocol design is sufficiently reliable and practical for                    
+                                             This project adopts a design-science research methodology,
+      disaster-response deployment in Malaysia.                                     
+                                           proceeding through four sequential phases: literature review
+      D. Problem Statement                 and hardware validation (Phase 1), system architecture design
+        When natural disasters disable cellular infrastructure in (Phase 2), Android application development and unit testing
+      Malaysia and Southeast Asia, affected communities lose (Phase 3), and empirical RF performance evaluation (Phase 4).
+      access to the communication systems they depend on for The methodology is grounded in empirical validation, as
+      requesting rescue, reporting locations, and coordinating protocol design decisions are directly informed by measurable
+      emergency response. While LoRa radio technology operates airtime and PDR metrics under realistic channel conditions.
+      independently of this infrastructure and has been empirically The decision to build the DEC-AI disaster layer atop the
+      validated for multi-kilometre, battery-powered mesh Meshtastic Android transport stack is a deliberate architectural
+      communication, the software gap at the Android middleware choice due to project time constraints. Meshtastic provides a
+      layer means that commodity smartphones cannot be used as battle-tested BLE/USB transport, RadioTransport interface,
+      autonomous LoRa gateways without either adopting and MeshService foreground service lifecycle that would save
+      Meshtastic’s proprietary firmware ecosystem, deploying a several months of development.
+      fixed Raspberry Pi gateway as in Stratos [8], or accepting the                
+                                           B. System Architecture                   
+      heavyweight cryptographic overhead of Reticulum.                              
+                                                          TABLE II                  
+        Specifically, the problem is the absence of an open-source                  
+                                              OSI LAYER MAPPING FOR THE DEC-AI LORA GATEWAY STACK
+      Android application that addresses the gaps identified in the                 
+      Gap analysis and enforces AS923’s 1% duty-cycle constraint                    
+      in software on the Android device.                                            
+        The impact of this gap is concrete: without such a system, a                
+      first responder carrying only a Xiaomi 12T and a Heltec V3                    
+      LoRa node has no way to send structured GPS-tagged alerts                     
+      across a multi-hop LoRa mesh to other responders outside                      
+      cellular range. This research directly addresses that gap.                    
+      E. Aim and Objectives                                                         
+        The aim of this project is to design, implement, and                        
+      empirically evaluate the DEC-AI LoRa Gateway: a custom Table II: OSI layer mapping for the DEC-AI LoRa Gateway stack. Layers 1–2
+      Android middleware application enabling reliable, duty-cycle- are implemented in SX1262 hardware and Heltec V3 firmware; Layers 3–7
+                                           are implemented in the Android application.
+      compliant, structured disaster data communication over a                      
+      LoRa mesh network via USB OTG serial, without dependence C. Custom Binary Mesh Protocol Design
+      on proprietary node firmware or fixed network infrastructure. The DEC-AI binary mesh protocol is designed for operation
+        The following objectives operationalise this aim: within AS923 airtime budgets. At SF12 (125 kHz), the
+      I.   Design and specify a custom binary mesh protocol maximum LoRa payload is 255 bytes but duty-cycle-
+      for sub-50-byte MTUs, including a 13-byte fixed header, compliant airtime constrains the effective MTU to 50 bytes.
+      selective-repeat ARQ with NACK bitmap, and The protocol adopts a 13-byte fixed header, leaving 40 bytes
+      HELLO/ROUTE discovery messages.      for application payload like GPS(4B lat + 4B lon + 4B
+      II.  Develop an Android foreground service timestamp + 1B status = 13B), an alert message (type byte +
+      implementing USB OTG serial communication with the text up to 39B), or a fragmented segment of a longer message.
+      Heltec V3 CH340/CH341 chipset using usb-serial-for-android SLIP (Serial Line Internet Protocol) encoding is applied at
+      v3.8.x [15], with SLIP framing and CRC-16 validation on all the data-link layer to delimit packet boundaries on the USB
+      frames.                              serial stream. The SYNC field (0xAA55) provides an
+      III. Implement a Kotlin Coroutines and Flows-based additional, protocol-level synchronisation marker that enables
+      asynchronous state machine integrating the ARQ engine, the SLIP decoder to resynchronise after partial frame
+      fragment assembler, and AS923 duty-cycle scheduler, meeting corruption.       
+      the <1% duty-cycle and 400 ms dwell-time regulatory                           
+                                           D. Selective-Repeat ARQ Engine           
+      constraints.                                                                  
+      IV.  Empirically evaluate the system against three Reliable delivery of ALERT and GPS messages is provided
+      performance metrics: packet delivery ratio (target: ≥95%), by a selective-repeat ARQ engine. The transmitter maintains a
+      message throughput (target: ≥50 binary messages/hour at window of unacknowledged packets identified by SEQ_NUM.
+      SF12), and Android battery drain (mAh/hour) across different On transmission, a 2000 ms acknowledgement timer is started
+                                           per packet. If an ACK (Acknowledgement from receiver) is
+
+===== PAGE 4 =====
+                                                                                    
+                                                                                    
+      2026S1-3636                                                                   
+                                                                                    
+      received before timeout, the sequence number is retired from II. Scenario B: Interference simulation: A second
+      the window. If a NACK (Not Acknowledgement) is received, Heltec V3 transmitting at 50% channel duty simulates
+      or the timeout expires, the specific packet is retransmitted. A collision conditions representative of a dense post-disaster RF
+      maximum retransmission count of three is enforced before the environment. ACK/NACK bitmap efficiency (ratio of NACKs
+      packet is declared failed and a TxFailed event is emitted. The resolved without full retransmission) and retransmission rate
+      ARQ engine transitions through the IDLE → CONNECTING are the primary metrics. 
+      → HELLO_SENT → ACTIVE → RETRANSMIT / ERROR III. Scenario C: Power consumption profiling: Xiaomi
+      state machine shown in the project’s FSM specification. 12T battery drain (mAh/hour) during continuous gateway
+        The NACK bitmap mechanism allows the receiver to report operation is measured using Android Battery Historian and
+      multiple missing fragments in a single ACK/NACK packet, compared against the device idle baseline to quantify the
+      reducing the overhead of individual per-fragment energy cost of the foreground USB serial service.
+      acknowledgements in multi-fragment message scenarios; an All experiments use the Heltec V3 (SX1262, AS923 band)
+      efficiency borrowed from the design pattern identified in connected to the Xiaomi 12T (Android 12) via USB OTG
+      Carrillo et al. [4].                 Type-C.                                  
+      E. AS923 Duty-Cycle Scheduler        H. Initial Results and Observations      
+        The AS923 band plan for Malaysia imposes a 1% duty- Testing was limited as the hardware components were only
+      cycle limit and a 400 ms maximum dwell time per sub- received in week 11. Initial hardware testing confirmed the
+      channel [13]. To enforce this, the DEC-AI feasibility of using the Heltec V3 as a low-cost LoRa
+      DutyCycleScheduler implements these constraints in Android communication device.
+      software. The scheduler maintains a per-channel airtime                       
+      ledger: each transmitted packet’s airtime is computed from its REFERENCES     
+      byte length and spreading factor, deducted from the available [1] O. Alsayyed, A. Al-Fuqaha, and Q. Abu Al-Haija, "Review of
+      budget, and the channel is marked blocked until the budget Technologies, Routing Protocols, and Architecture for Disaster Area
+      recovers to the 1% threshold.        Networks," IEEE Access, vol. 13, pp. 91129–91160, 2025. DOI:
+                                           10.1109/ACCESS.2025.3570733              
+      F. Android Application Architecture  [2]  L. Sciullo, A. Trotta, and M. Di Felice, "LOCATE: A LoRa-based
+                                           Mobile Emergency Management System for Infrastructure-Independent
+        The Android application is structured into four subsystems Search and Rescue Operations," Ad Hoc Networks, Elsevier, vol. 120, p.
+      following the UML component model. The USB Serial 102557, 2021.               
+                                           [3]  A. Trotta, M. Di Felice, F. Montori, K. R. Chowdhury, and L.
+      Service is an Android Foreground Service that owns the USB                    
+                                           Bononi, "LAURA: LoRa-Based UAV Assisted Robust Agriculture
+      OTG lifecycle, instantiates the appropriate usb-serial-for- Architecture," MDPI Sensors, vol. 21, no. 13, p. 4314, 2021.
+      android driver, applies SLIP framing, and emits validated [4] J. Carrillo, R. Acosta-Coll, A. Perez-Diaz, and Y. Tomas-Grau,
+                                           "Gateway-Free LoRa Mesh on ESP32: Neighbour-Based Routing with Hop-
+      ByteArray frames as a Kotlin Flow. The Protocol Engine                        
+                                           by-Hop ACKs and Listen-Before-Talk," MDPI Sensors, vol. 25, no. 19, p.
+      subscribes to this flow, runs the ARQ state machine, manages 6036, 2025. DOI: 10.3390/s25196036
+      the DutyCycleScheduler, and exposes a StateFlow of [5] W.-Y. Lee and Y.-Y. Ke, "A Monitoring System for Large-Area
+                                           IoT Using Low-Power LoRa Mesh Networks," IEEE Transactions on
+      GatewayUiState to the presentation layer. The UI Layer,                       
+                                           Instrumentation and Measurement, vol. 67, no. 9, pp. 2177–2187, 2018.
+      implemented in Jetpack Compose, observes GatewayUiState                       
+                                           [6]  Meshtastic Project, "Meshtastic Official Documentation v2.7.8,"
+      and renders the alert feed, GPS map (using offline OSM tiles), 2025. [Online]. Available: https://meshtastic.org/docs
+      node status board, and duty-cycle meter. The architecture [7] Android Developers, "Kotlin Coroutines on Android," Google
+                                           LLC,  updated March 2026. [Online]. Available:
+      follows unidirectional data flow (UDF): all user actions flow                 
+                                           https://developer.android.com/kotlin/coroutines
+      downward through GatewayViewModel to the Protocol [8] K. T. Sai and G. N. Sujini, "Stratos: A Resilient LoRa Mesh
+      Engine, and all state changes flow upward via StateFlow. Communication Network for Disaster Zones," International Journal on
+                                           Science and Technology (IJSAT), vol. 17, no. 2, pp. 1–23, April–June 2026.
+        The decision to architect the duty-cycle scheduler and ARQ                  
+                                           [9]  A. Shvaika, O. Veres, and M. Beshley, "Dynamic Data
+      engine in the Android domain layer rather than delegating to Serialization: Performance of JSON vs. Binary Formats in IoT Ecosystems,"
+      Heltec V3 firmware is a deliberate design choice that keeps Journal of Edge Computing, vol. 3, no. 2, 2024.
+                                           [10] Z. Faiza et al., "Structured Packet Scheduling for Ground-Based
+      the research contribution in Android software, makes the                      
+                                           LoRa IoT Networks: Trends, Challenges and TDMA Solutions," in Proc.
+      scheduler independently testable with Android unit tests, and IEEE MICC, Malacca, Malaysia, 2025, pp. 1–6. DOI:
+      removes the dependency on any particular firmware version 10.1109/MICC.2025.11210984
+                                           [11] Memfault, "Event Serialization for Constrained IoT: Protobuf and
+      on the ESP32.                                                                 
+                                           MessagePack for LoRa and BLE," 2024. [Online]. Available:
+                                           https://docs.memfault.com                
+      G. Experimental Design                                                        
+                                           [12] DeepWiki, "USB Serial Communication: Meshtastic-Android
+        Performance evaluation proceeds across three scenarios Architecture," 2026. [Online]. Available: https://deepwiki.com
+      emulating realistic operating conditions: [13] LoRa Alliance, Inc, “RP002-1.0.2 LoRaWAN® Regional
+                                           Parameters,” 2020      https://lora-alliance.org/wp-
+      I.   Scenario A: Baseline (line-of-sight, 10–200 m):                          
+                                           content/uploads/2020/11/RP_2-1.0.2.pdf   
+      PDR, throughput, and end-to-end latency measured at SF7 and [14] Semtech Corporation, "SX1262 Sub-GHz Radio Transceiver —
+      SF9. A minimum of 100 message transmissions per Datasheet Rev 2.1," Semtech, Camarillo, CA, 2019.
+                                           [15] mik3y, "usb-serial-for-android v3.8.x," GitHub Repository, 2024.
+      configuration is required for statistical significance. Different             
+                                           [Online]. Available: https://github.com/mik3y/usb-serial-for-android
+      message types are evaluated.                                                  

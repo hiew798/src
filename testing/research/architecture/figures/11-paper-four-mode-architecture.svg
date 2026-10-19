@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg
+  PUBLIC '-//W3C//DTD SVG 1.0//EN'
+  'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'>
+<svg width="960" height="595" preserveAspectRatio="xMinYMin meet" viewBox="0 0 960 595" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="960" height="595"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-595)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="0" y="0" width="960" height="595" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="73.024169921875" y="571.0" style="font-family: Arial-Bold; font-size: 19px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1142) scale(1,-1)">(a) Mode 1</text>
+			<text x="80.923828125" y="546.68" style="font-family: Arial-Bold; font-size: 19px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1093) scale(1,-1)">Baseline</text>
+			<text x="312.504638671875" y="571.0" style="font-family: Arial-Bold; font-size: 19px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1142) scale(1,-1)">(b) Mode 2</text>
+			<text x="331.504638671875" y="546.68" style="font-family: Arial-Bold; font-size: 19px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1093) scale(1,-1)">Tuned</text>
+			<text x="553.024169921875" y="571.0" style="font-family: Arial-Bold; font-size: 19px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1142) scale(1,-1)">(c) Mode 3</text>
+			<text x="575.187744140625" y="546.68" style="font-family: Arial-Bold; font-size: 19px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1093) scale(1,-1)">Fixed</text>
+			<text x="792.504638671875" y="571.0" style="font-family: Arial-Bold; font-size: 19px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1142) scale(1,-1)">(d) Mode 4</text>
+			<text x="799.880126953125" y="546.68" style="font-family: Arial-Bold; font-size: 19px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1093) scale(1,-1)">Adaptive</text>
+			<rect x="20" y="458" width="920" height="55" rx="9" ry="9" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(91%,96%,97%); fill-rule: evenodd;"/>
+			<text x="165.90966796874994" y="479.74" style="font-family: Arial-Bold; font-size: 18px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,959) scale(1,-1)">Common entry: associated SOS acknowledged; image manifest accepted</text>
+			<polyline points="120 458, 120 431" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="120 431, 123.9147 439.104, 116.0853 439.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<rect x="20" y="371" width="200" height="60" rx="9" ry="9" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(91%,96%,97%); fill-rule: evenodd;"/>
+			<text x="73.326416015625" y="406.0" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,812) scale(1,-1)">Send chunk i</text>
+			<text x="54.9619140625" y="382.8" style="font-family: Arial; font-size: 13px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,765) scale(1,-1)">Up to 180 image bytes</text>
+			<polyline points="120 371, 120 349" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="120 349, 123.9147 357.104, 116.0853 357.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<rect x="20" y="289" width="200" height="60" rx="9" ry="9" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(91%,96%,97%); fill-rule: evenodd;"/>
+			<text x="49.5849609375" y="324.0" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,648) scale(1,-1)">Wait for chunk ACK</text>
+			<text x="29.323730468749986" y="300.8" style="font-family: Arial; font-size: 13px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,601) scale(1,-1)">Normal timer starts at queueing</text>
+			<polyline points="120 289, 120 267" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="120 267, 123.9147 275.104, 116.0853 275.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<rect x="20" y="207" width="200" height="60" rx="9" ry="9" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(91%,96%,97%); fill-rule: evenodd;"/>
+			<text x="44.981689453125" y="242.0" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,484) scale(1,-1)">Schedule next chunk</text>
+			<text x="51.71826171875" y="218.8" style="font-family: Arial; font-size: 13px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,437) scale(1,-1)">300 ms post-ACK delay</text>
+			<polyline points="120 207, 120 185" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="120 185, 123.9147 193.104, 116.0853 193.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<rect x="20" y="125" width="200" height="60" rx="9" ry="9" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(91%,96%,97%); fill-rule: evenodd;"/>
+			<text x="41.63818359375" y="160.0" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,320) scale(1,-1)">Repeat / retry missing</text>
+			<text x="49.541015625" y="136.8" style="font-family: Arial; font-size: 13px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,273) scale(1,-1)">200 ms planning interval</text>
+			<polyline points="120 125, 120 89" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="120 89, 123.9147 97.10402, 116.0853 97.10402" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<polyline points="360 458, 360 431" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="360 431, 363.9147 439.104, 356.0853 439.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<rect x="260" y="371" width="200" height="60" rx="9" ry="9" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(91%,96%,97%); fill-rule: evenodd;"/>
+			<text x="313.326416015625" y="406.0" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,812) scale(1,-1)">Send chunk i</text>
+			<text x="303.642333984375" y="382.8" style="font-family: Arial; font-size: 13px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,765) scale(1,-1)">Same chunk format</text>
+			<polyline points="360 371, 360 349" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="360 349, 363.9147 357.104, 356.0853 357.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<rect x="260" y="289" width="200" height="60" rx="9" ry="9" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(91%,96%,97%); fill-rule: evenodd;"/>
+			<text x="289.5849609375" y="324.0" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,648) scale(1,-1)">Wait for chunk ACK</text>
+			<text x="283.063232421875" y="300.8" style="font-family: Arial; font-size: 13px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,601) scale(1,-1)">Image timer starts after TX</text>
+			<polyline points="360 289, 360 267" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="360 267, 363.9147 275.104, 356.0853 275.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<rect x="260" y="207" width="200" height="60" rx="9" ry="9" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(91%,96%,97%); fill-rule: evenodd;"/>
+			<text x="284.981689453125" y="242.0" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,484) scale(1,-1)">Schedule next chunk</text>
+			<text x="295.333251953125" y="218.8" style="font-family: Arial; font-size: 13px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,437) scale(1,-1)">30 ms post-ACK delay</text>
+			<polyline points="360 207, 360 185" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="360 185, 363.9147 193.104, 356.0853 193.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<rect x="260" y="125" width="200" height="60" rx="9" ry="9" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(91%,96%,97%); fill-rule: evenodd;"/>
+			<text x="281.63818359375" y="160.0" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,320) scale(1,-1)">Repeat / retry missing</text>
+			<text x="293.156005859375" y="136.8" style="font-family: Arial; font-size: 13px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,273) scale(1,-1)">20 ms planning interval</text>
+			<polyline points="360 125, 360 89" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="360 89, 363.9147 97.10402, 356.0853 97.10402" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<polyline points="600 458, 600 431" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="600 431, 603.9147 439.104, 596.0853 439.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<rect x="500" y="371" width="200" height="60" rx="9" ry="9" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(90%,95%,93%); fill-rule: evenodd;"/>
+			<text x="558.336181640625" y="406.0" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,812) scale(1,-1)">Send group</text>
+			<text x="550.1455078125" y="382.8" style="font-family: Arial; font-size: 13px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,765) scale(1,-1)">4 missing chunks</text>
+			<polyline points="600 371, 600 349" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="600 349, 603.9147 357.104, 596.0853 357.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<rect x="500" y="289" width="200" height="60" rx="9" ry="9" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(90%,95%,93%); fill-rule: evenodd;"/>
+			<text x="520.7958984375" y="324.0" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,648) scale(1,-1)">Query receiver bitmap</text>
+			<text x="508.23193359375" y="300.8" style="font-family: Arial; font-size: 13px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,601) scale(1,-1)">One reply reports saved chunks</text>
+			<polyline points="600 289, 600 267" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="600 267, 603.9147 275.104, 596.0853 275.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<rect x="500" y="207" width="200" height="60" rx="9" ry="9" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(90%,95%,93%); fill-rule: evenodd;"/>
+			<text x="511.636962890625" y="242.0" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,484) scale(1,-1)">Select remaining chunks</text>
+			<text x="522.69189453125" y="218.8" style="font-family: Arial; font-size: 13px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,437) scale(1,-1)">Retry missing; include new</text>
+			<polyline points="600 207, 600 185" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="600 185, 603.9147 193.104, 596.0853 193.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<rect x="500" y="125" width="200" height="60" rx="9" ry="9" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(90%,95%,93%); fill-rule: evenodd;"/>
+			<text x="551.663818359375" y="160.0" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,320) scale(1,-1)">Repeat group</text>
+			<text x="515.8173828125" y="136.8" style="font-family: Arial; font-size: 13px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,273) scale(1,-1)">Fixed cap; shorter final group</text>
+			<polyline points="600 125, 600 89" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="600 89, 603.9147 97.10402, 596.0853 97.10402" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<polyline points="840 458, 840 431" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="840 431, 843.9147 439.104, 836.0853 439.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<rect x="740" y="371" width="200" height="60" rx="9" ry="9" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(90%,95%,93%); fill-rule: evenodd;"/>
+			<text x="772.91015625" y="406.0" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,812) scale(1,-1)">Choose group size</text>
+			<text x="750.755126953125" y="382.8" style="font-family: Arial; font-size: 13px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,765) scale(1,-1)">Start at 2; airtime-bounded cap</text>
+			<polyline points="840 371, 840 349" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="840 349, 843.9147 357.104, 836.0853 357.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<rect x="740" y="289" width="200" height="60" rx="9" ry="9" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(90%,95%,93%); fill-rule: evenodd;"/>
+			<text x="746.663818359375" y="324.0" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,648) scale(1,-1)">Send group; query bitmap</text>
+			<text x="763.06005859375" y="300.8" style="font-family: Arial; font-size: 13px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,601) scale(1,-1)">Query retry on first timeout</text>
+			<polyline points="840 289, 840 267" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="840 267, 843.9147 275.104, 836.0853 275.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<rect x="740" y="207" width="200" height="60" rx="9" ry="9" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(90%,95%,93%); fill-rule: evenodd;"/>
+			<text x="755.386962890625" y="242.0" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,484) scale(1,-1)">Measure confirmed rate</text>
+			<text x="767.3828125" y="218.8" style="font-family: Arial; font-size: 13px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,437) scale(1,-1)">New bytes / elapsed time</text>
+			<polyline points="840 207, 840 185" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="840 185, 843.9147 193.104, 836.0853 193.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<rect x="740" y="125" width="200" height="60" rx="9" ry="9" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(90%,95%,93%); fill-rule: evenodd;"/>
+			<text x="752.48291015625" y="160.0" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,320) scale(1,-1)">Probe / retain group size</text>
+			<text x="760.33056640625" y="136.8" style="font-family: Arial; font-size: 13px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,273) scale(1,-1)">Accept trial above +5% rate</text>
+			<polyline points="840 125, 840 89" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="840 89, 843.9147 97.10402, 836.0853 97.10402" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<rect x="20" y="27" width="920" height="62" rx="9" ry="9" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(90%,95%,93%); fill-rule: evenodd;"/>
+			<text x="114.421142578125" y="64.0" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,128) scale(1,-1)">Common completion: persisted image, expected size and CRC32 verified, completion ACK</text>
+			<text x="252.359619140625" y="38.24000000000001" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,76) scale(1,-1)">Sender saves delivery state; phone observes the next status update.</text>
+			<text x="198.585205078125" y="6.0" style="font-family: Arial; font-size: 15px;fill: rgb(39%,45%,54%); stroke:none;" transform="translate(0,12) scale(1,-1)">Logical paths only. Retry loops and the common manifest exchange are abbreviated.</text>
+		</g>
+	</g>
+</svg>

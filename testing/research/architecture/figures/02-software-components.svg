@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg
+  PUBLIC '-//W3C//DTD SVG 1.0//EN'
+  'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'>
+<svg width="960" height="590" preserveAspectRatio="xMinYMin meet" viewBox="0 0 960 590" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="960" height="590"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-590)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="0" y="0" width="960" height="590" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<rect x="265" y="507" width="430" height="65" rx="9" ry="9" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(91%,96%,97%); fill-rule: evenodd;"/>
+			<text x="369.006103515625" y="547.0" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1094) scale(1,-1)">Phone browser: data/app.js</text>
+			<text x="334.962158203125" y="521.24" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1042) scale(1,-1)">HTML / CSS / JS served from WebAssets.h</text>
+			<polyline points="480 507, 480 470" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="480 470, 483.9147 478.104, 476.0853 478.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<text x="530.37841796875" y="482.0" style="font-family: Arial; font-size: 15px;fill: rgb(9%,41%,58%); stroke:none;" transform="translate(0,964) scale(1,-1)">Local web requests</text>
+			<rect x="270" y="390" width="420" height="80" rx="9" ry="9" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(91%,96%,97%); fill-rule: evenodd;"/>
+			<text x="400.63623046875" y="445.0" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,890) scale(1,-1)">WebServerManager</text>
+			<text x="309.90966796875" y="419.24" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,838) scale(1,-1)">Routing, sessions, JSON, JPEG upload / download</text>
+			<rect x="25" y="390" width="205" height="80" rx="9" ry="9" style="stroke: rgb(39%,45%,54%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(94%,96%,97%); fill-rule: evenodd;"/>
+			<text x="67.016357421875" y="445.0" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,890) scale(1,-1)">Portal services</text>
+			<text x="56.444091796875" y="419.24" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,838) scale(1,-1)">DNS + HTTP redirect</text>
+			<polyline points="230 430, 270 430" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="270 430, 261.896 433.9147, 261.896 426.0853" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<rect x="25" y="240" width="400" height="90" rx="9" ry="9" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(90%,95%,93%); fill-rule: evenodd;"/>
+			<text x="158.398681640625" y="305.0" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,610) scale(1,-1)">StorageManager</text>
+			<text x="87.451171875" y="279.24" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,558) scale(1,-1)">Report records, JPEG fragments, CRC32</text>
+			<text x="85.77392578125" y="260.04" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,520) scale(1,-1)">Commit + read-back + bitmap persistence</text>
+			<rect x="535" y="240" width="400" height="90" rx="9" ry="9" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(90%,95%,93%); fill-rule: evenodd;"/>
+			<text x="657.068115234375" y="305.0" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,610) scale(1,-1)">LoRaMeshManager</text>
+			<text x="610.777587890625" y="279.24" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,558) scale(1,-1)">Frame queues, retries, receive / send</text>
+			<text x="614.923095703125" y="260.04" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,520) scale(1,-1)">Duplicate checks and authentication</text>
+			<polyline points="350 390, 350 330" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="350 330, 353.9147 338.104, 346.0853 338.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<polyline points="610 390, 735 390, 735 330" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="735 330, 738.9147 338.104, 731.0853 338.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<polyline points="425 305, 535 305" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="535 305, 526.896 308.9147, 526.896 301.0853" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<text x="439.976806640625" y="317.0" style="font-family: Arial; font-size: 15px;fill: rgb(9%,41%,58%); stroke:none;" transform="translate(0,634) scale(1,-1)">Read / save</text>
+			<polyline points="535 265, 425 265" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="425 265, 433.104 261.0853, 433.104 268.9147" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1; fill: rgb(7%,49%,45%); fill-rule: evenodd;"/>
+			<rect x="25" y="125" width="400" height="70" rx="9" ry="9" style="stroke: rgb(39%,45%,54%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(94%,96%,97%); fill-rule: evenodd;"/>
+			<text x="164.308837890625" y="170.0" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,340) scale(1,-1)">LittleFS + flash</text>
+			<text x="176.231689453125" y="144.24" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,288) scale(1,-1)">Persistent files</text>
+			<rect x="535" y="125" width="190" height="70" rx="9" ry="9" style="stroke: rgb(39%,45%,54%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(94%,96%,97%); fill-rule: evenodd;"/>
+			<text x="574.421875" y="170.0" style="font-family: Arial-Bold; font-size: 16px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,340) scale(1,-1)">TransferPolicy</text>
+			<text x="575.5244140625" y="145.51999999999998" style="font-family: Arial; font-size: 14px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,291) scale(1,-1)">Mode 4 decisions</text>
+			<rect x="750" y="125" width="185" height="70" rx="9" ry="9" style="stroke: rgb(39%,45%,54%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(94%,96%,97%); fill-rule: evenodd;"/>
+			<text x="773.14453125" y="170.0" style="font-family: Arial-Bold; font-size: 16px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,340) scale(1,-1)">RadioLib / SX1262</text>
+			<text x="785.501953125" y="145.51999999999998" style="font-family: Arial; font-size: 14px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,291) scale(1,-1)">Radio driver + SPI</text>
+			<polyline points="225 240, 225 195" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="225 195, 228.9147 203.104, 221.0853 203.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<polyline points="630 240, 630 195" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="630 195, 633.9147 203.104, 626.0853 203.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<polyline points="842 240, 842 195" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="842 195, 845.9147 203.104, 838.0853 203.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<rect x="25" y="24" width="910" height="64" rx="9" ry="9" style="stroke: rgb(39%,45%,54%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(94%,96%,97%); fill-rule: evenodd;"/>
+			<text x="146.396484375" y="60.80000000000007" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,121) scale(1,-1)">loopTask: mesh.update -&gt; DNS -&gt; HTTP redirect -&gt; HTTPS -&gt; mesh.update -&gt; health log / yield</text>
+			<text x="216.61376953125" y="41.600000000000065" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,83) scale(1,-1)">Radio interrupt sets a flag; normal loop code handles frames and storage.</text>
+		</g>
+	</g>
+</svg>

@@ -1,0 +1,68 @@
+{
+  "inspection_date": "2026-10-18",
+  "files": [
+    {
+      "path": "testing.ino",
+      "sha256": "114e56bbf58c7f82887553ffa509111fc1322759d288af12f25c9a4da1c5aabb"
+    },
+    {
+      "path": "Config.h",
+      "sha256": "0f574eeff5827fd19a88840a3fe396ced6a52c9a01c0d7697eb649f6561dc09a"
+    },
+    {
+      "path": "TransferConfig.h",
+      "sha256": "58fdb74f1c835cee0435e1f0401c4699a08648f46676efccf6834a43203664d2"
+    },
+    {
+      "path": "TransferPolicy.h",
+      "sha256": "794ccc36507bbc280dff61886cefa7d6735fdd679b17b431f453994a8573a357"
+    },
+    {
+      "path": "PacketDefs.h",
+      "sha256": "38602871600644722f2b9b612328a99bfbc00777eb473a5813ac7b69d03a7e32"
+    },
+    {
+      "path": "StorageManager.h",
+      "sha256": "ac8bd4d4065e6a3efcd24cc2493316de39175b228909eece866441e4e7c9b452"
+    },
+    {
+      "path": "LoRaMeshManager.h",
+      "sha256": "4563dbbce735415cb78a02bc9c0bff709b81112fc49c21fe30f1c4e5889c8120"
+    },
+    {
+      "path": "WebServerManager.h",
+      "sha256": "aff3cc4797b79b5f271eb1ecad991fdf9b1f89c470aa437947ea32b3086080de"
+    },
+    {
+      "path": "WebAssets.h",
+      "sha256": "485d453827f2f25b06bfbef625808ece0a09aa35040fb420cfd20d9d3c739bab"
+    },
+    {
+      "path": "data/app.js",
+      "sha256": "0c12546470a13c1cba66e85bcc823dcc6a1b6a37f050725ad3fddc06d08cd4ad"
+    },
+    {
+      "path": "data/index.html",
+      "sha256": "ece303d21676b3112d873d126c66756b4ba8147ee7ac40df2ab00bd255dc31b8"
+    },
+    {
+      "path": "data/style.css",
+      "sha256": "7ec3b9913a2e9374d24eb2bccae7a01f985d9b54e9a5451aa87973589930710f"
+    },
+    {
+      "path": "tools/embed_web_assets.py",
+      "sha256": "7d1c282f310703b241fbadd6500a4cb7237667e213fb6771b91f7ff8a0bf293a"
+    }
+  ],
+  "figures": [
+    "01-system-architecture",
+    "02-software-components",
+    "03-image-compression",
+    "04-sos-image-lifecycle",
+    "05-mode-1-baseline",
+    "06-mode-2-tuned",
+    "07-mode-3-fixed",
+    "08-mode-4-adaptive",
+    "09-storage-acknowledgement"
+  ]
+}

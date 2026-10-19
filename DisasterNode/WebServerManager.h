@@ -1,550 +1,333 @@
-/*
- * =====================================================================================
- * File: WebServerManager.h
- * Project: Heltec Wireless Stick Lite V3 - Disaster Recovery Multi-Node LoRa Network
- * Author: Antigravity AI / FYP Disaster Recovery Team
- * 
- * Description:
- *   Manages ESP32 WiFi SoftAP, Captive Portal DNS Redirection, and Async HTTP Web Server.
- *   
- *   Key Capabilities & Networking Concepts:
- *   -----------------------------------------------------------------------------------
- *   1. Non-Blocking Async Architecture (ESPAsyncWebServer):
- *      Unlike standard synchronous Arduino WiFiServer (which blocks loop() while reading/writing
- *      bytes to a client), ESPAsyncWebServer operates asynchronously on background tasks.
- *      Multiple victim phones can connect and load webpages simultaneously without stalling
- *      or delaying time-critical LoRa radio interrupts.
- *      
- *   2. Captive Portal DNS Redirection (Port 53):
- *      When an Android phone connects to an open WiFi network, it immediately tries to resolve
- *      domains like "connectivitycheck.gstatic.com" or "clients3.google.com". The on-board
- *      DNSServer intercepts all UDP port 53 queries and answers with the ESP32 IP (192.168.4.1).
- *      Android detects this redirect and automatically pops up the "Sign in to network" browser!
- *      
- *   3. Strict Compile-Time Role Segregation:
- *      - CURRENT_NODE_ROLE == ROLE_CIVILIAN:
- *        Registers only civilian routes (SOS form, LittleFS static files, read-only incident list).
- *        Rescuer admin and clearance endpoints are NOT registered at all, guaranteeing victims
- *        cannot accidentally or maliciously clear distress reports.
- *      - CURRENT_NODE_ROLE == ROLE_RESCUER:
- *        Serves the Tactical Command Console at root (/), exposing incident triage lists,
- *        proximity beacon triggers, and Anti-Packet clearance actions.
- * =====================================================================================
- */
-
-#ifndef WEB_SERVER_MANAGER_H
-#define WEB_SERVER_MANAGER_H
-
-#include <Arduino.h>
-#include <WiFi.h>
-#include <DNSServer.h>
-#include <ESPAsyncWebServer.h>
-#include <AsyncJson.h>
+#pragma once
 #include <ArduinoJson.h>
-#include "Config.h"
-#include "PacketDefs.h"
-#include "StorageManager.h"
+#include <HTTPServer.hpp>
+#include <HTTPSServer.hpp>
+#include <SSLCert.hpp>
+
+#include "cert_der.h"
+#include "key_der.h"
+#include <HTTPRequest.hpp>
+#include <HTTPResponse.hpp>
+#include <ResourceNode.hpp>
+#include <ResourceParameters.hpp>
+#include <DNSServer.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
 #include "LoRaMeshManager.h"
-
-//to get the MAC
-#include "esp_mac.h"
-
-// =====================================================================================
-// EMBEDDED RESCUER TACTICAL DASHBOARD (HTML / CSS / JS in PROGMEM Flash)
-// Kept in flash memory so Rescuer Nodes function immediately out-of-the-box
-// without requiring a separate LittleFS filesystem flash tool.
-// =====================================================================================
-const char RESCUER_HTML[] PROGMEM = R"rawliteral(
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RESCUER TACTICAL COMMAND</title>
-<style>
-:root{--bg:#090d16;--card:#131b2e;--red:#ef4444;--orange:#f97316;--green:#10b981;--blue:#38bdf8;--text:#f1f5f9;--sub:#94a3b8;}
-*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
-body{background:var(--bg);color:var(--text);padding:14px;display:flex;justify-content:center;}
-.wrap{width:100%;max-width:750px;}
-.top{background:linear-gradient(135deg,rgba(16,185,129,0.15),rgba(19,27,46,0.9));border:1px solid var(--green);border-radius:12px;padding:14px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;}
-.top h1{font-size:1.1rem;color:#fff;letter-spacing:0.5px;}
-.actions{display:flex;gap:8px;margin-bottom:14px;}
-.btn{flex:1;padding:12px;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.85rem;}
-.btn-poll{background:var(--blue);color:#000;}
-.btn-ref{background:#334155;color:#fff;}
-.card{background:var(--card);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:12px;margin-bottom:10px;}
-.card.priority-high{border-left:5px solid var(--red);}
-.card.priority-med{border-left:5px solid var(--orange);}
-.card.status-resolved{border-left:5px solid var(--green);opacity:0.65;}
-.row{display:flex;justify-content:space-between;font-weight:700;margin-bottom:6px;font-size:0.95rem;}
-.badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
-.b{font-size:0.65rem;padding:2px 6px;border-radius:4px;font-weight:700;}
-.b-red{background:rgba(239,68,68,0.25);color:#fca5a5;}
-.b-org{background:rgba(249,115,22,0.25);color:#fdba74;}
-.b-grn{background:rgba(16,185,129,0.25);color:#6ee7b7;}
-.btn-clear{width:100%;padding:10px;background:linear-gradient(135deg,#059669,#10b981);color:#fff;border:none;border-radius:6px;font-weight:700;cursor:pointer;font-size:0.8rem;margin-top:8px;}
-.btn-clear:disabled{background:#475569;cursor:not-allowed;}
-</style>
-</head>
-<body>
-<div class="wrap">
-  <div class="top">
-    <div>
-      <h1>RESCUE COMMAND CONSOLE</h1>
-      <p id="diag" style="font-size:0.75rem;color:var(--sub);">Connecting to Gateway...</p>
-    </div>
-    <span style="font-size:1.5rem;">🛡️</span>
-  </div>
-  <div class="actions">
-    <button class="btn btn-poll" id="btnPoll">📡 Poll Nearby Node Backlogs</button>
-    <button class="btn btn-ref" id="btnRef">↻ Refresh</button>
-  </div>
-  <div id="list">Loading distress incidents...</div>
-</div>
-<script>
-async function load(){
-  try{
-    const r=await fetch('/api/rescuer/all-reports');
-    const d=await r.json();
-    const l=document.getElementById('list');
-    if(!d.length){l.innerHTML='<p style="text-align:center;color:#64748b;padding:30px;">No incidents reported yet.</p>';return;}
-    l.innerHTML=d.map(i=>{
-      const isRes=i.status===2;
-      const isHigh=i.trapped||i.injured;
-      const cls=isRes?'status-resolved':(isHigh?'priority-high':'priority-med');
-      return `<div class="card ${cls}">
-        <div class="row">
-          <span>📍 ${i.location}</span>
-          <span>👥 ${i.victimCount} People</span>
-        </div>
-        <div class="badges">
-          ${isRes?'<span class="b b-grn">✓ RESOLVED / RESCUED</span>':'<span class="b b-org">PENDING RESCUE</span>'}
-          ${i.trapped?'<span class="b b-red">TRAPPED</span>':''}
-          ${i.injured?'<span class="b b-red">INJURED</span>':''}
-          ${i.needWater?'<span class="b b-org">WATER</span>':''}
-          ${i.needMeds?'<span class="b b-org">MEDS</span>':''}
-        </div>
-        <p style="font-size:0.85rem;color:#cbd5e1;">${i.text||'No details.'}</p>
-        <img src="/api/rescuer/image?msgId=${i.msgId}&t=${Date.now()}" style="max-width:100%; border-radius:8px; margin-top:8px;" onerror="this.style.display='none'">
-        <p style="font-size:0.7rem;color:#64748b;margin-top:4px;">ID: ${i.msgId} | Contact: ${i.name}</p>
-        ${!isRes?`<button class="btn-clear" onclick="resolve('${i.msgId}')">✓ MARK RESCUED & CLEAR MESH BACKLOG</button>`:''}
-      </div>`;
-    }).join('');
-  }catch(e){console.error(e);}
-}
-async function resolve(id){
-  if(!confirm('Broadcast Anti-Packet to clear incident '+id+' across the entire mesh?'))return;
-  await fetch('/api/rescuer/clear-alert',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({msgId:id})});
-  load();
-}
-document.getElementById('btnPoll').onclick=async()=>{
-  alert('Broadcasting Rescuer Beacon...');
-  await fetch('/api/rescuer/poll-beacon',{method:'POST'});
-};
-document.getElementById('btnRef').onclick=load;
-setInterval(load,4000);
-load();
-</script>
-</body>
-</html>
-)rawliteral";
+#include "WebAssets.h"
+#include "BufferedOutput.h"
+#include "PortalRouting.h"
+using namespace httpsserver;
 
 class WebServerManager {
-private:
-    AsyncWebServer server;       // Asynchronous HTTP Web Server on port 80
-    DNSServer      dnsServer;    // DNS Server on UDP port 53 for Captive Portal redirection
-    StorageManager* storage;     // Pointer to persistent LittleFS/NVS storage
-    LoRaMeshManager* meshManager;// Pointer to LoRa Mesh Manager
-    String apSSID;               // Configured Access Point SSID
-
-public:
-    WebServerManager(StorageManager* storageMgr, LoRaMeshManager* meshMgr) 
-        : server(HTTP_PORT), storage(storageMgr), meshManager(meshMgr) {}
-
-    /**
-     * Initializes WiFi SoftAP, Captive Portal DNS redirection, and role-segregated HTTP routes.
-     */
-    bool begin() {
-        // Explicitly set AP mode so hardware MAC address loads cleanly from eFuse
-        WiFi.mode(WIFI_AP);
-
-        uint8_t mac[6];
-        // WiFi.macAddress(mac); // Does't work, use the built-in ESP API instead
-        esp_read_mac(mac, ESP_MAC_WIFI_SOFTAP);
-        
-        char ssidBuf[32];
-
-        // Format SSID with role-specific prefix and lower 2 bytes of hardware MAC
-        if (CURRENT_NODE_ROLE == ROLE_RESCUER) {
-            snprintf(ssidBuf, sizeof(ssidBuf), "%s%02X%02X", RESCUER_AP_SSID_PREFIX, mac[4], mac[5]);
-        } else {
-            snprintf(ssidBuf, sizeof(ssidBuf), "%s%02X%02X", CIVILIAN_AP_SSID_PREFIX, mac[4], mac[5]);
+    StorageManager& store;
+    LoRaMeshManager& mesh;
+    SSLCert certificate;
+    HTTPSServer server;
+    HTTPServer redirectServer;
+    DNSServer dns;
+    // Handlers run sequentially in loopTask; mesh.update() never re-enters the
+    // web server. Share fixed scratch space instead of stacking JSON documents
+    // and a 1 KB body buffer above the radio/filesystem call chain.
+    StaticJsonDocument<1536> requestDocument;
+    char requestBody[1025];
+    uint8_t responseScratch[512];
+    uint32_t webLoopMax=0, lastSlowWarning=0;
+    static WebServerManager* instance;
+    static void route(HTTPRequest* req,HTTPResponse* res) { instance->handle(req,res); }
+    static void redirect(HTTPRequest* req,HTTPResponse* res) {
+        req->discardRequestBody(); res->setStatusCode(302); res->setStatusText("Found");
+        res->setHeader("Location",PORTAL_URL); res->setHeader("Content-Type","text/html; charset=utf-8");
+        res->println(
+    "<!doctype html><html><body>"
+    "<a href=\"https://192.168.4.1/\">"
+    "Open secure emergency portal"
+    "</a></body></html>"
+);
+    }
+    static String query(HTTPRequest* req,const char* name) { std::string value; req->getParams()->getQueryParameter(name,value); return String(value.c_str()); }
+    static void error(HTTPResponse* res,int code,const char* message) {
+        res->setStatusCode(code); res->setStatusText(code==401 ? "Unauthorized" : "Request failed");
+        StaticJsonDocument<256> doc; doc["error"]=message; serializeJson(doc,*res);
+    }
+    static bool sessionValid(const String& s) { if(s.length()!=32) return false; for(char c:s) if(!((c>='0'&&c<='9')||(c>='a'&&c<='f'))) return false; return true; }
+    bool authorised(HTTPRequest* req,HTTPResponse* res,String& session) {
+        session=String(req->getHeader("X-Session").c_str());
+        if(!sessionValid(session)) { error(res,400,"Missing browser session. Reload this page."); return false; }
+        if(CURRENT_NODE_ROLE==ROLE_RESCUER && (req->getBasicAuthUser()!=RESCUER_USERNAME || req->getBasicAuthPassword()!=RESCUER_PASSWORD)) {
+            res->setHeader("WWW-Authenticate","Basic realm=\"Heltec rescuer\""); error(res,401,"Rescuer login required. Credentials are in NetworkSecrets.h."); return false;
         }
-        apSSID = String(ssidBuf);
-
-        Serial.printf("[WIFI AP] Starting Access Point: %s (Role: %s) ...\n",
-                      apSSID.c_str(),
-                      CURRENT_NODE_ROLE == ROLE_RESCUER ? "RESCUER GATEWAY" : "CIVILIAN NODE");
-
-        // Start open SoftAP without password
-        bool apSuccess = WiFi.softAP(apSSID.c_str(), WIFI_AP_PASSWORD, WIFI_AP_CHANNEL, 0, WIFI_MAX_CONNECTIONS);
-        if (!apSuccess) {
-            Serial.println("[WIFI ERROR] Failed to start SoftAP!");
-            return false;
-        }
-
-        IPAddress apIP = WiFi.softAPIP(); // Default: 192.168.4.1
-        Serial.printf("[WIFI SUCCESS] AP Started. IP: %s\n", apIP.toString().c_str());
-
-        // Start Captive Portal DNS Server (Maps all incoming domain queries "*" to 192.168.4.1)
-        dnsServer.start(DNS_PORT, "*", apIP);
-        Serial.println("[DNS] Captive Portal DNS running on port 53.");
-
-        // Setup strictly role-segregated routes
-        if (CURRENT_NODE_ROLE == ROLE_RESCUER) {
-            setupRescuerRoutes();
-        } else {
-            setupCivilianRoutes();
-        }
-
-        server.begin();
-        Serial.println("[HTTP] Async HTTP Web Server started on port 80.");
+        // API mutations require a custom header and same-origin requests; no CORS permissions are sent.
+        std::string origin=req->getHeader("Origin");
+        if(!origin.empty() && origin!="https://192.168.4.1") { error(res,403,"Use https://192.168.4.1/ on this Wi-Fi network."); return false; }
         return true;
     }
+    bool access(const Record& r,const String& session) {
+        if(CURRENT_NODE_ROLE==ROLE_RESCUER) return true;
+        Record report;
+        if(r.kind==SOS) return r.source==g_nodeId && session==r.owner;
+        return store.get(SOS,r.link,report) && report.source==g_nodeId && session==report.owner;
+    }
+    bool json(HTTPRequest* req,HTTPResponse* res,JsonDocument& doc) {
+        size_t n=req->getContentLength();
+        if(!n || n>1024 || req->getHeader("Content-Type").find("application/json")!=0) { error(res,400,"Expected JSON under 1024 bytes."); return false; }
+        char* body=requestBody; size_t got=0; uint32_t start=millis();
+        while(got<n && millis()-start<5000) {
+            size_t read=req->readChars(body+got,n-got); got+=read; mesh.update(); if(!read) delay(1);
+        }
+        body[got]=0;
+        if(got!=n || deserializeJson(doc,(const char*)body,got)) { error(res,400,"Incomplete or invalid JSON."); return false; }
+        return true;
+    }
+    template<size_t N> static bool copyText(JsonVariantConst v,char (&to)[N]) {
+        if(!v.is<const char*>()) return false;
+        const char* text=v.as<const char*>(); size_t n=strlen(text);
+        if(n>=N) return false; memcpy(to,text,n+1); return true;
+    }
+    void saved(HTTPResponse* res,const Record& r) {
+        mesh.recordQueued(r);
+        StaticJsonDocument<192> doc; doc["id"]=idString(r.id); doc["status"]="saved_pending";
+        res->setStatusCode(201); res->setStatusText("Created"); serializeJson(doc,*res);
+    }
+    void state(HTTPResponse* res,const String& session) {
+        BufferedOutput<HTTPResponse> output(*res,responseScratch,sizeof(responseScratch));
+        const char* prefix="{\"records\":[";
+        output.write((const uint8_t*)prefix,strlen(prefix)); bool first=true;
+        for(size_t i=0;i<store.count();i++) {
+            Record r; if(!store.at(i,r) || !access(r,session)) continue;
+            if(!first) output.write(','); first=false;
+            requestDocument.clear(); auto& doc=requestDocument;
+            doc["id"]=idString(r.id); doc["source"]=idString(r.source); doc["target"]=idString(r.target);
+            doc["link"]=idString(r.link); doc["kind"]=r.kind; doc["order"]=r.order;
+            doc["mine"]=r.source==g_nodeId; doc["delivery"]=r.delivery==DELIVERY_PENDING ? "pending" : r.delivery==DELIVERY_RELAY ? "relay" : "received";
+            if(r.kind==SOS) {
+                SosPayload p; memcpy(&p,r.payload,sizeof(p)); doc["name"]=p.name; doc["location"]=p.location; doc["text"]=p.text;
+                doc["people"]=p.people; doc["flags"]=p.flags; doc["resolved"]=store.resolved(r.id); doc["timestamp"]=p.timestamp;
+                doc["gps"]=bool(p.gps);
+                if(p.gps) { doc["lat"]=p.latitude; doc["lon"]=p.longitude; }
+                else { doc["lat"]=nullptr; doc["lon"]=nullptr; }
+            } else if(r.kind==CHAT) { ChatPayload p; memcpy(&p,r.payload,sizeof(p)); doc["text"]=p.text; doc["timestamp"]=p.timestamp; }
+            else if(r.kind==IMAGE) {
+                ImagePayload p; memcpy(&p,r.payload,sizeof(p)); doc["bytes"]=p.bytes; doc["chunks"]=imageChunks(p.bytes);
+                doc["done"]=__builtin_popcountll(r.bitmap); doc["complete"]=bool(r.complete);
+            }
+            serializeJson(doc,output);
+            if(!output.flush()) { res->error(); return; }
+            mesh.update();
+        }
+        output.write((const uint8_t*)"]}",2);
+        if(!output.flush()) res->error();
+    }
+    void submitSOS(HTTPRequest* req,HTTPResponse* res,const String& session) {
+        if(CURRENT_NODE_ROLE!=ROLE_CIVILIAN) { error(res,403,"Send SOS from a civilian node."); return; }
+        requestDocument.clear(); auto& doc=requestDocument; if(!json(req,res,doc)) return;
+        Record r; r.kind=SOS; r.source=g_nodeId; r.length=sizeof(SosPayload); session.toCharArray(r.owner,sizeof(r.owner));
+        // The browser supplies an idempotency ID so a lost HTTP response does not create a second SOS.
+        if(!parseId(String(doc["id"] | ""),r.id)) { error(res,400,"Invalid report ID."); return; }
+        SosPayload p{}; int people=doc["people"] | 0, flags=doc["flags"] | 0;
+        if(people<1 || people>99 || flags<0 || flags>31 || !copyText(doc["name"],p.name) || !copyText(doc["location"],p.location) || !copyText(doc["text"],p.text)) {
+            error(res,400,"Check people (1-99) and text byte limits: name 31, location 47, message 95."); return;
+        }
+        p.people=people; p.flags=flags; p.timestamp=doc["timestamp"] | 0U;
+        if(!doc["lat"].isNull() || !doc["lon"].isNull()) {
+            if(!doc["lat"].is<double>() || !doc["lon"].is<double>()) { error(res,400,"Invalid GPS coordinates."); return; }
+            double lat=doc["lat"],lon=doc["lon"];
+            if(!isfinite(lat)||!isfinite(lon)||fabs(lat)>90||fabs(lon)>180) { error(res,400,"Invalid GPS coordinates."); return; }
+            p.gps=1; p.latitude=lat; p.longitude=lon;
+        }
+        memcpy(r.payload,&p,sizeof(p)); Record existing;
+        if(store.get(SOS,r.id,existing)) {
+            if(!access(existing,session) || existing.length!=r.length || memcmp(existing.payload,r.payload,r.length)) error(res,409,"Report ID already used. Refresh to start another report.");
+            else saved(res,existing);
+            return;
+        }
+        if(!store.save(r)) { error(res,507,"Report was NOT saved: storage unavailable or full."); return; }
+        saved(res,r);
+    }
+    void chatOrResolve(HTTPRequest* req,HTTPResponse* res,const String& session,bool resolve) {
+        if(resolve && CURRENT_NODE_ROLE!=ROLE_RESCUER) { error(res,403,"Only a rescuer can resolve a report."); return; }
+        requestDocument.clear(); auto& doc=requestDocument; if(!json(req,res,doc)) return;
+        uint64_t id,reportId; Record report;
+        if(!parseId(String(doc["report"]|""),reportId) || !parseId(String(doc["id"]|""),id) || !store.get(SOS,reportId,report) || !access(report,session)) {
+            error(res,404,"Report not available in this browser session."); return;
+        }
+        if(!resolve && store.resolved(reportId)) { error(res,409,"This report has been resolved."); return; }
+        Record r; r.kind=resolve ? RESOLVE : CHAT; r.id=id; r.link=reportId; r.source=g_nodeId;
+        r.target=report.source==g_nodeId ? report.target : report.source; session.toCharArray(r.owner,sizeof(r.owner));
+        if(resolve) { ResolvePayload p{reportId,doc["timestamp"]|0U}; r.length=sizeof(p); memcpy(r.payload,&p,sizeof(p)); }
+        else { ChatPayload p{}; p.report=reportId; p.timestamp=doc["timestamp"]|0U;
+            if(!copyText(doc["text"],p.text) || !p.text[0]) { error(res,400,"Chat must contain 1-159 UTF-8 bytes."); return; }
+            r.length=sizeof(p); memcpy(r.payload,&p,sizeof(p));
+        }
+        Record existing;
+        if(store.get(r.kind,id,existing)) {
+            if(existing.source!=g_nodeId || existing.link!=reportId || existing.length!=r.length || memcmp(existing.payload,r.payload,r.length)) error(res,409,"Message ID conflict."); else saved(res,existing);
+            return;
+        }
+        if(!store.save(r)) { error(res,507,"Message was NOT saved: storage unavailable or full."); return; }
+        saved(res,r);
+    }
+    void photo(HTTPRequest* req,HTTPResponse* res,const String& session,bool upload) {
+        uint64_t id; Record report;
+        if(!parseId(query(req,"id"),id) || !store.get(SOS,id,report) || !access(report,session)) { error(res,404,"Report not found."); return; }
+        Record image;
+        if(!upload) {
+            if(!store.get(IMAGE,id,image) || !image.complete) { error(res,404,"Photo is not complete yet."); return; }
+            File f=LittleFS.open(store.imagePath(id),"r"); if(!f) { error(res,404,"Photo file unavailable."); return; }
+            res->setHeader("Content-Type","image/jpeg"); res->setHeader("Content-Length",std::to_string(f.size()));
+            uint8_t buf[512]; while(f.available()) { size_t n=f.read(buf,sizeof(buf)); if(!n) break; res->write(buf,n); mesh.update(); } f.close(); return;
+        }
+        if(CURRENT_NODE_ROLE!=ROLE_CIVILIAN || report.source!=g_nodeId) { error(res,403,"Only the report owner can attach a photo."); return; }
+        if(store.get(IMAGE,id,image)) { saved(res,image); return; } // One immutable photo per report; retry is idempotent.
+        size_t length=req->getContentLength();
+        if(length<4 || length>MAX_IMAGE_BYTES || req->getHeader("Content-Type")!="image/jpeg") { error(res,413,"Use a JPEG of at most 8192 bytes."); return; }
+        if(store.count()>=MAX_RECORDS || store.imageCount()>=MAX_IMAGES || LittleFS.totalBytes()-LittleFS.usedBytes()<length+20000) { error(res,507,"No space for a photo; the text report is still saved."); return; }
+        String tmp=store.imagePath(id,false); File f=LittleFS.open(tmp,"w"); if(!f) { error(res,507,"Cannot store photo."); return; }
+        uint8_t buf[512]; size_t count=0; uint32_t crc=0xffffffffU,start=millis(); bool ok=true;
+        while(count<length && millis()-start<10000) {
+            size_t wanted=length-count<sizeof(buf) ? length-count : sizeof(buf);
+            size_t n=req->readBytes(buf,wanted);
+            if(n) { if(f.write(buf,n)!=n) { ok=false; break; } crc=crcUpdate(crc,buf,n); count+=n; }
+            mesh.update(); if(!n) delay(1);
+        }
+        f.flush(); f.close(); ImagePayload info{id,(uint32_t)length,~crc};
+        if(!ok || count!=length || !store.verifyImage(id,info,false)) { error(res,400,"Photo upload incomplete or invalid. Retry the attachment."); return; }
+        if(!LittleFS.rename(tmp,store.imagePath(id))) { error(res,507,"Cannot commit photo file."); return; }
+        image.kind=IMAGE; image.id=id; image.source=g_nodeId; image.target=report.target; image.link=id; image.complete=1;
+        image.length=sizeof(info); memcpy(image.payload,&info,sizeof(info)); session.toCharArray(image.owner,sizeof(image.owner));
+        if(!store.save(image)) { error(res,507,"Photo metadata was not saved. Retry the attachment."); return; }
+        saved(res,image);
+    }
+    void clearData(HTTPRequest* req,HTTPResponse* res) {
+        requestDocument.clear(); auto& doc=requestDocument;
+        if(!json(req,res,doc)) return;
+        if(strcmp(doc["confirm"] | "","CLEAR_ALL")!=0 ||
+           idString(g_nodeId)!=String(doc["node"] | "")) {
+            error(res,400,"Confirm Clear all for the connected node."); return;
+        }
+        if(!mesh.clearStoredData()) {
+            error(res,503,"Clear did not finish. Some data may already be removed. Retry Clear all on this node."); return;
+        }
+        res->print("{\"ok\":true,\"radio\":");
+        res->print(mesh.ready() ? "true}" : "false}");
+    }
+    void handle(HTTPRequest* req,HTTPResponse* res) {
+        String path(req->getRequestString().c_str()); int question=path.indexOf('?'); if(question>=0) path=path.substring(0,question);
+        res->setHeader("Cache-Control","no-store"); res->setHeader("X-Content-Type-Options","nosniff");
+        res->setHeader("Content-Security-Policy","default-src 'self'; img-src 'self' blob:; style-src 'self'; script-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'");
+        std::string host=req->getHeader("Host");
+        if(redirectToPortal(req->getMethod().c_str(),host.c_str(),path.c_str())) { redirect(req,res); return; }
+        if(!isPortalHost(host.c_str())) { res->setHeader("Content-Type","application/json"); error(res,403,"Use http://192.168.4.1/."); req->discardRequestBody(); return; }
+        if((req->getMethod()=="GET" || req->getMethod()=="HEAD") && (path=="/" || path=="/app.js" || path=="/style.css")) {
+            res->setHeader("Content-Type",path=="/" ? "text/html; charset=utf-8" : path=="/app.js" ? "application/javascript; charset=utf-8" : "text/css; charset=utf-8");
+            const char* asset=path=="/" ? WEB_INDEX : path=="/app.js" ? WEB_APP : WEB_STYLE;
+            res->setHeader("Content-Length",std::to_string(strlen(asset)));
+            if(req->getMethod()=="GET") res->write((const uint8_t*)asset,strlen(asset)); return;
+        }
+        res->setHeader("Content-Type","application/json");
+        if(path=="/api/status" && req->getMethod()=="GET") {
+            requestDocument.clear(); auto& doc=requestDocument; doc["node"]=idString(g_nodeId); doc["role"]=CURRENT_NODE_ROLE==ROLE_RESCUER ? "rescuer" : "civilian";
+            doc["transferMode"]=TRANSFER_MODE; doc["transferName"]=transferModeName(); doc["protocol"]=MESH_VERSION;
+            doc["radio"]=mesh.ready(); doc["storage"]=store.ready(); doc["records"]=store.count(); doc["limit"]=MAX_RECORDS; doc["recoverable"]=store.unclaimed();
+            doc["rx"]=mesh.rxCount(); doc["tx"]=mesh.txCount(); doc["invalid"]=mesh.invalidCount(); doc["rssi"]=mesh.lastRssi(); doc["freeHeap"]=ESP.getFreeHeap();
+            doc["stackFix"]=1; doc["uptimeMs"]=millis(); doc["stackBytes"]=LOOP_TASK_STACK_BYTES;
+            doc["stackMinFree"]=uxTaskGetStackHighWaterMark(nullptr); doc["heapMinFree"]=ESP.getMinFreeHeap();
+            doc["wifiClients"]=WiFi.softAPgetStationNum();
+            doc["canClear"]=store.canClear();
+            doc["firmware"]=FIRMWARE_REVISION;
+            doc["versionRejects"]=mesh.versionRejectCount(); doc["authRejects"]=mesh.authRejectCount();
+            doc["sosStoreFailures"]=mesh.sosStoreFailureCount();
+            doc["meshGapMaxMs"]=mesh.maxServiceGapMs(); doc["webLoopMaxMs"]=webLoopMax;
+            doc["rxRaw"]=mesh.rawRxCount(); doc["rxReadErrors"]=mesh.rxReadErrorCount();
+            doc["rxLengthErrors"]=mesh.rxLengthErrorCount(); doc["rxStartErrors"]=mesh.rxStartErrorCount();
+            doc["irqPolled"]=mesh.polledEventCount(); doc["lastRxError"]=mesh.lastRxError();
+            serializeJson(doc,*res); return;
+        }
+        String session;
+        if(!authorised(req,res,session)) { req->discardRequestBody(); return; }
+        // Allow a failed clear to be retried even when normal storage is blocked.
+        if(req->getMethod()=="POST" && path=="/api/clear") {
+            clearData(req,res); req->discardRequestBody(); return;
+        }
+        if(!store.ready()) { error(res,503,"Storage unavailable; see Serial Monitor and README."); req->discardRequestBody(); return; }
+        bool post=req->getMethod()=="POST",get=req->getMethod()=="GET";
+        if(get && path=="/api/state") state(res,session);
+        else if(post && path=="/api/sos") submitSOS(req,res,session);
+        else if(post && path=="/api/chat") chatOrResolve(req,res,session,false);
+        else if(post && path=="/api/resolve") chatOrResolve(req,res,session,true);
+        else if((get || post) && path=="/api/image") photo(req,res,session,post);
+        else if(post && path=="/api/recover" && CURRENT_NODE_ROLE==ROLE_CIVILIAN) {
+            if(store.recoverFor(session)) res->print("{\"ok\":true}"); else error(res,507,"Could not claim all recovered reports. Retry when storage is available.");
+        }
+        else if(post && path=="/api/retry") { mesh.retryNow(); res->print("{\"ok\":true}"); }
+        else if(post && path=="/api/beacon" && CURRENT_NODE_ROLE==ROLE_RESCUER) { mesh.beacon(); res->print("{\"ok\":true}"); }
+        else error(res,404,"Endpoint not found.");
+        req->discardRequestBody();
+    }
+public:
+    WebServerManager(StorageManager& s, LoRaMeshManager& m)
+    : store(s),
+      mesh(m),
+      certificate(
+          cert_der,
+          sizeof(cert_der),
+          key_der,
+          sizeof(key_der)
+      ),
+      server(&certificate, 443, 2),
+      redirectServer(80, 2) {}
 
-    /**
-     * Call this in the main loop to process incoming DNS queries.
-     */
+    bool begin() {
+        instance = this;
+
+        // Actual application is served over HTTPS.
+        server.setDefaultNode(
+            new ResourceNode("", "", route)
+        );
+
+        // HTTP requests are redirected to HTTPS.
+        redirectServer.setDefaultNode(
+            new ResourceNode("", "", redirect)
+        );
+
+        dns.setTTL(60);
+        dns.setErrorReplyCode(DNSReplyCode::NoError);
+
+        bool dnsReady = dns.start(
+            53, "*", WiFi.softAPIP()
+        );
+
+        server.start();
+        redirectServer.start();
+
+        Serial.printf(
+            "[PORTAL] DNS %s | HTTPS %s | HTTP redirect %s\n",
+            dnsReady ? "ready" : "FAILED",
+            server.isRunning() ? "ready" : "FAILED",
+            redirectServer.isRunning() ? "ready" : "FAILED"
+        );
+
+        return dnsReady
+            && server.isRunning()
+            && redirectServer.isRunning();
+    }
+
+    uint32_t maxLoopMs() const { return webLoopMax; }
     void update() {
-        dnsServer.processNextRequest();
-    }
+        mesh.update();
+        dns.processNextRequest();
 
-    String getApSSID() const { return apSSID; }
+        const uint32_t started=millis();
+        redirectServer.loop();
+        server.loop();
+        const uint32_t elapsed=millis()-started;
+        if(elapsed>webLoopMax) webLoopMax=elapsed;
+        if(elapsed>=1000 && (!lastSlowWarning || millis()-lastSlowWarning>=30000)) {
+            lastSlowWarning=millis();
+            Serial.printf("[WEB] service_ms=%lu; radio processing may have been delayed\n",(unsigned long)elapsed);
+        }
 
-private:
-    /**
-     * CIVILIAN ROUTES: Exposes only victim reporting and status viewing.
-     * Administrative and clearance endpoints are NOT registered.
-     */
-    void setupCivilianRoutes() {
-        // -----------------------------------------------------------------------------
-        // CAPTIVE PORTAL REDIRECTION ROUTES (Android / iOS / Windows detection URLs)
-        // -----------------------------------------------------------------------------
-        server.on("/generate_204", HTTP_GET, [](AsyncWebServerRequest *request) { request->redirect("http://192.168.4.1/"); });
-        server.on("/gen_204",      HTTP_GET, [](AsyncWebServerRequest *request) { request->redirect("http://192.168.4.1/"); });
-        server.on("/redirect",     HTTP_GET, [](AsyncWebServerRequest *request) { request->redirect("http://192.168.4.1/"); });
-        server.on("/hotspot-detect.html", HTTP_GET, [](AsyncWebServerRequest *request) { request->redirect("http://192.168.4.1/"); });
-        server.on("/canonical.html",      HTTP_GET, [](AsyncWebServerRequest *request) { request->redirect("http://192.168.4.1/"); });
-
-        // -----------------------------------------------------------------------------
-        // STATIC FILES (Served from LittleFS Flash)
-        // -----------------------------------------------------------------------------
-        server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-            if (LittleFS.exists("/index.html")) {
-                request->send(LittleFS, "/index.html", "text/html");
-            } else {
-                request->send(200, "text/html", "<h2>Heltec Disaster Node</h2><p>Emergency UI loading...</p>");
-            }
-        });
-
-        server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request) {
-            request->send(LittleFS, "/style.css", "text/css");
-        });
-
-        server.on("/app.js", HTTP_GET, [](AsyncWebServerRequest *request) {
-            request->send(LittleFS, "/app.js", "application/javascript");
-        });
-
-        // -----------------------------------------------------------------------------
-        // REST API: GET /api/status - Civilian Node Diagnostics
-        // -----------------------------------------------------------------------------
-        server.on("/api/status", HTTP_GET, [this](AsyncWebServerRequest *request) {
-            AsyncJsonResponse *response = new AsyncJsonResponse();
-            JsonObject root = response->getRoot().to<JsonObject>();
-
-            root["nodeId"]          = String(g_nodeId, HEX);
-            root["role"]            = "CIVILIAN";
-            root["apSsid"]          = apSSID;
-            root["connectedClients"]= WiFi.softAPgetStationNum();
-            root["offlineSosCount"] = storage ? storage->getStoredMessageCount() : 0;
-            root["lastRssi"]        = meshManager ? meshManager->getLastRssi() : 0;
-            root["lastSnr"]         = meshManager ? meshManager->getLastSnr() : 0;
-            root["maxHops"]         = LORA_MAX_HOP_COUNT;
-            root["uptimeSec"]       = millis() / 1000;
-
-            response->setLength();
-            request->send(response);
-        });
-
-        // -----------------------------------------------------------------------------
-        // REST API: POST /api/sos - Submit Victim Distress Alert
-        // -----------------------------------------------------------------------------
-        AsyncCallbackJsonWebHandler *sosHandler = new AsyncCallbackJsonWebHandler("/api/sos", 
-            [this](AsyncWebServerRequest *request, JsonVariant &json) {
-                JsonObject jsonObj = json.as<JsonObject>();
-
-                if (!jsonObj.containsKey("location") || !jsonObj.containsKey("text")) {
-                    request->send(400, "application/json", "{\"error\":\"Missing required fields\"}");
-                    return;
-                }
-
-                DistressPayload payload;
-                memset(&payload, 0, sizeof(DistressPayload));
-
-                payload.statusFlags = 0;
-                if (jsonObj["trapped"].as<bool>())    payload.statusFlags |= FLAG_TRAPPED;
-                if (jsonObj["injured"].as<bool>())    payload.statusFlags |= FLAG_INJURED;
-                if (jsonObj["needWater"].as<bool>())  payload.statusFlags |= FLAG_NEED_WATER;
-                if (jsonObj["needMeds"].as<bool>())   payload.statusFlags |= FLAG_NEED_MEDS;
-
-                payload.victimCount = jsonObj["victimCount"] | 1;
-                strncpy(payload.floorRoom,   jsonObj["location"] | "Unknown", sizeof(payload.floorRoom) - 1);
-                strncpy(payload.contactName, jsonObj["name"]     | "Anon",    sizeof(payload.contactName) - 1);
-                strncpy(payload.textMsg,     jsonObj["text"]     | "",        sizeof(payload.textMsg) - 1);
-                payload.timestamp = millis() / 1000;
-
-                // Generate collision-proof persistent Message ID using ESP32 NVS
-                uint32_t msgId = storage ? storage->getNextUniqueMsgId(g_nodeId) : micros();
-
-                Serial.printf("[WEB SOS SUBMIT] New SOS submitted! MsgID: 0x%08X\n", msgId);
-
-                // 1. Broadcast immediately over LoRa mesh
-                bool sentOk = false;
-                if (meshManager) {
-                    sentOk = meshManager->broadcastDistressAlert(msgId, payload);
-                }
-
-                // 2. Save in LittleFS flash memory (Store-and-Forward queue)
-                if (storage) {
-                    storage->saveUnackedMessage(msgId, payload);
-                }
-
-                // Return JSON response to victim browser
-                AsyncJsonResponse *response = new AsyncJsonResponse();
-                JsonObject root = response->getRoot().to<JsonObject>();
-                root["success"] = true;
-                root["msgId"]   = String(msgId, HEX);
-                root["loraTx"]  = sentOk;
-                root["saved"]   = true;
-
-                response->setLength();
-                request->send(response);
-            }
-        );
-        server.addHandler(sosHandler);
-
-        // -----------------------------------------------------------------------------
-        // REST API: GET /api/distress-list - Read-only incident list for victims
-        // -----------------------------------------------------------------------------
-        server.on("/api/distress-list", HTTP_GET, [this](AsyncWebServerRequest *request) {
-            AsyncJsonResponse *response = new AsyncJsonResponse(false, 8192);
-            JsonArray arr = response->getRoot().to<JsonArray>();
-
-            if (storage) {
-                size_t count = storage->getHistoryMessageCount();
-                for (size_t i = 0; i < count; i++) {
-                    StoredMessage rec;
-                    if (storage->getHistoryMessageByIndex(i, rec)) {
-                        JsonObject obj = arr.createNestedObject();
-                        obj["msgId"]       = String(rec.msgId, HEX);
-                        obj["location"]    = String(rec.payload.floorRoom);
-                        obj["name"]        = String(rec.payload.contactName);
-                        obj["text"]        = String(rec.payload.textMsg);
-                        obj["victimCount"] = rec.payload.victimCount;
-                        obj["trapped"]     = (rec.payload.statusFlags & FLAG_TRAPPED) != 0;
-                        obj["injured"]     = (rec.payload.statusFlags & FLAG_INJURED) != 0;
-                        obj["needWater"]   = (rec.payload.statusFlags & FLAG_NEED_WATER) != 0;
-                        obj["needMeds"]    = (rec.payload.statusFlags & FLAG_NEED_MEDS) != 0;
-                        obj["status"]      = rec.status; // 0=PENDING, 1=ACKED, 2=RESOLVED
-                        obj["timestamp"]   = rec.payload.timestamp;
-                    }
-                }
-            }
-
-            response->setLength();
-            request->send(response);
-        });
-
-        // -----------------------------------------------------------------------------
-        // REST API: POST /api/upload-image - Upload an image for a specific msgId
-        // -----------------------------------------------------------------------------
-        server.on("/api/upload-image", HTTP_POST, 
-            [](AsyncWebServerRequest *request) {
-                request->send(200, "application/json", "{\"success\":true}");
-            },
-            [this](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final) {
-                String msgIdStr;
-                if (request->hasParam("msgId")) {
-                    msgIdStr = request->getParam("msgId")->value();
-                } else if (request->hasParam("msgId", true)) {
-                    msgIdStr = request->getParam("msgId", true)->value();
-                } else {
-                    return;
-                }
-
-                uint32_t msgId = strtoul(msgIdStr.c_str(), NULL, 16);
-                
-                if (storage) {
-                    char filepath[32];
-                    snprintf(filepath, sizeof(filepath), "/img_%08X.bin", msgId);
-                    
-                    File file;
-                    if (index == 0) {
-                        file = LittleFS.open(filepath, "w");
-                        Serial.printf("[WEB UPLOAD] Started receiving image for MsgID 0x%08X\n", msgId);
-                    } else {
-                        file = LittleFS.open(filepath, "a");
-                    }
-                    if (file) {
-                        file.write(data, len);
-                        file.flush();
-                        file.close();
-                    }
-                }
-                
-                if (final) {
-                    Serial.printf("[WEB UPLOAD] Finished receiving image for MsgID 0x%08X\n", msgId);
-                    if (meshManager) {
-                        meshManager->queueImageTransmission(msgId);
-                    }
-                }
-            }
-        );
-
-        // Non-existing URLs fallback to captive portal root
-        server.onNotFound([](AsyncWebServerRequest *request) {
-            request->redirect("http://192.168.4.1/");
-        });
-    }
-
-    /**
-     * RESCUER ROUTES: Exposes the Tactical Command Dashboard, Anti-Packet triggers,
-     * and Rescuer Beacon polling. Civilian SOS submission is disabled.
-     */
-    void setupRescuerRoutes() {
-        // Tactical Dashboard Root Page (Served directly from embedded PROGMEM HTML)
-        server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-            request->send_P(200, "text/html", RESCUER_HTML);
-        });
-
-        // Triage Report Feed: Returns all recorded distress incidents
-        server.on("/api/rescuer/all-reports", HTTP_GET, [this](AsyncWebServerRequest *request) {
-            AsyncJsonResponse *response = new AsyncJsonResponse(false, 8192);
-            JsonArray arr = response->getRoot().to<JsonArray>();
-
-            if (storage) {
-                size_t count = storage->getHistoryMessageCount();
-                for (size_t i = 0; i < count; i++) {
-                    StoredMessage rec;
-                    if (storage->getHistoryMessageByIndex(i, rec)) {
-                        JsonObject obj = arr.createNestedObject();
-                        obj["msgId"]       = String(rec.msgId, HEX);
-                        obj["location"]    = String(rec.payload.floorRoom);
-                        obj["name"]        = String(rec.payload.contactName);
-                        obj["text"]        = String(rec.payload.textMsg);
-                        obj["victimCount"] = rec.payload.victimCount;
-                        obj["trapped"]     = (rec.payload.statusFlags & FLAG_TRAPPED) != 0;
-                        obj["injured"]     = (rec.payload.statusFlags & FLAG_INJURED) != 0;
-                        obj["needWater"]   = (rec.payload.statusFlags & FLAG_NEED_WATER) != 0;
-                        obj["needMeds"]    = (rec.payload.statusFlags & FLAG_NEED_MEDS) != 0;
-                        obj["status"]      = rec.status; // 0=PENDING, 1=ACKED, 2=RESOLVED
-                        obj["timestamp"]   = rec.payload.timestamp;
-                    }
-                }
-            }
-
-            response->setLength();
-            request->send(response);
-        });
-
-        // Fetch image for a distress incident
-        server.on("/api/rescuer/image", HTTP_GET, [this](AsyncWebServerRequest *request) {
-            if (request->hasParam("msgId")) {
-                String msgIdStr = request->getParam("msgId")->value();
-                uint32_t msgId = strtoul(msgIdStr.c_str(), NULL, 16);
-                if (storage && storage->hasImage(msgId)) {
-                    char filepath[32];
-                    snprintf(filepath, sizeof(filepath), "/img_%08X.bin", msgId);
-                    
-                    File imgFile = storage->getFullImageFile(msgId);
-                    size_t imgSize = imgFile ? imgFile.size() : 0;
-                    
-                    // --- DEBUG START ---
-                    if (imgFile && imgSize >= 4) {
-                        uint8_t firstBytes[4] = {0};
-                        uint8_t lastBytes[4] = {0};
-                        imgFile.seek(0, SeekSet);
-                        imgFile.read(firstBytes, 4);
-                        imgFile.seek(imgSize - 4, SeekSet);
-                        imgFile.read(lastBytes, 4);
-                        Serial.printf("[WEB SERVE IMAGE DEBUG] First 4 bytes: %02X %02X %02X %02X\n", firstBytes[0], firstBytes[1], firstBytes[2], firstBytes[3]);
-                        Serial.printf("[WEB SERVE IMAGE DEBUG] Last 4 bytes: %02X %02X %02X %02X\n", lastBytes[0], lastBytes[1], lastBytes[2], lastBytes[3]);
-                    } else {
-                        Serial.println("[WEB SERVE IMAGE DEBUG] Could not read bytes, file too small or unable to open.");
-                    }
-                    // --- DEBUG END ---
-                    
-                    if (imgFile) imgFile.close();
-
-                    Serial.printf("[WEB SERVE IMAGE] Serving %s (%u bytes) for MsgID 0x%08X\n", filepath, imgSize, msgId);
-
-                    AsyncWebServerResponse *response = request->beginResponse(LittleFS, filepath, "image/jpeg");
-                    response->addHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-                    request->send(response);
-                    return;
-                }
-            }
-            request->send(404, "text/plain", "Image not found");
-        });
-
-        // Rescuer Clearance / Anti-Packet Trigger: Marks incident resolved and broadcasts Anti-Packet
-        AsyncCallbackJsonWebHandler *clearHandler = new AsyncCallbackJsonWebHandler("/api/rescuer/clear-alert", 
-            [this](AsyncWebServerRequest *request, JsonVariant &json) {
-                JsonObject jsonObj = json.as<JsonObject>();
-                if (!jsonObj.containsKey("msgId")) {
-                    request->send(400, "application/json", "{\"error\":\"Missing msgId\"}");
-                    return;
-                }
-
-                String hexStr = jsonObj["msgId"].as<String>();
-                uint32_t targetId = strtoul(hexStr.c_str(), NULL, 16);
-
-                Serial.printf("[RESCUER ACTION] Marking MsgID 0x%08X resolved and broadcasting Anti-Packet...\n", targetId);
-
-                // 1. Mark incident resolved in local storage and purge from pending queue
-                if (storage) {
-                    storage->markMessageResolved(targetId, g_nodeId, millis() / 1000);
-                }
-
-                // 2. Broadcast Anti-Packet frame over LoRa mesh
-                bool loraOk = false;
-                if (meshManager) {
-                    loraOk = meshManager->broadcastClearAlert(&targetId, 1, g_nodeId);
-                }
-
-                AsyncJsonResponse *response = new AsyncJsonResponse();
-                JsonObject root = response->getRoot().to<JsonObject>();
-                root["success"]  = true;
-                root["msgId"]    = hexStr;
-                root["antiPktTx"]= loraOk;
-                response->setLength();
-                request->send(response);
-            }
-        );
-        server.addHandler(clearHandler);
-
-        // Rescuer Beacon Poll Trigger: Broadcasts PKT_RESCUER_BEACON to poll nearby building nodes
-        server.on("/api/rescuer/poll-beacon", HTTP_POST, [this](AsyncWebServerRequest *request) {
-            bool ok = false;
-            if (meshManager) {
-                ok = meshManager->sendRescuerBeacon();
-            }
-            request->send(200, "application/json", ok ? "{\"success\":true}" : "{\"error\":\"TX failed\"}");
-        });
-
-        server.onNotFound([](AsyncWebServerRequest *request) {
-            request->redirect("http://192.168.4.1/");
-        });
+        mesh.update();
     }
 };
-
-#endif // WEB_SERVER_MANAGER_H
+WebServerManager* WebServerManager::instance=nullptr;

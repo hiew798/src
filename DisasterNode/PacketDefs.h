@@ -1,291 +1,111 @@
-/*
- * =====================================================================================
- * File: PacketDefs.h
- * Project: Heltec Wireless Stick Lite V3 - Disaster Recovery Multi-Node LoRa Network
- * Author: Antigravity AI / FYP Disaster Recovery Team
- * 
- * Description:
- *   Extensible binary packet structures and serialization helpers for LoRa transmission.
- *   
- * DESIGNED FOR EASY EXTENSION & MODIFICATION:
- *   If you want to add new fields in the future (e.g., GPS coordinates, medical alert flags,
- *   battery level), simply update the `DistressPayload` struct below.
- *   The fixed `PacketHeader`, Anti-Packet clearing mechanism, and mesh relay engine are
- *   decoupled from the payload contents and will continue working automatically!
- * 
- * CRITICAL C++ COMPILER PACKING NOTE (#pragma pack):
- *   Notice the use of `#pragma pack(push, 1)` and `#pragma pack(pop)`.
- *   By default, 32-bit microcontrollers (like ESP32) insert invisible padding bytes
- *   between struct fields to align them to 4-byte boundaries. `#pragma pack(push, 1)`
- *   forces the compiler to pack every byte contiguously without padding.
- *   This ensures the exact byte layout sent over radio matches byte-for-byte on the receiver.
- * =====================================================================================
- */
+#pragma once
+#include <stdint.h>
+#include <stddef.h>
+#include <string.h>
+#include <math.h>
+#include "TransferConfig.h"
 
-#ifndef PACKET_DEFS_H
-#define PACKET_DEFS_H
-
-#include <Arduino.h>
-#include "Config.h"
-
-// Magic byte at the start of every frame to identify valid disaster network packets
-// and immediately reject stray or noise LoRa frames
-#define PROTOCOL_MAGIC_BYTE     0xD5  // 'D'isaster '5'
-
-// Current schema version - increment if structure fields change in future revisions
-#define PAYLOAD_SCHEMA_VERSION  0x02
-
-// Special broadcast destination address (0xFFFF = Broadcast to any listening node/rescuer)
-#define LORA_BROADCAST_ADDR     0xFFFF
-
-// =====================================================================================
-// SECTION 1: PACKET TYPE ENUMERATION
-// Defines the functional purpose of each LoRa frame transmitted over the network.
-// =====================================================================================
-enum PacketType : uint8_t {
-    PKT_DISTRESS_ALERT = 0x01,  // Victim SOS / Status message (Carries DistressPayload)
-    PKT_DISTRESS_ACK   = 0x02,  // Point-to-point Acknowledgment from Rescuer to Victim Node
-    PKT_RESCUER_BEACON = 0x03,  // Beacon sent by Rescuer Node asking nearby nodes to dump stored SOS logs
-    PKT_IMAGE_CHUNK    = 0x04,  // Optional chunked image payload (for low-res photos)
-    PKT_CLEAR_MESSAGES = 0x05   // Anti-Packet / Rescuer Invalidation (Purges cleared alerts from mesh)
-};
-
-// =====================================================================================
-// SECTION 2: STATUS FLAGS & LIFECYCLE STATE
-// Compact bitflags representing critical emergency conditions.
-// =====================================================================================
-enum StatusFlags : uint8_t {
-    FLAG_TRAPPED      = (1 << 0), // 0x01 (Bit 0): Victim trapped under rubble/debris
-    FLAG_INJURED      = (1 << 1), // 0x02 (Bit 1): Medical injuries / severe bleeding present
-    FLAG_NEED_WATER   = (1 << 2), // 0x04 (Bit 2): Requires urgent drinking water / food
-    FLAG_NEED_MEDS    = (1 << 3), // 0x08 (Bit 3): Urgent prescription or trauma medication required
-    FLAG_UNCONSCIOUS  = (1 << 4)  // 0x10 (Bit 4): Unconscious person present at location
-};
-
-// Incident lifecycle status for local storage tracking
-enum MessageStatus : uint8_t {
-    STATUS_PENDING      = 0x00, // Awaiting rescue / unacknowledged
-    STATUS_ACKNOWLEDGED = 0x01, // Rescuer confirmed receipt of signal
-    STATUS_RESOLVED     = 0x02  // Incident resolved / victim rescued (Purged from pending retransmission)
-};
-
-// =====================================================================================
-// SECTION 3: FIXED NETWORK HEADER
-// Every packet starts with this header. Do NOT change this unless modifying core protocol.
-// Total Header Size: 12 bytes
-// =====================================================================================
+// Modes 1/2 keep wire protocol 3. Modes 3/4 require protocol 4 on all nodes.
+// Stored records retain their existing version and layout in all four modes.
+constexpr uint16_t MESH_MAGIC = 0xD5A3;
+constexpr uint8_t MESH_VERSION = GROUPED_TRANSFER ? 4 : 3;
+constexpr size_t AUTH_TAG_BYTES = 8;
+constexpr size_t MAX_PAYLOAD = 192;
+constexpr size_t CHUNK_BYTES = 180;
+enum PacketKind : uint8_t { SOS = 1, CHAT = 2, IMAGE = 3, CHUNK = 4, RESOLVE = 5, ACK = 6, BEACON = 7,
+    GROUP_CHUNK = 8, BITMAP_QUERY = 9, BITMAP_ACK = 10 };
+enum Delivery : uint8_t { DELIVERY_PENDING = 0, DELIVERY_RECEIVED = 1, DELIVERY_RELAY = 2 };
+enum AckFlags : uint8_t { ACK_COMPLETE = 1, ACK_RESTART = 2 };
+constexpr uint16_t META_ACK = 0xffff;
 #pragma pack(push, 1)
 struct PacketHeader {
-    uint8_t  magic;         // Byte 0: Always PROTOCOL_MAGIC_BYTE (0xD5)
-    uint8_t  version;       // Byte 1: Schema version (PAYLOAD_SCHEMA_VERSION)
-    uint8_t  pktType;       // Byte 2: PacketType enum (PKT_DISTRESS_ALERT, PKT_CLEAR_MESSAGES, etc.)
-    uint32_t msgId;         // Bytes 3-6: Unique message ID (16-bit Node ID | 16-bit persistent NVS Sequence)
-    uint16_t senderNodeId;  // Bytes 7-8: Node ID of originating device
-    uint16_t targetNodeId;  // Bytes 9-10: Destination node ID (0xFFFF = Broadcast)
-    uint8_t  ttl;           // Byte 11: Hop count remaining (Starts at LORA_MAX_HOP_COUNT, decremented at each relay)
-    uint8_t  payloadLen;    // Byte 12: Length of the payload struct following this header in bytes
+    uint16_t magic;
+    uint8_t version, kind;
+    uint64_t packetId, source, target, objectId;
+    uint8_t ttl;
+    uint16_t length;
 };
+struct SosPayload {
+    uint8_t flags, people, gps;
+    float latitude, longitude;
+    uint32_t timestamp;
+    char location[48], name[32], text[96];
+};
+struct ChatPayload { uint64_t report; uint32_t timestamp; char text[160]; };
+struct ImagePayload { uint64_t report; uint32_t bytes, crc; };
+struct ChunkPayload { uint16_t index; uint8_t count; uint8_t data[CHUNK_BYTES]; };
+struct ResolvePayload { uint64_t report; uint32_t timestamp; };
+struct AckPayload { uint8_t kind; uint16_t chunk; uint8_t flags; };
+// Echo the exact request packet ID: delayed responses cannot replace newer progress.
+struct BitmapAckPayload { uint64_t request, bitmap; uint8_t flags; };
 #pragma pack(pop)
+static_assert(sizeof(SosPayload) <= MAX_PAYLOAD, "SOS payload too large");
+static_assert(sizeof(PacketHeader) + sizeof(ChunkPayload) + AUTH_TAG_BYTES <= 255, "LoRa frame too large");
 
-// =====================================================================================
-// SECTION 4: EXTENSIBLE DISTRESS PAYLOAD SCHEMA
-// 
-// HOW TO EDIT THIS STRUCT IN THE FUTURE:
-// 1. Add your new field below (e.g. float latitude; float longitude; uint8_t batteryPct;).
-// 2. Adjust array sizes if necessary (e.g. floorRoom[16] -> floorRoom[24]).
-// 3. Keep total struct size under ~200 bytes so the entire LoRa frame stays < 255 bytes.
-// =====================================================================================
-#pragma pack(push, 1)
-struct DistressPayload {
-    uint8_t  statusFlags;    // Bitmask of StatusFlags (Trapped, Injured, Need Water, etc.)
-    uint8_t  victimCount;    // Total count of people needing rescue at this location
-    
-    // Fixed size character buffers avoid dynamic heap fragmentation on ESP32
-    char     floorRoom[16];  // Location description (e.g. "Bldg A, Lvl 3, R302")
-    char     contactName[16];// Name of victim or contact person
-    char     textMsg[64];    // Custom distress text message
-    
-    uint32_t timestamp;      // Uptime / epoch timestamp when created (in seconds)
-    
-    // --- FUTURE EXTENSION PLACEHOLDERS ---
-    // Uncomment or add custom fields below as requirements evolve:
-    // float    latitude;    // GPS Latitude
-    // float    longitude;   // GPS Longitude
-    // uint8_t  batteryPct;  // Node battery percentage
-};
-#pragma pack(pop)
-
-// =====================================================================================
-// SECTION 5: ACKNOWLEDGMENT & ANTI-PACKET (CLEAR) PAYLOADS
-// =====================================================================================
-#pragma pack(push, 1)
-// Direct ACK sent by rescuer node back to a specific victim node
-struct AckPayload {
-    uint32_t ackedMsgId;     // The original msgId being acknowledged
-    uint16_t rescuerNodeId;  // ID of rescuer node issuing ACK
-    uint32_t rescuerTime;    // Rescuer timestamp (in seconds)
-};
-
-// Anti-Packet (Vaccine / Invalidation Frame)
-// Carries a batch of up to MAX_CLEAR_BATCH_SIZE (8) message IDs that have been resolved
-// so all intermediate building nodes delete them from their retransmission backlogs.
-struct ClearMessagePayload {
-    uint16_t rescuerNodeId;                       // Rescuer node performing clearance
-    uint32_t clearTimestamp;                      // Timestamp of clearance
-    uint8_t  count;                               // Number of message IDs in this batch (1..MAX_CLEAR_BATCH_SIZE)
-    uint32_t clearedMsgIds[MAX_CLEAR_BATCH_SIZE]; // Array of message IDs being invalidated
-};
-#pragma pack(pop)
-
-// =====================================================================================
-// SECTION 5.1: IMAGE CHUNK PAYLOAD
-// =====================================================================================
-#pragma pack(push, 1)
-// Payload for a single chunk of an image
-struct ImageChunkPayload {
-    uint32_t imageMsgId;      // Unique ID matching the original distress msgId
-    uint16_t chunkIndex;      // Index of this specific chunk (0 to totalChunks - 1)
-    uint16_t totalChunks;     // Total number of chunks that make up the complete image
-    uint8_t  chunkDataLen;    // Number of valid bytes in this chunk's data array
-    uint8_t  chunkData[MAX_IMAGE_CHUNK_DATA_LEN]; // Raw image chunk bytes
-};
-#pragma pack(pop)
-
-// =====================================================================================
-// SECTION 6: SERIALIZATION HELPER FUNCTIONS
-// Converts high-level structs to raw byte buffers for LoRa radio transmission.
-// =====================================================================================
-
-/**
- * Builds a complete binary LoRa frame (Header + DistressPayload) ready for transmission.
- * @param buffer Output byte array (Must be at least sizeof(PacketHeader) + sizeof(DistressPayload))
- * @param msgId Unique collision-proof message identifier
- * @param senderId Node ID of originating device
- * @param payload Pointer to populated DistressPayload struct
- * @return Total bytes written to buffer
- */
-inline size_t buildDistressPacket(uint8_t* buffer, uint32_t msgId, uint16_t senderId, const DistressPayload* payload) {
-    PacketHeader header;
-    header.magic        = PROTOCOL_MAGIC_BYTE;
-    header.version      = PAYLOAD_SCHEMA_VERSION;
-    header.pktType      = PKT_DISTRESS_ALERT;
-    header.msgId        = msgId;
-    header.senderNodeId = senderId;
-    header.targetNodeId = LORA_BROADCAST_ADDR;
-    header.ttl          = LORA_MAX_HOP_COUNT;
-    header.payloadLen   = sizeof(DistressPayload);
-
-    // Contiguously copy header and payload into linear output byte buffer
-    memcpy(buffer, &header, sizeof(PacketHeader));
-    memcpy(buffer + sizeof(PacketHeader), payload, sizeof(DistressPayload));
-
-    return sizeof(PacketHeader) + sizeof(DistressPayload);
-}
-
-/**
- * Builds an Anti-Packet (PKT_CLEAR_MESSAGES) frame to invalidate resolved SOS messages across the mesh.
- * @param buffer Output byte array
- * @param uniquePktId Unique message ID for this Anti-Packet (prevents relay loops)
- * @param rescuerId ID of rescuer issuing clearance
- * @param msgIds Array of incident Message IDs being cleared
- * @param count Number of IDs in array (1 to MAX_CLEAR_BATCH_SIZE)
- * @return Total bytes written to buffer
- */
-inline size_t buildClearPacket(uint8_t* buffer, uint32_t uniquePktId, uint16_t rescuerId, const uint32_t* msgIds, uint8_t count) {
-    if (count > MAX_CLEAR_BATCH_SIZE) count = MAX_CLEAR_BATCH_SIZE;
-
-    ClearMessagePayload clearPayload;
-    clearPayload.rescuerNodeId  = rescuerId;
-    clearPayload.clearTimestamp = millis() / 1000;
-    clearPayload.count          = count;
-    memset(clearPayload.clearedMsgIds, 0, sizeof(clearPayload.clearedMsgIds));
-    for (uint8_t i = 0; i < count; i++) {
-        clearPayload.clearedMsgIds[i] = msgIds[i];
+inline uint32_t crcUpdate(uint32_t c, const uint8_t* data, size_t n) {
+    while (n--) {
+        c ^= *data++;
+        for (uint8_t b=0; b<8; ++b) c = (c >> 1) ^ (0xedb88320U & (0U - (c & 1)));
     }
-
-    PacketHeader header;
-    header.magic        = PROTOCOL_MAGIC_BYTE;
-    header.version      = PAYLOAD_SCHEMA_VERSION;
-    header.pktType      = PKT_CLEAR_MESSAGES;
-    header.msgId        = uniquePktId;
-    header.senderNodeId = rescuerId;
-    header.targetNodeId = LORA_BROADCAST_ADDR;
-    header.ttl          = LORA_MAX_HOP_COUNT;
-    header.payloadLen   = sizeof(ClearMessagePayload);
-
-    memcpy(buffer, &header, sizeof(PacketHeader));
-    memcpy(buffer + sizeof(PacketHeader), &clearPayload, sizeof(ClearMessagePayload));
-
-    return sizeof(PacketHeader) + sizeof(ClearMessagePayload);
+    return c;
 }
-
-/**
- * Builds a point-to-point ACK binary frame.
- */
-inline size_t buildAckPacket(uint8_t* buffer, uint32_t targetMsgId, uint16_t senderId, uint16_t targetNodeId) {
-    PacketHeader header;
-    header.magic        = PROTOCOL_MAGIC_BYTE;
-    header.version      = PAYLOAD_SCHEMA_VERSION;
-    header.pktType      = PKT_DISTRESS_ACK;
-    header.msgId        = micros();
-    header.senderNodeId = senderId;
-    header.targetNodeId = targetNodeId;
-    header.ttl          = LORA_MAX_HOP_COUNT;
-    header.payloadLen   = sizeof(AckPayload);
-
-    AckPayload ack;
-    ack.ackedMsgId     = targetMsgId;
-    ack.rescuerNodeId  = senderId;
-    ack.rescuerTime    = millis() / 1000;
-
-    memcpy(buffer, &header, sizeof(PacketHeader));
-    memcpy(buffer + sizeof(PacketHeader), &ack, sizeof(AckPayload));
-
-    return sizeof(PacketHeader) + sizeof(AckPayload);
-}
-
-/**
- * Builds an image chunk packet.
- * @param buffer Output byte array
- * @param chunkPktId Unique message ID for this specific chunk packet
- * @param senderId Node ID of originating device
- * @param payload Pointer to populated ImageChunkPayload struct
- * @return Total bytes written to buffer
- */
-inline size_t buildImageChunkPacket(uint8_t* buffer, uint32_t chunkPktId, uint16_t senderId, const ImageChunkPayload* payload) {
-    PacketHeader header;
-    header.magic        = PROTOCOL_MAGIC_BYTE;
-    header.version      = PAYLOAD_SCHEMA_VERSION;
-    header.pktType      = PKT_IMAGE_CHUNK;
-    header.msgId        = chunkPktId;
-    header.senderNodeId = senderId;
-    header.targetNodeId = LORA_BROADCAST_ADDR;
-    header.ttl          = LORA_MAX_HOP_COUNT;
-    header.payloadLen   = sizeof(ImageChunkPayload);
-
-    memcpy(buffer, &header, sizeof(PacketHeader));
-    memcpy(buffer + sizeof(PacketHeader), payload, sizeof(ImageChunkPayload));
-
-    return sizeof(PacketHeader) + sizeof(ImageChunkPayload);
-}
-
-/**
- * Parses and validates an incoming LoRa raw byte array into a PacketHeader structure.
- * @return true if packet is long enough and magic byte matches; false otherwise.
- */
-inline bool parsePacketHeader(const uint8_t* buffer, size_t len, PacketHeader* outHeader) {
-    if (len < sizeof(PacketHeader)) {
-        return false; // Packet too short to contain header
+inline uint32_t crc32(const void* data, size_t n) { return ~crcUpdate(0xffffffffU, (const uint8_t*)data, n); }
+inline bool terminated(const char* s, size_t n) { return memchr(s, 0, n) != nullptr; }
+inline uint16_t imageChunks(uint32_t bytes) { return (bytes + CHUNK_BYTES - 1) / CHUNK_BYTES; }
+inline uint64_t completeMask(uint32_t bytes) { return (uint64_t(1) << imageChunks(bytes)) - 1; }
+inline uint8_t bitmapCount(uint64_t bits) { uint8_t n=0; while(bits) { bits &= bits-1; ++n; } return n; }
+inline bool validPayload(const PacketHeader& h, const uint8_t* data) {
+    switch (h.kind) {
+    case SOS: {
+        if (h.length != sizeof(SosPayload)) return false;
+        SosPayload p; memcpy(&p, data, sizeof(p));
+        return p.people >= 1 && p.people <= 99 && p.flags <= 31 && p.gps <= 1 &&
+            (!p.gps || (isfinite(p.latitude) && isfinite(p.longitude) && fabs(p.latitude)<=90 && fabs(p.longitude)<=180)) &&
+            terminated(p.location, sizeof(p.location)) && terminated(p.name, sizeof(p.name)) && terminated(p.text, sizeof(p.text));
     }
-
-    memcpy(outHeader, buffer, sizeof(PacketHeader));
-
-    // Validate magic byte
-    if (outHeader->magic != PROTOCOL_MAGIC_BYTE) {
-        return false;
+    case CHAT: {
+        if (h.length != sizeof(ChatPayload)) return false;
+        ChatPayload p; memcpy(&p, data, sizeof(p));
+        return p.report && p.text[0] && terminated(p.text, sizeof(p.text));
     }
-
-    return true;
+    case IMAGE: {
+        if (h.length != sizeof(ImagePayload)) return false;
+        ImagePayload p; memcpy(&p, data, sizeof(p));
+        return p.report == h.objectId && p.bytes >= 4 && p.bytes <= 8192;
+    }
+    case GROUP_CHUNK:
+        if (!GROUPED_TRANSFER || !h.target) return false;
+        // Same 180-byte data payload; group chunks do not elicit individual ACKs.
+        // fall through
+    case CHUNK: {
+        if (h.length < 4 || h.length > sizeof(ChunkPayload)) return false;
+        ChunkPayload p{}; memcpy(&p, data, h.length);
+        return p.count >= 1 && p.count <= CHUNK_BYTES && p.index < 46 && h.length == 3 + p.count;
+    }
+    case RESOLVE: {
+        if (h.length != sizeof(ResolvePayload)) return false;
+        ResolvePayload p; memcpy(&p, data, sizeof(p)); return p.report != 0;
+    }
+    case ACK: {
+        if (h.length != sizeof(AckPayload) || !h.target) return false;
+        AckPayload p; memcpy(&p, data, sizeof(p));
+        return (p.kind == SOS || p.kind == CHAT || p.kind == IMAGE || p.kind == RESOLVE) && p.flags <= 2 &&
+            (p.chunk == META_ACK || (p.kind == IMAGE && p.chunk < 46));
+    }
+    case BEACON: return h.length == 0 && h.target == 0;
+    case BITMAP_QUERY: return GROUPED_TRANSFER && h.target && h.length == 0;
+    case BITMAP_ACK: {
+        if (!GROUPED_TRANSFER || !h.target || h.length != sizeof(BitmapAckPayload)) return false;
+        BitmapAckPayload p; memcpy(&p, data, sizeof(p));
+        return p.request && p.flags <= ACK_COMPLETE && !(p.bitmap >> 46);
+    }
+    default: return false;
+    }
 }
-
-#endif // PACKET_DEFS_H
+inline bool parseFrame(const uint8_t* frame, size_t n, PacketHeader& h) {
+    if (n < sizeof(h) + AUTH_TAG_BYTES || n > 255) return false;
+    memcpy(&h, frame, sizeof(h));
+    return h.magic == MESH_MAGIC && h.version == MESH_VERSION && h.packetId && h.objectId && h.source &&
+        h.ttl >= 1 && h.ttl <= 3 && h.length <= MAX_PAYLOAD && n == sizeof(h) + h.length + AUTH_TAG_BYTES &&
+        validPayload(h, frame + sizeof(h));
+}

@@ -1,0 +1,245 @@
+[
+  {
+    "doi": "10.1109/ccnc51664.2024.10454687",
+    "title": [
+      "Image Transmission over LoRa-Based Networks: A Performance Study Using Image Compression and Reconstruction Methods"
+    ],
+    "author": [
+      {
+        "given": "Obeng Lydia",
+        "family": "Dede",
+        "sequence": "first",
+        "affiliation": [
+          {
+            "name": "Norfolk State University,Department of Engineering,Norfolk,USA"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Harikrishnan Muraleedharan",
+        "family": "Jalajamony",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Norfolk State University,Department of Engineering,Norfolk,USA"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Renny Edwin",
+        "family": "Fernandez",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Norfolk State University,Department of Engineering,Norfolk,USA"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "venue": [
+      "2024 IEEE 21st Consumer Communications &amp; Networking Conference (CCNC)"
+    ],
+    "volume": null,
+    "issue": null,
+    "page": "642-643",
+    "published": {
+      "date-parts": [
+        [
+          2024,
+          1,
+          6
+        ]
+      ]
+    },
+    "publisher": "IEEE"
+  },
+  {
+    "doi": "10.1109/t-c.1974.223784",
+    "title": [
+      "Discrete Cosine Transform"
+    ],
+    "author": [
+      {
+        "given": "N.",
+        "family": "Ahmed",
+        "sequence": "first",
+        "affiliation": [
+          {
+            "name": "Departments of Electrical Engineering and Computer Science, Kansas State University"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "T.",
+        "family": "Natarajan",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "K.R.",
+        "family": "Rao",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "venue": [
+      "IEEE Transactions on Computers"
+    ],
+    "volume": "C-23",
+    "issue": "1",
+    "page": "90-93",
+    "published": {
+      "date-parts": [
+        [
+          1974,
+          1
+        ]
+      ]
+    },
+    "publisher": "Institute of Electrical and Electronics Engineers (IEEE)"
+  },
+  {
+    "doi": "10.1109/30.125072",
+    "title": [
+      "The JPEG still picture compression standard"
+    ],
+    "author": [
+      {
+        "given": "G.K.",
+        "family": "Wallace",
+        "sequence": "first",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "venue": [
+      "IEEE Transactions on Consumer Electronics"
+    ],
+    "volume": "38",
+    "issue": "1",
+    "page": "xviii-xxxiv",
+    "published": {
+      "date-parts": [
+        [
+          1992
+        ]
+      ]
+    },
+    "publisher": "Institute of Electrical and Electronics Engineers (IEEE)"
+  },
+  {
+    "doi": "10.1109/tip.2003.819861",
+    "title": [
+      "Image quality assessment: from error visibility to structural similarity"
+    ],
+    "author": [
+      {
+        "family": "Zhou Wang",
+        "sequence": "first",
+        "affiliation": [
+          {
+            "name": "Center for Neural Sci., New York Univ., NY, USA"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "A.C.",
+        "family": "Bovik",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "H.R.",
+        "family": "Sheikh",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "E.P.",
+        "family": "Simoncelli",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "venue": [
+      "IEEE Transactions on Image Processing"
+    ],
+    "volume": "13",
+    "issue": "4",
+    "page": "600-612",
+    "published": {
+      "date-parts": [
+        [
+          2004,
+          4
+        ]
+      ]
+    },
+    "publisher": "Institute of Electrical and Electronics Engineers (IEEE)"
+  }
+]

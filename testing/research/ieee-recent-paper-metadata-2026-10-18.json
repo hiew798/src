@@ -1,0 +1,281 @@
+[
+  {
+    "DOI": "10.1109/jiot.2025.3588064",
+    "title": [
+      "Interleaved Reception in LoRa Using IFT: A Hardware-Efficient Architecture for Fast and Low-Power Image Transmission"
+    ],
+    "author": [
+      {
+        "ORCID": "https://orcid.org/0009-0000-4003-9397",
+        "authenticated-orcid": false,
+        "given": "Soumadeep",
+        "family": "De",
+        "sequence": "first",
+        "affiliation": [
+          {
+            "name": "Department of Electronics Engineering, Norfolk State University, Norfolk, VA, USA"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Obeng Lydia",
+        "family": "Dede",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Department of Electronics Engineering, Norfolk State University, Norfolk, VA, USA"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "ORCID": "https://orcid.org/0009-0005-0787-4194",
+        "authenticated-orcid": false,
+        "given": "Santhosh",
+        "family": "Adhinarayanan",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Department of Electronics Engineering, Norfolk State University, Norfolk, VA, USA"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "ORCID": "https://orcid.org/0000-0002-6225-7181",
+        "authenticated-orcid": false,
+        "given": "Harikrishnan Muraleedharan",
+        "family": "Jalajamony",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Department of Materials Science and Engineering, Norfolk State University, Norfolk, VA, USA"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Adem",
+        "family": "Ibrahim",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Department of Electronics Engineering, Norfolk State University, Norfolk, VA, USA"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Isaac",
+        "family": "Osunmakinde",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Department of Computer Science, Norfolk State University, Norfolk, VA, USA"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "ORCID": "https://orcid.org/0000-0003-2346-5460",
+        "authenticated-orcid": false,
+        "given": "Renny Edwin",
+        "family": "Fernandez",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Department of Electronics Engineering, Norfolk State University, Norfolk, VA, USA"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "container-title": [
+      "IEEE Internet of Things Journal"
+    ],
+    "publisher": "Institute of Electrical and Electronics Engineers (IEEE)",
+    "type": "journal-article",
+    "page": "39777-39787",
+    "volume": "12",
+    "issue": "19",
+    "published": {
+      "date-parts": [
+        [
+          2025,
+          10,
+          1
+        ]
+      ]
+    },
+    "URL": "https://doi.org/10.1109/jiot.2025.3588064"
+  },
+  {
+    "DOI": "10.1109/stee63704.2026.11663995",
+    "title": [
+      "An Efficient Image Compression Method for LoRa Networks"
+    ],
+    "author": [
+      {
+        "given": "Yurii",
+        "family": "Onykiienko",
+        "sequence": "first",
+        "affiliation": [
+          {
+            "name": "Igor Sikorsky Kyiv Polytechnic Institute",
+            "place": [
+              "Kyiv, Ukraine"
+            ],
+            "department": [
+              "The Department of Acoustic and Multimedia Electronic Systems"
+            ]
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Serhii",
+        "family": "Naida",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Igor Sikorsky Kyiv Polytechnic Institute",
+            "place": [
+              "Kyiv, Ukraine"
+            ],
+            "department": [
+              "The Department of Acoustic and Multimedia Electronic Systems"
+            ]
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Maksim",
+        "family": "Mazin",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Igor Sikorsky Kyiv Polytechnic Institute",
+            "place": [
+              "Kyiv, Ukraine"
+            ],
+            "department": [
+              "The Department of Acoustic and Multimedia Electronic Systems"
+            ]
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Illia",
+        "family": "Kyrylenko",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Igor Sikorsky Kyiv Polytechnic Institute",
+            "place": [
+              "Kyiv, Ukraine"
+            ],
+            "department": [
+              "The Department of Acoustic and Multimedia Electronic Systems"
+            ]
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Pavlo",
+        "family": "Popovych",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Igor Sikorsky Kyiv Polytechnic Institute",
+            "place": [
+              "Kyiv, Ukraine"
+            ],
+            "department": [
+              "The Department of Acoustic and Multimedia Electronic Systems"
+            ]
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "container-title": [
+      "2026 IEEE 8th International Conference on Smart Technologies in Power Engineering and Electronics (STEE)"
+    ],
+    "publisher": "IEEE",
+    "type": "proceedings-article",
+    "page": "TT2.14.1-TT2.14.5",
+    "published": {
+      "date-parts": [
+        [
+          2026,
+          4
+        ]
+      ]
+    },
+    "URL": "https://doi.org/10.1109/stee63704.2026.11663995"
+  }
+]

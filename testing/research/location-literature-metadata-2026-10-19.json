@@ -1,0 +1,459 @@
+{
+  "checked_on": "2026-10-19",
+  "sources": [
+    {
+      "reference_number": 10,
+      "doi": "10.1109/ICCED60214.2023.10425043",
+      "primary_source": "https://ieeexplore.ieee.org/abstract/document/10425043",
+      "technical_verification_scope": "Publisher abstract",
+      "metadata": {
+        "title": [
+          "Wireless Resilience: A LoRa-Based Sensor Network and Mobile Application for Flood Victim Rescue System"
+        ],
+        "author": [
+          {
+            "given": "Mohammad Syameer",
+            "family": "Imran",
+            "sequence": "first",
+            "affiliation": [
+              {
+                "name": "International Islamic University Malaysia,Faculty of Information and Communication Technology,Department of Computer Science,Selangor,Malaysia"
+              }
+            ],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          },
+          {
+            "given": "Muhammad",
+            "family": "Daniel",
+            "sequence": "additional",
+            "affiliation": [
+              {
+                "name": "International Islamic University Malaysia,Faculty of Information and Communication Technology,Department of Computer Science,Selangor,Malaysia"
+              }
+            ],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          },
+          {
+            "given": "Zainab S.",
+            "family": "Attarbashi",
+            "sequence": "additional",
+            "affiliation": [
+              {
+                "name": "International Islamic University Malaysia,Faculty of Information and Communication Technology,Department of Computer Science,Selangor,Malaysia"
+              }
+            ],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          },
+          {
+            "given": "Dini Oktarina Dwi",
+            "family": "Handayani",
+            "sequence": "additional",
+            "affiliation": [
+              {
+                "name": "International Islamic University Malaysia,Faculty of Information and Communication Technology,Department of Computer Science,Selangor,Malaysia"
+              }
+            ],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          },
+          {
+            "given": "Saman",
+            "family": "Iftikhar",
+            "sequence": "additional",
+            "affiliation": [
+              {
+                "name": "Arab Open University,Faculty of Computer Studies,Saudi Arabia"
+              }
+            ],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          },
+          {
+            "given": "Dania",
+            "family": "Al-Madani",
+            "sequence": "additional",
+            "affiliation": [
+              {
+                "name": "Arab Open University,Faculty of Computer Studies,Saudi Arabia"
+              }
+            ],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          }
+        ],
+        "container-title": [
+          "2023 IEEE 9th International Conference on Computing, Engineering and Design (ICCED)"
+        ],
+        "published": {
+          "date-parts": [
+            [
+              2023,
+              11,
+              7
+            ]
+          ]
+        },
+        "volume": null,
+        "issue": null,
+        "page": "1-6",
+        "publisher": "IEEE",
+        "DOI": "10.1109/icced60214.2023.10425043"
+      }
+    },
+    {
+      "reference_number": 11,
+      "doi": "10.1109/TWC.2023.3325330",
+      "primary_source": "https://ieeexplore.ieee.org/abstract/document/10295375",
+      "technical_verification_scope": "Publisher abstract",
+      "metadata": {
+        "title": [
+          "LoRaAid: Underground Joint Communication and Localization System Based on LoRa Technology"
+        ],
+        "author": [
+          {
+            "ORCID": "https://orcid.org/0000-0002-9713-7470",
+            "authenticated-orcid": false,
+            "given": "Huaijin",
+            "family": "Zhang",
+            "sequence": "first",
+            "affiliation": [
+              {
+                "name": "Research Center of 6G Mobile Communications, School of Cyber Science and Engineering and the School of Electronic Information and Communications, Huazhong University of Science and Technology, Wuhan, China"
+              }
+            ],
+            "role": [
+              {
+                "vocabulary": "crossref",
+                "role": "author"
+              }
+            ]
+          },
+          {
+            "ORCID": "https://orcid.org/0000-0003-0460-4453",
+            "authenticated-orcid": false,
+            "given": "Guanghua",
+            "family": "Liu",
+            "sequence": "additional",
+            "affiliation": [
+              {
+                "name": "Research Center of 6G Mobile Communications, School of Cyber Science and Engineering, Huazhong University of Science and Technology, Wuhan, China"
+              }
+            ],
+            "role": [
+              {
+                "vocabulary": "crossref",
+                "role": "author"
+              }
+            ]
+          },
+          {
+            "ORCID": "https://orcid.org/0000-0001-5759-6536",
+            "authenticated-orcid": false,
+            "given": "You",
+            "family": "Xu",
+            "sequence": "additional",
+            "affiliation": [
+              {
+                "name": "Wuhan National Laboratory for Optoelectronics, Research Center of 6G Mobile Communications, School of Cyber Science and Engineering, Huazhong University of Science and Technology, Wuhan, China"
+              }
+            ],
+            "role": [
+              {
+                "vocabulary": "crossref",
+                "role": "author"
+              }
+            ]
+          },
+          {
+            "ORCID": "https://orcid.org/0000-0002-8482-1046",
+            "authenticated-orcid": false,
+            "given": "Tao",
+            "family": "Jiang",
+            "sequence": "additional",
+            "affiliation": [
+              {
+                "name": "Research Center of 6G Mobile Communications, School of Cyber Science and Engineering, Huazhong University of Science and Technology, Wuhan, China"
+              }
+            ],
+            "role": [
+              {
+                "vocabulary": "crossref",
+                "role": "author"
+              }
+            ]
+          }
+        ],
+        "container-title": [
+          "IEEE Transactions on Wireless Communications"
+        ],
+        "published": {
+          "date-parts": [
+            [
+              2024,
+              5
+            ]
+          ]
+        },
+        "volume": "23",
+        "issue": "5",
+        "page": "5248-5260",
+        "publisher": "Institute of Electrical and Electronics Engineers (IEEE)",
+        "DOI": "10.1109/twc.2023.3325330"
+      }
+    },
+    {
+      "reference_number": 12,
+      "doi": "10.1109/TMC.2017.2695452",
+      "primary_source": "https://ieeexplore.ieee.org/abstract/document/7904658",
+      "technical_verification_scope": "Publisher abstract and author publication page",
+      "metadata": {
+        "title": [
+          "TeamPhone: Networking SmartPhones for Disaster Recovery"
+        ],
+        "author": [
+          {
+            "ORCID": "https://orcid.org/0000-0003-3967-2704",
+            "authenticated-orcid": false,
+            "given": "Zongqing",
+            "family": "Lu",
+            "sequence": "first",
+            "affiliation": [],
+            "role": [
+              {
+                "vocabulary": "crossref",
+                "role": "author"
+              }
+            ]
+          },
+          {
+            "given": "Guohong",
+            "family": "Cao",
+            "sequence": "additional",
+            "affiliation": [],
+            "role": [
+              {
+                "vocabulary": "crossref",
+                "role": "author"
+              }
+            ]
+          },
+          {
+            "given": "Thomas",
+            "family": "La Porta",
+            "sequence": "additional",
+            "affiliation": [],
+            "role": [
+              {
+                "vocabulary": "crossref",
+                "role": "author"
+              }
+            ]
+          }
+        ],
+        "container-title": [
+          "IEEE Transactions on Mobile Computing"
+        ],
+        "published": {
+          "date-parts": [
+            [
+              2017,
+              12,
+              1
+            ]
+          ]
+        },
+        "volume": "16",
+        "issue": "12",
+        "page": "3554-3567",
+        "publisher": "Institute of Electrical and Electronics Engineers (IEEE)",
+        "DOI": "10.1109/tmc.2017.2695452"
+      }
+    },
+    {
+      "reference_number": 13,
+      "doi": "10.1109/GLOCOM.2018.8647177",
+      "primary_source": "https://cris.unibo.it/handle/11585/676980",
+      "technical_verification_scope": "Author-institution abstract",
+      "metadata": {
+        "title": [
+          "LOCATE: A LoRa-based mObile emergenCy mAnagement sysTEm"
+        ],
+        "author": [
+          {
+            "given": "Luca",
+            "family": "Sciullo",
+            "sequence": "first",
+            "affiliation": [],
+            "role": [
+              {
+                "vocabulary": "crossref",
+                "role": "author"
+              }
+            ]
+          },
+          {
+            "given": "Federico",
+            "family": "Fossemo",
+            "sequence": "additional",
+            "affiliation": [],
+            "role": [
+              {
+                "vocabulary": "crossref",
+                "role": "author"
+              }
+            ]
+          },
+          {
+            "given": "Angelo",
+            "family": "Trotta",
+            "sequence": "additional",
+            "affiliation": [],
+            "role": [
+              {
+                "vocabulary": "crossref",
+                "role": "author"
+              }
+            ]
+          },
+          {
+            "given": "Marco",
+            "family": "Di Felice",
+            "sequence": "additional",
+            "affiliation": [],
+            "role": [
+              {
+                "vocabulary": "crossref",
+                "role": "author"
+              }
+            ]
+          }
+        ],
+        "container-title": [
+          "2018 IEEE Global Communications Conference (GLOBECOM)"
+        ],
+        "published": {
+          "date-parts": [
+            [
+              2018,
+              12
+            ]
+          ]
+        },
+        "volume": null,
+        "issue": null,
+        "page": "1-7",
+        "publisher": "IEEE",
+        "DOI": "10.1109/glocom.2018.8647177"
+      }
+    },
+    {
+      "reference_number": 14,
+      "doi": "10.65136/jati.v6i1.170",
+      "primary_source": "https://jati.apu.edu.my/index.php/JATI/article/download/170/137/300",
+      "technical_verification_scope": "Publisher full text, Sections III and IV",
+      "metadata": {
+        "title": [
+          "Short-Term Mobile Ad Hoc Network with LoRa Based Infrastructure in Disaster Relief"
+        ],
+        "author": [
+          {
+            "given": "Chan Xin",
+            "family": "Yen",
+            "sequence": "first",
+            "affiliation": [],
+            "role": [
+              {
+                "vocabulary": "crossref",
+                "role": "author"
+              }
+            ]
+          },
+          {
+            "given": "Kamalanathan",
+            "family": "Shanmugam",
+            "sequence": "additional",
+            "affiliation": [],
+            "role": [
+              {
+                "vocabulary": "crossref",
+                "role": "author"
+              }
+            ]
+          },
+          {
+            "given": "Muhammad Ehsan",
+            "family": "Rana",
+            "sequence": "additional",
+            "affiliation": [],
+            "role": [
+              {
+                "vocabulary": "crossref",
+                "role": "author"
+              }
+            ]
+          }
+        ],
+        "container-title": [
+          "Journal of Applied Technology and Innovation"
+        ],
+        "published": {
+          "date-parts": [
+            [
+              2022,
+              6,
+              1
+            ]
+          ]
+        },
+        "volume": "6",
+        "issue": "2",
+        "page": null,
+        "publisher": "Asia Pacific University Sdn. Bhd.",
+        "DOI": "10.65136/jati.v6i1.170"
+      }
+    },
+    {
+      "reference_number": 15,
+      "title": "Geolocation",
+      "organisation": "W3C",
+      "version_date": "2026-03-26",
+      "status": "Candidate Recommendation Snapshot",
+      "primary_source": "https://www.w3.org/TR/2026/CR-geolocation-20260326/"
+    },
+    {
+      "reference_number": 16,
+      "title": "Secure Contexts",
+      "organisation": "W3C",
+      "version_date": "2023-11-10",
+      "status": "Candidate Recommendation Draft",
+      "primary_source": "https://www.w3.org/TR/2023/CRD-secure-contexts-20231110/"
+    }
+  ]
+}

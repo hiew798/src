@@ -1,0 +1,40 @@
+{
+  "statistics": {
+    "close_1": {
+      "n": 5,
+      "mean_s": 98,
+      "sample_sd_s": 8.860022573334675
+    },
+    "close_2": {
+      "n": 5,
+      "mean_s": 85.8,
+      "sample_sd_s": 2.588435821108957
+    },
+    "close_3": {
+      "n": 5,
+      "mean_s": 77.4,
+      "sample_sd_s": 3.646916505762094
+    },
+    "close_4": {
+      "n": 5,
+      "mean_s": 65.6,
+      "sample_sd_s": 7.127411872482185
+    },
+    "wall_3": {
+      "n": 4,
+      "mean_s": 105.25,
+      "sample_sd_s": 7.88986691902975
+    },
+    "wall_4": {
+      "n": 4,
+      "mean_s": 88,
+      "sample_sd_s": 10.424330514074592
+    }
+  },
+  "tables": 6,
+  "figures": 6,
+  "numbered_equations": 8,
+  "references": 24,
+  "observations": 28,
+  "source_template_unchanged": true
+}

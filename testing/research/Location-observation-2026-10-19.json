@@ -1,0 +1,23 @@
+{
+  "record_date": "2026-10-19",
+  "provenance": "We confirmed the following functional observation from our phone-based use of the prototype.",
+  "automatic_coordinates_populated": true,
+  "mobile_data_enabled": false,
+  "certificate_or_trust_profile_installed": false,
+  "dedicated_application_installed": false,
+  "certificate_handling": "Continued past the browser certificate warning",
+  "code_options": {
+    "enableHighAccuracy": true,
+    "timeout_ms": 12000,
+    "maximumAge_ms": 30000
+  },
+  "location_provider": null,
+  "position_timestamp": null,
+  "returned_accuracy_m": null,
+  "ground_truth_position": null,
+  "error_m": null,
+  "acquisition_duration_s": null,
+  "attempt_count": null,
+  "phone_and_browser_versions": null,
+  "interpretation": "Functional coordinate retrieval under the tested configuration; fresh GNSS-only acquisition, numerical accuracy and cross-browser compatibility are not established."
+}

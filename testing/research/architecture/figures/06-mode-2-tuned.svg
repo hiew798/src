@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg
+  PUBLIC '-//W3C//DTD SVG 1.0//EN'
+  'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'>
+<svg width="960" height="585" preserveAspectRatio="xMinYMin meet" viewBox="0 0 960 585" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="960" height="585"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-585)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="0" y="0" width="960" height="585" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<rect x="60" y="520" width="240" height="50" rx="9" ry="9" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(91%,96%,97%); fill-rule: evenodd;"/>
+			<text x="119.532958984375" y="539.56" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1079) scale(1,-1)">Civilian sender</text>
+			<path d="M 180,520 L 180,37 Z" style="stroke: rgb(39%,45%,54%); stroke-linecap: butt; stroke-width: 1.2; stroke-dasharray: 5, 5;"/>
+			<rect x="600" y="520" width="240" height="50" rx="9" ry="9" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(91%,96%,97%); fill-rule: evenodd;"/>
+			<text x="651.47705078125" y="539.56" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1079) scale(1,-1)">Rescuer receiver</text>
+			<path d="M 720,520 L 720,37 Z" style="stroke: rgb(39%,45%,54%); stroke-linecap: butt; stroke-width: 1.2; stroke-dasharray: 5, 5;"/>
+			<polyline points="180 484, 720 484" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="720 484, 711.896 487.9147, 711.896 480.0853" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<text x="340.169677734375" y="492.0" style="font-family: Arial; font-size: 15px;fill: rgb(9%,41%,58%); stroke:none;" transform="translate(0,984) scale(1,-1)">IMAGE manifest: bytes + CRC32</text>
+			<polyline points="720 432, 180 432" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="180 432, 188.104 428.0853, 188.104 435.9147" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1; fill: rgb(7%,49%,45%); fill-rule: evenodd;"/>
+			<text x="404.150390625" y="443.0" style="font-family: Arial; font-size: 15px;fill: rgb(7%,49%,45%); stroke:none;" transform="translate(0,886) scale(1,-1)">Manifest ACK</text>
+			<polyline points="180 357, 720 357" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="720 357, 711.896 360.9147, 711.896 353.0853" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<text x="339.54345703125" y="365.0" style="font-family: Arial; font-size: 15px;fill: rgb(9%,41%,58%); stroke:none;" transform="translate(0,730) scale(1,-1)">CHUNK i (up to 180 JPEG bytes)</text>
+			<rect x="744" y="296" width="195" height="50" rx="9" ry="9" style="stroke: rgb(39%,45%,54%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(94%,96%,97%); fill-rule: evenodd;"/>
+			<text x="781.47802734375" y="325.8" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,651) scale(1,-1)">Write, read back,</text>
+			<text x="798.14794921875" y="306.6" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,613) scale(1,-1)">save bitmap</text>
+			<polyline points="720 277, 180 277" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="180 277, 188.104 273.0853, 188.104 280.9147" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1; fill: rgb(7%,49%,45%); fill-rule: evenodd;"/>
+			<text x="397.8955078125" y="288.0" style="font-family: Arial; font-size: 15px;fill: rgb(7%,49%,45%); stroke:none;" transform="translate(0,576) scale(1,-1)">ACK for chunk i</text>
+			<rect x="15" y="195" width="330" height="58" rx="9" ry="9" style="stroke: rgb(39%,45%,54%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(94%,96%,97%); fill-rule: evenodd;"/>
+			<text x="100.810546875" y="228.8" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,457) scale(1,-1)">30 ms post-ACK delay</text>
+			<text x="54.949951171875" y="209.60000000000002" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,419) scale(1,-1)">20 ms planner; 0-39 ms image jitter</text>
+			<rect x="350" y="195" width="570" height="58" rx="9" ry="9" style="stroke: rgb(39%,45%,54%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(94%,96%,97%); fill-rule: evenodd;"/>
+			<text x="451.19140625" y="228.8" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,457) scale(1,-1)">ACK deadline is re-based after successful radio TX,</text>
+			<text x="467.06298828125" y="209.60000000000002" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,419) scale(1,-1)">using airtime and estimated return-path length.</text>
+			<polyline points="180 155, 720 155" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="720 155, 711.896 158.9147, 711.896 151.0853" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<text x="333.90380859375" y="163.0" style="font-family: Arial; font-size: 15px;fill: rgb(9%,41%,58%); stroke:none;" transform="translate(0,326) scale(1,-1)">CHUNK i+1; repeat until last chunk</text>
+			<polyline points="720 75, 180 75" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="180 75, 188.104 71.08531, 188.104 78.91469" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1; fill: rgb(7%,49%,45%); fill-rule: evenodd;"/>
+			<text x="321.20361328125" y="86.0" style="font-family: Arial; font-size: 15px;fill: rgb(7%,49%,45%); stroke:none;" transform="translate(0,172) scale(1,-1)">Final chunk ACK with COMPLETE flag</text>
+			<text x="259.892578125" y="12.0" style="font-family: Arial; font-size: 15px;fill: rgb(39%,45%,54%); stroke:none;" transform="translate(0,24) scale(1,-1)">Sequence schematic: arrow spacing is not a measured time scale.</text>
+		</g>
+	</g>
+</svg>

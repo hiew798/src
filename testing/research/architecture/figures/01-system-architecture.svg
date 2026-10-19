@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg
+  PUBLIC '-//W3C//DTD SVG 1.0//EN'
+  'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'>
+<svg width="960" height="525" preserveAspectRatio="xMinYMin meet" viewBox="0 0 960 525" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="960" height="525"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-525)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="0" y="0" width="960" height="525" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="201.9169921875" y="500.0" style="font-family: Arial-Bold; font-size: 22px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1000) scale(1,-1)">Two local Wi-Fi networks, one bidirectional LoRa link</text>
+			<rect x="25" y="370" width="280" height="95" rx="9" ry="9" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(91%,96%,97%); fill-rule: evenodd;"/>
+			<text x="106.9111328125" y="440.0" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,880) scale(1,-1)">Civilian phone</text>
+			<text x="109.98046875" y="414.24" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,828) scale(1,-1)">Camera / gallery</text>
+			<text x="76.845703125" y="395.04" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,790) scale(1,-1)">Browser UI + compression</text>
+			<rect x="655" y="370" width="280" height="95" rx="9" ry="9" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(91%,96%,97%); fill-rule: evenodd;"/>
+			<text x="733.594970703125" y="440.0" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,880) scale(1,-1)">Rescuer phone</text>
+			<text x="729.964599609375" y="414.24" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,828) scale(1,-1)">Browser dashboard</text>
+			<text x="719.329833984375" y="395.04" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,790) scale(1,-1)">Photo display + replies</text>
+			<rect x="25" y="180" width="280" height="115" rx="9" ry="9" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(90%,95%,93%); fill-rule: evenodd;"/>
+			<text x="105.944091796875" y="270.0" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,540) scale(1,-1)">Civilian ESP32</text>
+			<text x="71.40380859375" y="244.24" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,488) scale(1,-1)">Web API + persistent queue</text>
+			<text x="70.784912109375" y="225.04000000000002" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,450) scale(1,-1)">LoRa transfer state machine</text>
+			<rect x="655" y="180" width="280" height="115" rx="9" ry="9" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(90%,95%,93%); fill-rule: evenodd;"/>
+			<text x="732.6279296875" y="270.0" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,540) scale(1,-1)">Rescuer ESP32</text>
+			<text x="702.6708984375" y="244.24" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,488) scale(1,-1)">Web API + image assembly</text>
+			<text x="717.04833984375" y="225.04000000000002" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,450) scale(1,-1)">Persistent receive state</text>
+			<polyline points="105 370, 105 295" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="105 295, 108.9147 303.104, 101.0853 303.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<polyline points="225 295, 225 370" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="225 370, 221.0853 361.896, 228.9147 361.896" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<text x="116.6748046875" y="330.0" style="font-family: Arial; font-size: 15px;fill: rgb(9%,41%,58%); stroke:none;" transform="translate(0,660) scale(1,-1)">Wi-Fi / HTTPS</text>
+			<polyline points="735 370, 735 295" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="735 295, 738.9147 303.104, 731.0853 303.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<polyline points="855 295, 855 370" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="855 370, 851.0853 361.896, 858.9147 361.896" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<text x="746.6748046875" y="330.0" style="font-family: Arial; font-size: 15px;fill: rgb(9%,41%,58%); stroke:none;" transform="translate(0,660) scale(1,-1)">Wi-Fi / HTTPS</text>
+			<polyline points="305 261, 655 261" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="655 261, 646.896 264.9147, 646.896 257.0853" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<text x="396.214599609375" y="277.0" style="font-family: Arial; font-size: 15px;fill: rgb(9%,41%,58%); stroke:none;" transform="translate(0,554) scale(1,-1)">SOS, JPEG chunks, chat</text>
+			<polyline points="655 208, 305 208" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="305 208, 313.104 204.0853, 313.104 211.9147" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1; fill: rgb(7%,49%,45%); fill-rule: evenodd;"/>
+			<text x="386.62353515625" y="222.0" style="font-family: Arial; font-size: 15px;fill: rgb(7%,49%,45%); stroke:none;" transform="translate(0,444) scale(1,-1)">Device ACKs and reply chat</text>
+			<rect x="25" y="50" width="280" height="75" rx="9" ry="9" style="stroke: rgb(39%,45%,54%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(94%,96%,97%); fill-rule: evenodd;"/>
+			<text x="78.568115234375" y="100.0" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,200) scale(1,-1)">LittleFS: source copy</text>
+			<text x="64.537353515625" y="74.24000000000001" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,148) scale(1,-1)">JPEG + report + delivery state</text>
+			<rect x="655" y="50" width="280" height="75" rx="9" ry="9" style="stroke: rgb(39%,45%,54%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(94%,96%,97%); fill-rule: evenodd;"/>
+			<text x="691.107421875" y="100.0" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,200) scale(1,-1)">LittleFS: destination copy</text>
+			<text x="694.53369140625" y="74.24000000000001" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,148) scale(1,-1)">Chunks + bitmap + final JPEG</text>
+			<polyline points="165 180, 165 125" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="165 125, 168.9147 133.104, 161.0853 133.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<polyline points="795 180, 795 125" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="795 125, 798.9147 133.104, 791.0853 133.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<rect x="342" y="42" width="276" height="113" rx="9" ry="9" style="stroke: rgb(39%,45%,54%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(94%,96%,97%); fill-rule: evenodd;"/>
+			<text x="353.302001953125" y="122.5" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,245) scale(1,-1)">Each LoRa radio uses one antenna.</text>
+			<text x="344.5458984375" y="103.3" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,206) scale(1,-1)">Transmission and reception alternate.</text>
+			<text x="361.64794921875" y="84.1" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,168) scale(1,-1)">Phone-to-node traffic stays local.</text>
+			<text x="367.474365234375" y="64.9" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,129) scale(1,-1)">No cloud service is in this path.</text>
+		</g>
+	</g>
+</svg>

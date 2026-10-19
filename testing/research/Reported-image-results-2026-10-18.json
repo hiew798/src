@@ -1,0 +1,129 @@
+{
+  "record_date": "2026-10-18",
+  "provenance": "We manually recorded the hardware image-reception times. Calculations use all 20 recorded values. The analysis contains no serial logs.",
+  "image": {
+    "bytes": 2284,
+    "same_image_used": true,
+    "sha256": null
+  },
+  "placement": {
+    "description": "Boards side by side",
+    "separation_m": null
+  },
+  "timing": {
+    "start": "Rescuer indicates reception and begins receiving image",
+    "end": "Photo shown as complete and verified on rescuer",
+    "method": "Manual timing",
+    "unit": "seconds",
+    "initial_indication_approx_s": 3,
+    "initial_interval_included": false,
+    "civilian_ack_endpoint": false
+  },
+  "repetitions_per_mode": 5,
+  "results": [
+    {
+      "mode": 1,
+      "runs": 5,
+      "individual_seconds": [
+        94,
+        90,
+        95,
+        98,
+        113
+      ],
+      "calculated_mean_seconds": 98,
+      "sample_standard_deviation_seconds": 8.860022573334675,
+      "minimum_seconds": 90,
+      "maximum_seconds": 113,
+      "saved_vs_mode1_seconds": 0,
+      "reduction_vs_mode1_pct": 0
+    },
+    {
+      "mode": 2,
+      "runs": 5,
+      "individual_seconds": [
+        85,
+        89,
+        84,
+        83,
+        88
+      ],
+      "calculated_mean_seconds": 85.8,
+      "sample_standard_deviation_seconds": 2.588435821108957,
+      "minimum_seconds": 83,
+      "maximum_seconds": 89,
+      "saved_vs_mode1_seconds": 12.2,
+      "reduction_vs_mode1_pct": 12.448979591836737
+    },
+    {
+      "mode": 3,
+      "runs": 5,
+      "individual_seconds": [
+        75,
+        80,
+        77,
+        82,
+        73
+      ],
+      "calculated_mean_seconds": 77.4,
+      "sample_standard_deviation_seconds": 3.6469165057620936,
+      "minimum_seconds": 73,
+      "maximum_seconds": 82,
+      "saved_vs_mode1_seconds": 20.6,
+      "reduction_vs_mode1_pct": 21.0204081632653
+    },
+    {
+      "mode": 4,
+      "runs": 5,
+      "individual_seconds": [
+        58,
+        71,
+        75,
+        63,
+        61
+      ],
+      "calculated_mean_seconds": 65.6,
+      "sample_standard_deviation_seconds": 7.127411872482185,
+      "minimum_seconds": 58,
+      "maximum_seconds": 75,
+      "saved_vs_mode1_seconds": 32.4,
+      "reduction_vs_mode1_pct": 33.061224489795926
+    }
+  ],
+  "standard_deviation_method": "Sample standard deviation, denominator n-1 = 4",
+  "cross_mode_pairing": "Not documented; list positions do not establish matched pairs across modes",
+  "excluded_readings": [],
+  "adaptive_vs_fixed": {
+    "saved_seconds": 11.8,
+    "reduction_pct": 15.24547803617571
+  },
+  "superseded_summary_only_estimates": {
+    "mode1": 94,
+    "mode2": 85,
+    "mode3": 75,
+    "mode4": 58,
+    "used_in_current_calculations": false
+  },
+  "distance": {
+    "approximate_range_m": [
+      50,
+      100
+    ],
+    "clear_path": true,
+    "modes_checked": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "observation": "Delivery was similar",
+    "numerical_timings": null,
+    "repetitions": null
+  },
+  "obstruction": {
+    "status": "Follow-up recorded separately on 2026-10-19",
+    "measurements_file": "Obstruction-results-2026-10-19.json",
+    "included_in_side_by_side_statistics": false
+  },
+  "automated_pilot_measurements_included": false
+}

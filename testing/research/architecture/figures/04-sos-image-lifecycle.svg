@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg
+  PUBLIC '-//W3C//DTD SVG 1.0//EN'
+  'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'>
+<svg width="960" height="610" preserveAspectRatio="xMinYMin meet" viewBox="0 0 960 610" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="960" height="610"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-610)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="0" y="0" width="960" height="610" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<rect x="20" y="552" width="180" height="48" rx="9" ry="9" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(91%,96%,97%); fill-rule: evenodd;"/>
+			<text x="48.59912109374999" y="570.56" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1141) scale(1,-1)">Phone browser</text>
+			<path d="M 110,552 L 110,35 Z" style="stroke: rgb(39%,45%,54%); stroke-linecap: butt; stroke-width: 1.2; stroke-dasharray: 5, 5;"/>
+			<rect x="295" y="552" width="180" height="48" rx="9" ry="9" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(91%,96%,97%); fill-rule: evenodd;"/>
+			<text x="332.103271484375" y="570.56" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1141) scale(1,-1)">Civilian node</text>
+			<path d="M 385,552 L 385,35 Z" style="stroke: rgb(39%,45%,54%); stroke-linecap: butt; stroke-width: 1.2; stroke-dasharray: 5, 5;"/>
+			<rect x="660" y="552" width="180" height="48" rx="9" ry="9" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(91%,96%,97%); fill-rule: evenodd;"/>
+			<text x="693.787109375" y="570.56" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1141) scale(1,-1)">Rescuer node</text>
+			<path d="M 750,552 L 750,35 Z" style="stroke: rgb(39%,45%,54%); stroke-linecap: butt; stroke-width: 1.2; stroke-dasharray: 5, 5;"/>
+			<polyline points="110 518, 385 518" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="385 518, 376.896 521.9147, 376.896 514.0853" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<text x="187.071533203125" y="528.0" style="font-family: Arial; font-size: 15px;fill: rgb(9%,41%,58%); stroke:none;" transform="translate(0,1056) scale(1,-1)">POST SOS JSON</text>
+			<polyline points="385 452, 110 452" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="110 452, 118.104 448.0853, 118.104 455.9147" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1; fill: rgb(7%,49%,45%); fill-rule: evenodd;"/>
+			<text x="178.707275390625" y="462.0" style="font-family: Arial; font-size: 15px;fill: rgb(7%,49%,45%); stroke:none;" transform="translate(0,924) scale(1,-1)">Local save response</text>
+			<polyline points="385 403, 750 403" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="750 403, 741.896 406.9147, 741.896 399.0853" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<text x="530.406494140625" y="413.0" style="font-family: Arial; font-size: 15px;fill: rgb(9%,41%,58%); stroke:none;" transform="translate(0,826) scale(1,-1)">SOS frame</text>
+			<polyline points="750 345, 385 345" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="385 345, 393.104 341.0853, 393.104 348.9147" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1; fill: rgb(7%,49%,45%); fill-rule: evenodd;"/>
+			<text x="495.3857421875" y="355.0" style="font-family: Arial; font-size: 15px;fill: rgb(7%,49%,45%); stroke:none;" transform="translate(0,710) scale(1,-1)">ACK after report save</text>
+			<polyline points="110 277, 385 277" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="385 277, 376.896 280.9147, 376.896 273.0853" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<text x="153.292236328125" y="287.0" style="font-family: Arial; font-size: 15px;fill: rgb(9%,41%,58%); stroke:none;" transform="translate(0,574) scale(1,-1)">POST prepared JPEG bytes</text>
+			<polyline points="385 197, 750 197" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="750 197, 741.896 200.9147, 741.896 193.0853" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<text x="462.034912109375" y="207.0" style="font-family: Arial; font-size: 15px;fill: rgb(9%,41%,58%); stroke:none;" transform="translate(0,414) scale(1,-1)">Image manifest, chunks, replies</text>
+			<polyline points="750 114, 385 114" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="385 114, 393.104 110.0853, 393.104 117.9147" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1; fill: rgb(7%,49%,45%); fill-rule: evenodd;"/>
+			<text x="495.3857421875" y="124.0" style="font-family: Arial; font-size: 15px;fill: rgb(7%,49%,45%); stroke:none;" transform="translate(0,248) scale(1,-1)">Final completion ACK</text>
+			<polyline points="385 60, 110 60" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="110 60, 118.104 56.08531, 118.104 63.91469" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1; fill: rgb(7%,49%,45%); fill-rule: evenodd;"/>
+			<text x="149.945068359375" y="70.0" style="font-family: Arial; font-size: 15px;fill: rgb(7%,49%,45%); stroke:none;" transform="translate(0,140) scale(1,-1)">State poll: received by device</text>
+			<rect x="425" y="455" width="255" height="50" rx="9" ry="9" style="stroke: rgb(39%,45%,54%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(94%,96%,97%); fill-rule: evenodd;"/>
+			<text x="474.98046875" y="475.2" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,950) scale(1,-1)">SOS saved in LittleFS</text>
+			<rect x="780" y="360" width="165" height="45" rx="9" ry="9" style="stroke: rgb(39%,45%,54%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(94%,96%,97%); fill-rule: evenodd;"/>
+			<text x="821.231689453125" y="377.7" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,755) scale(1,-1)">Save report</text>
+			<rect x="425" y="280" width="490" height="48" rx="9" ry="9" style="stroke: rgb(39%,45%,54%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(94%,96%,97%); fill-rule: evenodd;"/>
+			<text x="477.02880859375" y="308.8" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,617) scale(1,-1)">Photo compression/upload may overlap SOS delivery.</text>
+			<text x="476.19384765625" y="289.6" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,579) scale(1,-1)">Radio image transfer waits for a known rescuer target.</text>
+			<rect x="425" y="227" width="290" height="35" rx="9" ry="9" style="stroke: rgb(39%,45%,54%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(94%,96%,97%); fill-rule: evenodd;"/>
+			<text x="459.73388671875" y="239.7" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,479) scale(1,-1)">JPEG + metadata saved locally</text>
+			<rect x="560" y="145" width="375" height="30" rx="9" ry="9" style="stroke: rgb(39%,45%,54%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(94%,96%,97%); fill-rule: evenodd;"/>
+			<text x="604.534912109375" y="155.2" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,310) scale(1,-1)">Verify complete image; save completion</text>
+		</g>
+	</g>
+</svg>

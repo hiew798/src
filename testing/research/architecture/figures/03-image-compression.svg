@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg
+  PUBLIC '-//W3C//DTD SVG 1.0//EN'
+  'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'>
+<svg width="960" height="755" preserveAspectRatio="xMinYMin meet" viewBox="0 0 960 755" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="960" height="755"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-755)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="0" y="0" width="960" height="755" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<rect x="320" y="688" width="320" height="55" rx="9" ry="9" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(91%,96%,97%); fill-rule: evenodd;"/>
+			<text x="393.543212890625" y="710.06" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1420) scale(1,-1)">Camera or gallery file</text>
+			<polyline points="480 688, 480 657" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="480 657, 483.9147 665.104, 476.0853 665.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<polygon points="480 657, 627.5 617, 480 577, 332.5 617" style="stroke: rgb(65%,39%,8%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(100%,95%,87%); fill-rule: evenodd;"/>
+			<text x="418.65234375" y="620.0" style="font-family: Arial-Bold; font-size: 16px;fill: rgb(65%,39%,8%); stroke:none;" transform="translate(0,1240) scale(1,-1)">File present and</text>
+			<text x="420.41796875" y="599.52" style="font-family: Arial-Bold; font-size: 16px;fill: rgb(65%,39%,8%); stroke:none;" transform="translate(0,1199) scale(1,-1)">size &lt;= 15 MiB?</text>
+			<rect x="730" y="583" width="210" height="65" rx="9" ry="9" style="stroke: rgb(65%,39%,8%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(100%,95%,87%); fill-rule: evenodd;"/>
+			<text x="786.357421875" y="610.06" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1220) scale(1,-1)">Reject input</text>
+			<polyline points="627 617, 730 617" style="stroke: rgb(65%,39%,8%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="730 617, 721.896 620.9147, 721.896 613.0853" style="stroke: rgb(65%,39%,8%); stroke-linecap: butt; stroke-width: 1; fill: rgb(65%,39%,8%); fill-rule: evenodd;"/>
+			<text x="669.41259765625" y="630.0" style="font-family: Arial; font-size: 15px;fill: rgb(65%,39%,8%); stroke:none;" transform="translate(0,1260) scale(1,-1)">No</text>
+			<polyline points="480 577, 480 551" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="480 551, 483.9147 559.104, 476.0853 559.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<text x="503.076416015625" y="559.0" style="font-family: Arial; font-size: 15px;fill: rgb(9%,41%,58%); stroke:none;" transform="translate(0,1118) scale(1,-1)">Yes</text>
+			<rect x="285" y="486" width="390" height="65" rx="9" ry="9" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(91%,96%,97%); fill-rule: evenodd;"/>
+			<text x="389.309814453125" y="526.0" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1052) scale(1,-1)">Decode original image</text>
+			<text x="398.29833984375" y="500.24" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1000) scale(1,-1)">Browser image.decode()</text>
+			<polyline points="480 486, 480 458" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="480 458, 483.9147 466.104, 476.0853 466.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<rect x="230" y="383" width="500" height="75" rx="9" ry="9" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(91%,96%,97%); fill-rule: evenodd;"/>
+			<text x="284.931640625" y="433.0" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,866) scale(1,-1)">Choose dimension bound; preserve aspect ratio</text>
+			<text x="371.590576171875" y="407.24" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,814) scale(1,-1)">160 x 120 -&gt; 120 x 90 -&gt; 80 x 60</text>
+			<polyline points="480 383, 480 356" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="480 356, 483.9147 364.104, 476.0853 364.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<rect x="230" y="281" width="500" height="75" rx="9" ry="9" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(91%,96%,97%); fill-rule: evenodd;"/>
+			<text x="298.13818359375" y="331.0" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,662) scale(1,-1)">Draw on white canvas; convert pixels to gray</text>
+			<text x="343.033447265625" y="305.24" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,610) scale(1,-1)">gray = round(0.299R + 0.587G + 0.114B)</text>
+			<polyline points="480 281, 480 254" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="480 254, 483.9147 262.104, 476.0853 262.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<rect x="285" y="188" width="390" height="66" rx="9" ry="9" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(91%,96%,97%); fill-rule: evenodd;"/>
+			<text x="364.747802734375" y="229.0" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,458) scale(1,-1)">Encode JPEG at next quality</text>
+			<text x="388.4765625" y="203.24" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,406) scale(1,-1)">0.60 -&gt; 0.45 -&gt; 0.30 -&gt; 0.20</text>
+			<polyline points="480 188, 480 165" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="480 165, 483.9147 173.104, 476.0853 173.104" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<polygon points="480 165, 630 127, 480 89, 330 127" style="stroke: rgb(65%,39%,8%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(100%,95%,87%); fill-rule: evenodd;"/>
+			<text x="420.875" y="130.0" style="font-family: Arial-Bold; font-size: 16px;fill: rgb(65%,39%,8%); stroke:none;" transform="translate(0,260) scale(1,-1)">Blob exists and</text>
+			<text x="422.62890625" y="109.52" style="font-family: Arial-Bold; font-size: 16px;fill: rgb(65%,39%,8%); stroke:none;" transform="translate(0,219) scale(1,-1)">bytes &lt;= 8192?</text>
+			<rect x="725" y="89" width="215" height="76" rx="9" ry="9" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(90%,95%,93%); fill-rule: evenodd;"/>
+			<text x="776.307861328125" y="140.0" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,280) scale(1,-1)">Return first fit</text>
+			<text x="764.549560546875" y="114.24000000000001" style="font-family: Arial; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,228) scale(1,-1)">Upload binary JPEG</text>
+			<polyline points="630 127, 725 127" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="725 127, 716.896 130.9147, 716.896 123.0853" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1; fill: rgb(7%,49%,45%); fill-rule: evenodd;"/>
+			<text x="665.076416015625" y="141.0" style="font-family: Arial; font-size: 15px;fill: rgb(7%,49%,45%); stroke:none;" transform="translate(0,282) scale(1,-1)">Yes</text>
+			<polyline points="330 127, 165 127, 165 221, 285 221" style="stroke: rgb(65%,39%,8%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="285 221, 276.896 224.9147, 276.896 217.0853" style="stroke: rgb(65%,39%,8%); stroke-linecap: butt; stroke-width: 1; fill: rgb(65%,39%,8%); fill-rule: evenodd;"/>
+			<text x="183.3056640625" y="145.0" style="font-family: Arial; font-size: 15px;fill: rgb(65%,39%,8%); stroke:none;" transform="translate(0,290) scale(1,-1)">No: next quality</text>
+			<polyline points="165 221, 55 221, 55 420, 230 420" style="stroke: rgb(65%,39%,8%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="230 420, 221.896 423.9147, 221.896 416.0853" style="stroke: rgb(65%,39%,8%); stroke-linecap: butt; stroke-width: 1; fill: rgb(65%,39%,8%); fill-rule: evenodd;"/>
+			<text x="69.1259765625" y="434.0" style="font-family: Arial; font-size: 15px;fill: rgb(65%,39%,8%); stroke:none;" transform="translate(0,868) scale(1,-1)">Qualities exhausted</text>
+			<rect x="220" y="13" width="720" height="40" rx="9" ry="9" style="stroke: rgb(39%,45%,54%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(94%,96%,97%); fill-rule: evenodd;"/>
+			<text x="324.9267578125" y="28.200000000000045" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,56) scale(1,-1)">If all 3 bounds x 4 qualities fail: report an error; the saved SOS remains.</text>
+		</g>
+	</g>
+</svg>

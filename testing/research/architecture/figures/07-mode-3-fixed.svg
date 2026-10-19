@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg
+  PUBLIC '-//W3C//DTD SVG 1.0//EN'
+  'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'>
+<svg width="960" height="650" preserveAspectRatio="xMinYMin meet" viewBox="0 0 960 650" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="960" height="650"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-650)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="0" y="0" width="960" height="650" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<rect x="50" y="590" width="240" height="48" rx="9" ry="9" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(91%,96%,97%); fill-rule: evenodd;"/>
+			<text x="109.532958984375" y="608.56" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1217) scale(1,-1)">Civilian sender</text>
+			<path d="M 170,590 L 170,40 Z" style="stroke: rgb(39%,45%,54%); stroke-linecap: butt; stroke-width: 1.2; stroke-dasharray: 5, 5;"/>
+			<rect x="605" y="590" width="240" height="48" rx="9" ry="9" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(91%,96%,97%); fill-rule: evenodd;"/>
+			<text x="656.47705078125" y="608.56" style="font-family: Arial-Bold; font-size: 17px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,1217) scale(1,-1)">Rescuer receiver</text>
+			<path d="M 725,590 L 725,40 Z" style="stroke: rgb(39%,45%,54%); stroke-linecap: butt; stroke-width: 1.2; stroke-dasharray: 5, 5;"/>
+			<polyline points="170 553, 725 553" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="725 553, 716.896 556.9147, 716.896 549.0853" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<text x="392.901611328125" y="561.0" style="font-family: Arial; font-size: 15px;fill: rgb(9%,41%,58%); stroke:none;" transform="translate(0,1122) scale(1,-1)">IMAGE manifest</text>
+			<polyline points="725 520, 170 520" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="170 520, 178.104 516.0853, 178.104 523.9147" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1; fill: rgb(7%,49%,45%); fill-rule: evenodd;"/>
+			<text x="389.556884765625" y="531.0" style="font-family: Arial; font-size: 15px;fill: rgb(7%,49%,45%); stroke:none;" transform="translate(0,1062) scale(1,-1)">Initial bitmap reply</text>
+			<polyline points="170 490, 725 490" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="725 490, 716.896 493.9147, 716.896 486.0853" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<text x="382.904052734375" y="498.0" style="font-family: Arial; font-size: 15px;fill: rgb(9%,41%,58%); stroke:none;" transform="translate(0,996) scale(1,-1)">GROUP_CHUNK 0</text>
+			<polyline points="170 446, 500 446" style="stroke: rgb(65%,39%,8%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="500 446, 491.896 449.9147, 491.896 442.0853" style="stroke: rgb(65%,39%,8%); stroke-linecap: butt; stroke-width: 1; fill: rgb(65%,39%,8%); fill-rule: evenodd;"/>
+			<text x="319.560546875" y="458.0" style="font-family: Arial; font-size: 15px;fill: rgb(65%,39%,8%); stroke:none;" transform="translate(0,916) scale(1,-1)">GROUP_CHUNK 1 (illustrative loss)</text>
+			<text x="506.6630859375" y="439.0" style="font-family: Arial-Bold; font-size: 22px;fill: rgb(65%,39%,8%); stroke:none;" transform="translate(0,878) scale(1,-1)">X</text>
+			<polyline points="170 402, 725 402" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="725 402, 716.896 405.9147, 716.896 398.0853" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<text x="382.904052734375" y="410.0" style="font-family: Arial; font-size: 15px;fill: rgb(9%,41%,58%); stroke:none;" transform="translate(0,820) scale(1,-1)">GROUP_CHUNK 2</text>
+			<polyline points="170 358, 725 358" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="725 358, 716.896 361.9147, 716.896 354.0853" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<text x="382.904052734375" y="366.0" style="font-family: Arial; font-size: 15px;fill: rgb(9%,41%,58%); stroke:none;" transform="translate(0,732) scale(1,-1)">GROUP_CHUNK 3</text>
+			<rect x="752" y="344" width="185" height="153" rx="9" ry="9" style="stroke: rgb(39%,45%,54%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(94%,96%,97%); fill-rule: evenodd;"/>
+			<text x="767.38330078125" y="454.1" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,908) scale(1,-1)">Each received chunk:</text>
+			<text x="783.01318359375" y="434.90000000000003" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,869) scale(1,-1)">write + read-back</text>
+			<text x="785.089599609375" y="415.70000000000005" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,831) scale(1,-1)">+ save progress.</text>
+			<text x="797.416259765625" y="396.5" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,793) scale(1,-1)">No individual</text>
+			<text x="801.99755859375" y="377.3" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,754) scale(1,-1)">chunk ACK.</text>
+			<polyline points="170 301, 725 301" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="725 301, 716.896 304.9147, 716.896 297.0853" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<text x="322.45361328125" y="309.0" style="font-family: Arial; font-size: 15px;fill: rgb(9%,41%,58%); stroke:none;" transform="translate(0,618) scale(1,-1)">BITMAP_QUERY (unique request ID)</text>
+			<polyline points="725 249, 170 249" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="170 249, 178.104 245.0853, 178.104 252.9147" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1; fill: rgb(7%,49%,45%); fill-rule: evenodd;"/>
+			<text x="292.84423828125" y="261.0" style="font-family: Arial; font-size: 15px;fill: rgb(7%,49%,45%); stroke:none;" transform="translate(0,522) scale(1,-1)">BITMAP_ACK: [1, 0, 1, 1] for chunks [0, 1, 2, 3]</text>
+			<rect x="20" y="169" width="630" height="48" rx="9" ry="9" style="stroke: rgb(39%,45%,54%); stroke-linecap: butt; stroke-width: 1.5; fill: rgb(94%,96%,97%); fill-rule: evenodd;"/>
+			<text x="94.088134765625" y="197.8" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,395) scale(1,-1)">Next group selects missing chunks: retry 1 plus new chunks 4, 5, 6.</text>
+			<text x="106.59423828125" y="178.60000000000002" style="font-family: Arial-Bold; font-size: 15px;fill: rgb(9%,19%,30%); stroke:none;" transform="translate(0,357) scale(1,-1)">It does not retransmit chunks already committed at the receiver.</text>
+			<polyline points="170 130, 725 130" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="725 130, 716.896 133.9147, 716.896 126.0853" style="stroke: rgb(9%,41%,58%); stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,41%,58%); fill-rule: evenodd;"/>
+			<text x="343.682861328125" y="138.0" style="font-family: Arial; font-size: 15px;fill: rgb(9%,41%,58%); stroke:none;" transform="translate(0,276) scale(1,-1)">Next group, then another query</text>
+			<polyline points="725 70, 170 70" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1.8; fill: None; fill-rule: evenodd;"/>
+			<polygon points="170 70, 178.104 66.08531, 178.104 73.91469" style="stroke: rgb(7%,49%,45%); stroke-linecap: butt; stroke-width: 1; fill: rgb(7%,49%,45%); fill-rule: evenodd;"/>
+			<text x="246.588134765625" y="82.0" style="font-family: Arial; font-size: 15px;fill: rgb(7%,49%,45%); stroke:none;" transform="translate(0,164) scale(1,-1)">Final bitmap includes COMPLETE after full-image verification</text>
+			<text x="196.5234375" y="15.0" style="font-family: Arial; font-size: 15px;fill: rgb(39%,45%,54%); stroke:none;" transform="translate(0,30) scale(1,-1)">Data frames include listening gaps. Group size is four; the final group may be shorter.</text>
+		</g>
+	</g>
+</svg>
